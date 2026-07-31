@@ -1,4 +1,4 @@
-// Time.qml
+// TimeWorkspace/Time.qml
 
 pragma Singleton
 

@@ -1,4 +1,4 @@
-// Colors.qml
+// Colors/Colors.qml
 
 pragma Singleton
 

@@ -1,4 +1,4 @@
-// TimeWorkspaceWidget.qml
+// TimeWorkspace/TimeWorkspaceWidget.qml
 
 import QtQuick
 import QtQuick.Layouts
