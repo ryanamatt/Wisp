@@ -5,8 +5,11 @@ Wisp is a Shell.
 ## Build & Run
 
 ```Bash
+# Build
 cmake -B build
 cmake --build build
+# Or
+./scripts/build.sh
 
 # Run
 ./build/wisp
