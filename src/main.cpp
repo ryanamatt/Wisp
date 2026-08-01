@@ -82,6 +82,8 @@ int main(int argc, char *argv[]) {
     std::string qmlDir = WISP_DEFAULT_QML_DIR;
     std::vector<std::string> args(argv + 1, argv + argc);
 
+    bool isRunRequested = false;
+
     for (size_t i = 0; i < args.size(); ++i) {
         const std::string &arg = args[i];
 
@@ -102,7 +104,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (arg == "run") {
-            // explicit form of the default action -- nothing else to do
+            isRunRequested = true;
             continue;
         }
 
@@ -111,5 +113,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    return runBar(qmlDir);
+    if (isRunRequested) return runBar(qmlDir);
+
+    // If incorrect args print help message.
+    printUsage(argv[0]);
+    return 0;
 }
