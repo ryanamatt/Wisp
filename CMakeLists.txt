@@ -11,10 +11,8 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 qt_standard_project_setup()
 
-# Put the wisp binary directly at build/wisp instead of build/src/wisp.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_subdirectory(backend/time)
 
-# The `wisp` CLI executable itself.
 add_subdirectory(src)

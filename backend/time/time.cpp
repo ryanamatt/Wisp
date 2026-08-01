@@ -17,7 +17,6 @@ QString Time::time() const {
 }
 
 void Time::updateTime() {
-    // Same format string the old QML singleton used with Qt.formatDateTime.
     const QString formatted = QDateTime::currentDateTime().toString(QStringLiteral("ddd MMM d hh:mm:ss AP"));
 
     if (formatted != m_time) {
