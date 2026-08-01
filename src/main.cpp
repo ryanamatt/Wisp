@@ -28,10 +28,10 @@ void printUsage(const char *argv0) {
         "Usage: " << argv0 << " [command] [options]\n"
         "\n"
         "Commands:\n"
-        "  run                 Launch the bar (default if no command given)\n"
+        "  run                 Launch the bar\n"
         "\n"
         "Options:\n"
-        "  -c, --config <dir>  Directory containing shell.qml\n"
+        "  -f <dir>            Directory containing shell.qml\n"
         "                      (default: " << WISP_DEFAULT_QML_DIR << ")\n"
         "  -h, --help          Show this help message\n"
         "  -v, --version       Show version information\n";
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
             printVersion();
             return 0;
         }
-        if (arg == "-c" || arg == "--config") {
+        if (arg == "-f") {
             if (i + 1 >= args.size()) {
                 std::cerr << "wisp: " << arg << " requires a directory argument\n";
                 return 1;
