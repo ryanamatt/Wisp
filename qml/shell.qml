@@ -1,4 +1,4 @@
-// shell.qml
+// qml/shell.qml
 
 import Quickshell
 

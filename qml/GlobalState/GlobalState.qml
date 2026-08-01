@@ -1,4 +1,4 @@
-// GlobalState/GlobalState.qml
+// qml/GlobalState/GlobalState.qml
 
 pragma Singleton
 

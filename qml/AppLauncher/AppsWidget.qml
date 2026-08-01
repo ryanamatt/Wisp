@@ -1,4 +1,4 @@
-// AppLauncher/AppsWidget.qml
+// qml/AppLauncher/AppsWidget.qml
 
 import QtQuick
 import QtQuick.Controls

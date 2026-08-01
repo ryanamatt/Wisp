@@ -1,4 +1,4 @@
-// AppLauncher/AppLauncher.qml
+// qml/AppLauncher/AppLauncher.qml
 
 import Quickshell
 import Quickshell.Io

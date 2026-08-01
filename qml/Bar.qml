@@ -1,4 +1,4 @@
-// Bar.qml
+// qml/Bar.qml
 
 import Quickshell
 import Quickshell.Io
