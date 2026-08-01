@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../Colors"
+import Wisp.Time
 
 Rectangle {
 
