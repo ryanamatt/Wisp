@@ -7,7 +7,8 @@
                 "/usr/include/qt6",
                 "/usr/include/qt6/QtCore",
                 "/usr/include/qt6/QtQml",
-                "/usr/include/qt6/QtQmlCore"
+                "/usr/include/qt6/QtQmlCore",
+                "${workspaceFolder}/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

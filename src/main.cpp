@@ -9,6 +9,8 @@
 #include <vector>
 #include <unistd.h>
 
+#include "config/config.hpp"
+
 #ifndef WISP_VERSION
 #define WISP_VERSION "0.0.0-dev"
 #endif
@@ -33,6 +35,8 @@ void printUsage(const char *argv0) {
         "Options:\n"
         "  -f <dir>            Directory containing shell.qml\n"
         "                      (default: " << WISP_DEFAULT_QML_DIR << ")\n"
+        "  -c <file>           Path to config.json\n"
+        "                      (default: " << wisp::config::defaultPath() << ")\n"
         "  -h, --help          Show this help message\n"
         "  -v, --version       Show version information\n";
 }
@@ -44,13 +48,15 @@ void printVersion() {
 // Runs the bar by exec'ing into quickshell, replacing this process
 // entirely. signals, stdio, and the exit code all pass straight
 // through, same as `exec` in a shell script.
-int runBar(const std::string &qmlDir) {
+int runBar(const std::string &qmlDir, const std::string &configPath) {
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";
 
     if (!std::filesystem::exists(shellQml)) {
         std::cerr << "wisp: cannot find shell.qml under " << qmlDir << "\n";
         return 1;
     }
+
+    wisp::config::load(configPath);
 
     // Prepend our bundled QML backend (e.g. Wisp.Time) to
     // QML2_IMPORT_PATH, keeping anything the user already has set so
@@ -80,6 +86,7 @@ int runBar(const std::string &qmlDir) {
 
 int main(int argc, char *argv[]) {
     std::string qmlDir = WISP_DEFAULT_QML_DIR;
+    std::string configPath = wisp::config::defaultPath();
     std::vector<std::string> args(argv + 1, argv + argc);
 
     bool isRunRequested = false;
@@ -103,6 +110,14 @@ int main(int argc, char *argv[]) {
             qmlDir = args[++i];
             continue;
         }
+        if (arg == "-c") {
+            if (i + 1 >= args.size()) {
+                std::cerr << "wisp: " << arg << " requires a file argument\n";
+                return 1;
+            }
+            configPath = args[++i];
+            continue;
+        }
         if (arg == "run") {
             isRunRequested = true;
             continue;
@@ -113,7 +128,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (isRunRequested) return runBar(qmlDir);
+    if (isRunRequested) return runBar(qmlDir, configPath);
 
     // If incorrect args print help message.
     printUsage(argv[0]);
