@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
-import "../Colors"
+import "../../Colors"
 
 RowLayout {
     id: root

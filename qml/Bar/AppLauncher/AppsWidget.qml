@@ -4,8 +4,8 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
-import "../Colors"
-import "../GlobalState"
+import "../../Colors"
+import "../../GlobalState"
 
 Rectangle {
     id: appsWidget

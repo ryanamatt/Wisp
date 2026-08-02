@@ -5,7 +5,7 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import "../Colors"
+import "../../Colors"
 
 Rectangle {
     id: root
