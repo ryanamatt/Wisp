@@ -6,8 +6,8 @@
 
 *.qml     linguist-language=QML
 
-*.md
-*.json
+*.md text
+*.json text
 
 # Exclude third-party library and build artifacts from linguist stats
 third_party/n/json.hpp linguist-vendored
