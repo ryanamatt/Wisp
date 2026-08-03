@@ -9,7 +9,7 @@ import "../../GlobalState"
 import "../../Colors"
 
 BarWidgetContainer {
-    id: powerMenu 
+    id: powerMenu
 
     required property var screen
 
@@ -17,58 +17,27 @@ BarWidgetContainer {
 
     icon.text: "\udb81\udc25"
 
-    readonly property real fullRadius: implicitHeight / 2
-    topLeftRadius: fullRadius
-    topRightRadius: fullRadius
-    bottomLeftRadius: fullRadius * (1 - openProgress)
-    bottomRightRadius: fullRadius * (1 - openProgress)
-
-    readonly property bool isOpenHere: GlobalState.isPowerMenuOpen
+    isOpenHere: GlobalState.isPowerMenuOpen
         && GlobalState.powerMenuScreen === powerMenu.screen
 
-    property real openProgress: isOpenHere ? 1 : 0
-    Behavior on openProgress {
-        SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.001 }
+    popupWindows: [powerMenuPopup]
+
+    onRequestOpen: {
+        GlobalState.powerMenuScreen = powerMenu.screen
+        GlobalState.isPowerMenuOpen = true
+    }
+    onRequestClose: {
+        GlobalState.isPowerMenuOpen = false
+        GlobalState.powerMenuScreen = null
     }
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
             popup.resetSelection()
             popup.forceActiveFocus()
-            focusGrab.active = true
+            activateFocusGrab()
         } else {
-            focusGrab.active = false
-        }
-    }
-
-    MouseArea {
-        id: widgetHoverArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: {
-            hideTimer.stop()
-            GlobalState.isPowerMenuOpen = true
-            GlobalState.powerMenuScreen = powerMenu.screen
-        }
-        onExited: hideTimer.start()
-    }
-
-    Timer {
-        id: hideTimer
-        interval: 200
-        onTriggered: {
-            GlobalState.isPowerMenuOpen = false
-            GlobalState.powerMenuScreen = null
-        }
-    }
-
-    HyprlandFocusGrab {
-        id: focusGrab
-        windows: [powerMenuPopup]
-        onCleared: {
-            hideTimer.stop()
-            GlobalState.isPowerMenuOpen = false
-            GlobalState.powerMenuScreen = null
+            releaseFocusGrab()
         }
     }
 
@@ -111,11 +80,9 @@ BarWidgetContainer {
                     id: popupHover
                     onHoveredChanged: {
                         if (popupHover.hovered) {
-                            hideTimer.stop()
-                            GlobalState.powerMenuScreen = powerMenu.screen
-                            GlobalState.isPowerMenuOpen = true
+                            powerMenu.open()
                         } else {
-                            hideTimer.start()
+                            powerMenu.close()
                         }
                     }
                 }
@@ -127,11 +94,7 @@ BarWidgetContainer {
 
                     opacity: Math.max(0, (powerMenu.openProgress - 0.25) / 0.75)
 
-                    onRequestClose: {
-                        hideTimer.stop()
-                        GlobalState.isPowerMenuOpen = false
-                        GlobalState.powerMenuScreen = null
-                    }
+                    onRequestClose: powerMenu.forceClose()
                 }
             }
         }

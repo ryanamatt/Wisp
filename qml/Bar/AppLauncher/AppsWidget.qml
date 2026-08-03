@@ -17,64 +17,30 @@ BarWidgetContainer {
 
     icon.text: "\uf40e"
 
-    // Full pill radius when closed, animates flat as the popup opens so the
-    // bottom of the pill and the top of the popup read as one shape.
-    readonly property real fullRadius: implicitHeight / 2
-    topLeftRadius: fullRadius
-    topRightRadius: fullRadius
-    bottomLeftRadius: fullRadius * (1 - openProgress)
-    bottomRightRadius: fullRadius * (1 - openProgress)
-
     // True only when THIS screen's launcher is the one that's open, since
     // AppsWidget is instantiated once per monitor but GlobalState is shared
     // across all of them.
-    readonly property bool isOpenHere: GlobalState.isAppLauncherOpen
+    isOpenHere: GlobalState.isAppLauncherOpen
         && GlobalState.appLauncherScreen === appsWidget.screen
 
-    // Drives the whole open/close animation. 0 = fully closed, 1 = fully open.
-    property real openProgress: isOpenHere ? 1 : 0
-    Behavior on openProgress {
-        SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.001 }
+    popupWindows: [launcherPopup]
+
+    onRequestOpen: {
+        GlobalState.appLauncherScreen = appsWidget.screen
+        GlobalState.isAppLauncherOpen = true
+    }
+    onRequestClose: {
+        GlobalState.isAppLauncherOpen = false
+        GlobalState.appLauncherScreen = null
     }
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
             launcher.resetSelection()
             launcher.forceActiveFocus()
-            focusGrab.active = true
+            activateFocusGrab()
         } else {
-            focusGrab.active = false
-        }
-    }
-
-    MouseArea {
-        id: widgetHoverArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: {
-            hideTimer.stop()
-            GlobalState.appLauncherScreen = appsWidget.screen
-            GlobalState.isAppLauncherOpen = true
-        }
-        onExited: hideTimer.start()
-    }
-
-    Timer {
-        id: hideTimer
-        interval: 200
-        onTriggered: {
-            GlobalState.isAppLauncherOpen = false
-            GlobalState.appLauncherScreen = null
-        }
-    }
-
-    HyprlandFocusGrab {
-        id: focusGrab
-        windows: [launcherPopup]
-        onCleared: {
-            hideTimer.stop()
-            GlobalState.isAppLauncherOpen = false
-            GlobalState.appLauncherScreen = null
+            releaseFocusGrab()
         }
     }
 
@@ -129,11 +95,9 @@ BarWidgetContainer {
                     id: popupHover
                     onHoveredChanged: {
                         if (popupHover.hovered) {
-                            hideTimer.stop()
-                            GlobalState.appLauncherScreen = appsWidget.screen
-                            GlobalState.isAppLauncherOpen = true
+                            appsWidget.open()
                         } else {
-                            hideTimer.start()
+                            appsWidget.close()
                         }
                     }
                 }
@@ -146,15 +110,11 @@ BarWidgetContainer {
                     // so the shape leads and the icons follow.
                     opacity: Math.max(0, (appsWidget.openProgress - 0.25) / 0.75)
 
-                    onRequestClose: {
-                        hideTimer.stop()
-                        GlobalState.isAppLauncherOpen = false
-                        GlobalState.appLauncherScreen = null
-                    }
+                    onRequestClose: appsWidget.forceClose()
                 }
 
             }
         }
     }
-    
+
 }
