@@ -18,13 +18,13 @@ qt_add_qml_module(wisptime
     URI Wisp.Time
     OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Time
     SOURCES
-        backend/time/time.hpp
-        backend/time/time.cpp
+        src/backend/time/time.hpp
+        src/backend/time/time.cpp
 )
 
 target_include_directories(wisptime PRIVATE
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/backend/time
+    ${CMAKE_SOURCE_DIR}/src/backend/time
 )
 
 target_link_libraries(wisptime PRIVATE
