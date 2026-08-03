@@ -1,4 +1,4 @@
-// qml/TimeWorkspace/WorkspaceIndicator.qml
+// qml/bar/TimeWorkspace/WorkspaceIndicator.qml
 
 import Quickshell
 import Quickshell.Hyprland

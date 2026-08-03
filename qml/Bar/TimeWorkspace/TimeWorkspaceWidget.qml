@@ -1,8 +1,9 @@
-// qml/TimeWorkspace/TimeWorkspaceWidget.qml
+// qml/bar/TimeWorkspace/TimeWorkspaceWidget.qml
 
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
+import "../../Components"
 import Wisp.Time
 
 Rectangle {

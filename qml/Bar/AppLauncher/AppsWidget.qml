@@ -1,20 +1,17 @@
-// qml/AppLauncher/AppsWidget.qml
+// qml/bar/AppLauncher/AppsWidget.qml
 
 import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
 import "../../Colors"
+import "../../Components"
 import "../../GlobalState"
 
-Rectangle {
+BarWidgetContainer {
     id: appsWidget
 
     required property var screen
-
-    color: Colors.colors.backgroundAlt
-    border.color: Colors.colors.background
-    border.width: 2
 
     implicitHeight: 36
     implicitWidth: 75
