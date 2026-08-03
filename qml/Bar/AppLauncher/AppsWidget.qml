@@ -13,8 +13,9 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitHeight: 36
     implicitWidth: 75
+
+    icon.text: "\uf40e"
 
     // Full pill radius when closed, animates flat as the popup opens so the
     // bottom of the pill and the top of the popup read as one shape.
@@ -44,14 +45,6 @@ BarWidgetContainer {
         } else {
             focusGrab.active = false
         }
-    }
-
-    Text {
-        anchors.centerIn: parent
-        text: "\uf40e"
-        color: Colors.colors.foreground
-        font.pixelSize: 25
-        font.family: "Noto Sans Mono"
     }
 
     MouseArea {

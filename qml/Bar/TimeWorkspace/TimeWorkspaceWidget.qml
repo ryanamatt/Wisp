@@ -6,18 +6,12 @@ import "../../Colors"
 import "../../Components"
 import Wisp.Time
 
-Rectangle {
-
+BarWidgetContainer {
     id: timeWorkspace
 
     required property var screen
 
-    color: Colors.colors.backgroundAlt
-    border.color: Colors.colors.background
-    border.width: 2
-
     implicitWidth: 200
-    implicitHeight: 40
 
     radius: implicitWidth / 2
 

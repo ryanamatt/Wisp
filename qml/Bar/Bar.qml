@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import "../Colors"
 import "TimeWorkspace"
 import "AppLauncher"
+import "PowerMenu"
 
 Variants {
     model: Quickshell.screens
@@ -32,10 +33,17 @@ Variants {
 
             Item { Layout.fillWidth: true }
 
+            // Width 50
+            PowerMenuWidget {}
+
+            Item { implicitWidth: 20 }
+
             TimeWorkspaceWidget {
                 screen: bar.modelData
                 Layout.alignment: Qt.AlignHCenter
             }
+
+            Item { implicitWidth: 70 }
 
             Item { Layout.fillWidth: true }
 
