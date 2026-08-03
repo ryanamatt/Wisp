@@ -21,7 +21,7 @@ Rectangle {
         id: icon
         anchors.centerIn: parent
         color: Colors.colors.foreground
-        font.pixelSize: 25
+        font.pixelSize: 30
         font.family: "Noto Sans Mono"
     }
 

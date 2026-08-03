@@ -34,7 +34,9 @@ Variants {
             Item { Layout.fillWidth: true }
 
             // Width 50
-            PowerMenuWidget {}
+            PowerMenuWidget {
+                screen: bar.modelData
+            }
 
             Item { implicitWidth: 20 }
 

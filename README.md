@@ -19,5 +19,7 @@ cmake --build build
 
 Keybinds Added to binds.lua
 
-hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs -c ~/Projects/bar/qml ipc call appLauncher toggle"))
+hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs -c ~/Projects/wisp/qml ipc call appLauncher toggle"))
+
+hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("qs -c ~/Projects/wisp/qml ipc call powerMenu toggle"))
 
