@@ -16,19 +16,12 @@ BarWidgetContainer {
 
     icon.text: "\udb81\udc25"
 
-    isOpenHere: GlobalState.isPowerMenuOpen
-        && GlobalState.powerMenuScreen === powerMenu.screen
+    isOpenHere: GlobalState.powerMenu.isOpenOn(powerMenu.screen)
 
     popupWindows: [powerMenuPopup]
 
-    onRequestOpen: {
-        GlobalState.powerMenuScreen = powerMenu.screen
-        GlobalState.isPowerMenuOpen = true
-    }
-    onRequestClose: {
-        GlobalState.isPowerMenuOpen = false
-        GlobalState.powerMenuScreen = null
-    }
+    onRequestOpen: GlobalState.powerMenu.open(powerMenu.screen)
+    onRequestClose: GlobalState.powerMenu.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

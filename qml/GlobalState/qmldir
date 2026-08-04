@@ -1,1 +1,2 @@
 singleton GlobalState GlobalState.qml
+PopupState PopupState.qml

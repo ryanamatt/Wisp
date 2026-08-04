@@ -17,22 +17,12 @@ BarWidgetContainer {
 
     icon.text: "\uf40e"
 
-    // True only when THIS screen's launcher is the one that's open, since
-    // AppsWidget is instantiated once per monitor but GlobalState is shared
-    // across all of them.
-    isOpenHere: GlobalState.isAppLauncherOpen
-        && GlobalState.appLauncherScreen === appsWidget.screen
+    isOpenHere: GlobalState.appLauncher.isOpenOn(appsWidget.screen)
 
     popupWindows: [launcherPopup]
 
-    onRequestOpen: {
-        GlobalState.appLauncherScreen = appsWidget.screen
-        GlobalState.isAppLauncherOpen = true
-    }
-    onRequestClose: {
-        GlobalState.isAppLauncherOpen = false
-        GlobalState.appLauncherScreen = null
-    }
+    onRequestOpen: GlobalState.appLauncher.open(appsWidget.screen)
+    onRequestClose: GlobalState.appLauncher.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
