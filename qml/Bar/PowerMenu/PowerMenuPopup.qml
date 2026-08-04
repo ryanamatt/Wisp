@@ -6,14 +6,10 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../../Colors"
+import "../../Components"
 
-Rectangle {
+BarPopup {
     id: powerMenuPopup
-    color: "transparent"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    clip: true
-    focus: true
 
     signal requestClose()
     property int currentIndex: 0
