@@ -14,8 +14,18 @@ BarPopup {
     signal requestClose()
     property int currentIndex: 0
 
+    property bool isConfirming: false
+    property int confirmingIndex: -1
+
     function resetSelection() {
         powerMenuPopup.currentIndex = 0
+    }
+
+    function closePopup() {
+        currentIndex = 0
+        confirmingIndex = -1
+        isConfirming = false
+        powerMenuPopup.requestClose()
     }
 
     property var actions: [
@@ -76,13 +86,20 @@ BarPopup {
     }
 
     function runSelection() {
-        const action = powerMenuPopup.actions[powerMenuPopup.currentIndex]
-        runAction(action)
+        if (isConfirming && currentIndex === confirmingIndex) {
+            isConfirming = false
+            const action = powerMenuPopup.actions[powerMenuPopup.currentIndex]
+            runAction(action)
+        } 
+        else {
+            isConfirming = true
+            confirmingIndex = currentIndex
+        }
     }
 
     Keys.onLeftPressed:   moveSelection(-1)
     Keys.onRightPressed:  moveSelection(1)
-    Keys.onEscapePressed: powerMenuPopup.requestClose()
+    Keys.onEscapePressed: closePopup()
     Keys.onReturnPressed: runSelection()
     Keys.onEnterPressed:  runSelection()
 
@@ -106,8 +123,10 @@ BarPopup {
                 Layout.fillHeight: true
 
                 readonly property bool selected: index === powerMenuPopup.currentIndex
+                readonly property bool confirming: index === powerMenuPopup.confirmingIndex
 
-                color: selected ? Colors.colors.hover : Colors.colors.backgroundAlt
+                // color: selected ? Colors.colors.hover : Colors.colors.backgroundAlt
+                color: confirming ? Colors.colors.success : selected ? Colors.colors.hover : Colors.colors.backgroundAlt
                 border.width: selected ? 3 : 1
                 border.color: powerMenuPopup.colorFor(modelData)
 
@@ -116,7 +135,7 @@ BarPopup {
                     spacing: 8
 
                     Text {
-                        text: modelData.glyph
+                        text: confirming ? "C?" : modelData.glyph
                         font.family: "Iosevka Nerd Font Propo"
                         font.pixelSize: 32
                         color: powerMenuPopup.colorFor(modelData)
@@ -131,7 +150,7 @@ BarPopup {
                     onEntered: powerMenuPopup.currentIndex = tile.index
                     onClicked: {
                         powerMenuPopup.currentIndex = tile.index
-                        powerMenuPopup.runAction(modelData)
+                        powerMenuPopup.runSelection()
                     }
                 }
 

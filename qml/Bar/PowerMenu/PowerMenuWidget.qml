@@ -37,6 +37,7 @@ BarWidgetContainer {
             popup.forceActiveFocus()
             activateFocusGrab()
         } else {
+            popup.closePopup()
             releaseFocusGrab()
         }
     }
