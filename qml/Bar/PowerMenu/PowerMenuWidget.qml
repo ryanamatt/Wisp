@@ -3,7 +3,6 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Hyprland
 import "../../Components"
 import "../../GlobalState"
 import "../../Colors"
