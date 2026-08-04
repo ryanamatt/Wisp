@@ -8,6 +8,7 @@ import "../Colors"
 import "TimeWorkspace"
 import "AppLauncher"
 import "PowerMenu"
+import "Notifications"
 
 Variants {
     model: Quickshell.screens
@@ -50,8 +51,9 @@ Variants {
             Item { Layout.fillWidth: true }
 
             // Width 75
-            Item { implicitWidth: 75 }
+            Item { implicitWidth: 25 }
 
+            NotificationsWidget {}
         }
     }
 }
