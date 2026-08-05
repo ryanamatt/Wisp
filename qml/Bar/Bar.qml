@@ -10,6 +10,7 @@ import "AppLauncher"
 import "PowerMenu"
 import "Notifications"
 import "ThemeSwitcher"
+import "Audio"
 
 Variants {
     model: Quickshell.screens
@@ -35,6 +36,8 @@ Variants {
 
             Item { Layout.fillWidth: true }
 
+            Item { implicitWidth: 210 }
+
             // Width 50
             PowerMenuWidget {
                 screen: bar.modelData
@@ -47,7 +50,9 @@ Variants {
                 Layout.alignment: Qt.AlignHCenter
             }
 
-             Item { implicitWidth: 30 }
+            Item  {implicitWidth: 20 }
+
+            AudioWidget {}
 
             Item { Layout.fillWidth: true }
 
