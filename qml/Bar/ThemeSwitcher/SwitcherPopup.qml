@@ -3,6 +3,7 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../../Colors"
@@ -65,14 +66,22 @@ BarPopup {
         }
     }
 
-    // Get a Themes Wallpapers
-    Process {
-        id: listWallpapers
-        command: ["bash", "-c", "find '" + Quickshell.env("HOME") + "/dotfiles/wallpapers/" + selectedTheme + "' -mindepth 1 -maxdepth 1 -type f -printf '%f\\n' | sort"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                switcherPopup.wallpaperNames = this.text.split("\n").filter(s => s.length > 0)
-                switcherPopup.selectedWallpaperIndex = 0
+    // Fetches the wallpaper list for a single theme.
+    Component {
+        id: wallpaperListerComponent
+
+        Process {
+            id: proc
+            property string forTheme: ""
+
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    if (proc.forTheme === switcherPopup.selectedTheme) {
+                        switcherPopup.wallpaperNames = this.text.split("\n").filter(s => s.length > 0)
+                        switcherPopup.selectedWallpaperIndex = 0
+                    }
+                    proc.destroy()
+                }
             }
         }
     }
@@ -83,10 +92,16 @@ BarPopup {
         if (switcherPopup.selectedTheme === "" || switcherPopup.selectedTheme === undefined) {
             return
         }
-        if (listWallpapers.running) {
-            listWallpapers.running = false
+
+        var theme = switcherPopup.selectedTheme
+        var lister = wallpaperListerComponent.createObject(switcherPopup, {
+            forTheme: theme,
+            command: ["bash", "-c", "find '" + Quickshell.env("HOME") + "/dotfiles/wallpapers/" + theme + "' -mindepth 1 -maxdepth 1 -type f -printf '%f\\n' | sort"]
+        })
+
+        if (lister) {
+            lister.running = true
         }
-        listWallpapers.running = true
     }
 
     Process {
@@ -97,6 +112,8 @@ BarPopup {
     function switchTheme() {
         selectedTheme = themeNames[selectedThemeIndex]
         switchThemeProc.running = true
+        wallpaperNames = []
+        selectedWallpaperIndex = -1
         refreshWallpapers()
     }
 
@@ -141,6 +158,8 @@ BarPopup {
                         switcherPopup.selectedTheme = switcherPopup.themeNames[currentIndex]
                     }
 
+                    switcherPopup.wallpaperNames = []
+                    switcherPopup.selectedWallpaperIndex = -1
                     switcherPopup.refreshWallpapers()
                 }
 
@@ -240,20 +259,53 @@ BarPopup {
                             height: 50
 
                             Rectangle {
+                                id: wallpaperCardBg
                                 width: 180
                                 height: 50
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                
+
                                 color: index ? Colors.colors.hover : Colors.colors.surfaceAlt
                                 radius: 25
-                                border.color: Colors.colors.border
-                                border.width: index ? 2 : 0
 
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: modelData
-                                    font.pixelSize: 14
-                                    color: index ? Colors.colors.foreground : Colors.colors.accentAlt
+                                property string img: "file://" + Quickshell.env("HOME") + "/dotfiles/wallpapers/" + selectedTheme + "/" + modelData
+
+                                // The actual image, rendered normally but kept invisible -
+                                // MultiEffect below grabs its texture and masks it.
+                                Image {
+                                    id: wallpaperImage
+                                    anchors.fill: parent
+                                    fillMode: Image.PreserveAspectCrop
+                                    asynchronous: true
+                                    source: parent.img ? parent.img : ""
+                                    visible: false
+                                    layer.enabled: true
+                                }
+
+                                // Invisible mask shape - same geometry/radius as the card,
+                                // used to cut the image into a pill.
+                                Rectangle {
+                                    id: wallpaperMask
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    visible: false
+                                    layer.enabled: true
+                                }
+
+                                // Draws wallpaperImage clipped to wallpaperMask's rounded shape.
+                                MultiEffect {
+                                    anchors.fill: parent
+                                    source: wallpaperImage
+                                    maskEnabled: true
+                                    maskSource: wallpaperMask
+                                }
+
+                                // Border drawn on top so it stays crisp above the masked image.
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    color: "transparent"
+                                    border.color: Colors.colors.border
+                                    border.width: index ? 2 : 0
                                 }
                             }
 
