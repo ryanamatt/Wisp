@@ -9,6 +9,7 @@ import "TimeWorkspace"
 import "AppLauncher"
 import "PowerMenu"
 import "Notifications"
+import "ThemeSwitcher"
 
 Variants {
     model: Quickshell.screens
@@ -46,12 +47,15 @@ Variants {
                 Layout.alignment: Qt.AlignHCenter
             }
 
-            Item { implicitWidth: 70 }
+             Item { implicitWidth: 30 }
 
             Item { Layout.fillWidth: true }
 
-            // Width 75
-            Item { implicitWidth: 25 }
+            ThemeSwitcherWidget {
+                screen: bar.modelData
+            }
+
+            Item {implicitWidth: 20 }
 
             NotificationsWidget {}
         }

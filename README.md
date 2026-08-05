@@ -23,6 +23,8 @@ hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs -c ~/Projects/wisp/qml ipc ca
 
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("qs -c ~/Projects/wisp/qml ipc call powerMenu toggle"))
 
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("qs -c ~/Projects/wisp/qml ipc call themeSwitcher toggle"))
+
 ## License
 
 MIT

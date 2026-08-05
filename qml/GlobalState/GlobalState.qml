@@ -10,5 +10,6 @@ Singleton {
 
     property PopupState appLauncher: PopupState { ipcName: "appLauncher" }
     property PopupState powerMenu: PopupState { ipcName: "powerMenu" }
+    property PopupState switcherWidget: PopupState { ipcName: "themeSwitcher" }
 
 }
