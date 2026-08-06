@@ -15,5 +15,6 @@ BarWidgetContainer {
     implicitWidth: 100
 
     icon.font.pixelSize: 15
-    icon.text: SystemMonitor.cpuTemp + " | " + SystemMonitor.cpuUsage
+    // icon.text: SystemMonitor.cpuTemp + " | " + SystemMonitor.cpuUsage
+    icon.text: SystemMonitor.memUsed + " | " + SystemMonitor.memTotal
 }

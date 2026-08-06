@@ -12,6 +12,8 @@ namespace {
     void populate_defaults(SystemStats* systemStats) {
         systemStats->cpuTemp = -1.0;
         systemStats->cpuUsage = -1.0;
+        systemStats->memTotal = -1.0;
+        systemStats->memUsed = -1.0;
     }
 
     double roundToTenth(double value) {
@@ -28,13 +30,13 @@ SystemMonitor::SystemMonitor(QObject *parent) : QObject(parent) {
     m_timer.start();
 }
 
-double SystemMonitor::cpuTemp() const {
-    return systemStats.cpuTemp;
-}
+double SystemMonitor::cpuTemp() const { return systemStats.cpuTemp; }
 
-double SystemMonitor::cpuUsage() const {
-    return systemStats.cpuUsage;
-}
+double SystemMonitor::cpuUsage() const { return systemStats.cpuUsage; }
+
+double SystemMonitor::memTotal() const { return systemStats.memTotal; }
+
+double SystemMonitor::memUsed() const { return systemStats.memUsed; }
 
 void SystemMonitor::getCpuTemp() {
     for (const auto & entry : std::filesystem::directory_iterator("/sys/class/thermal/")) {
@@ -60,7 +62,7 @@ void SystemMonitor::getCpuTemp() {
                     }
                     temp_file.close();
                 }
-                break; // Stop searching once found
+                break;
             }
         }
     }
@@ -94,10 +96,50 @@ void SystemMonitor::calculateCpuUsage() {
     }
 }
 
+void SystemMonitor::getMemoryUsage() {
+    std::ifstream meminfo_file("/proc/meminfo");
+    if (!meminfo_file.is_open()) return;
+
+    std::string line;
+    unsigned long long memTotalKb = 0;
+    unsigned long long memFreeKb = 0;
+    unsigned long long buffersKb = 0;
+    unsigned long long cachedKb = 0;
+
+    while (std::getline(meminfo_file, line)) {
+        std::istringstream ss(line);
+        std::string key;
+        unsigned long long value;
+        std::string unit;
+
+        ss >> key >> value >> unit;
+
+        if (key == "MemTotal:") {
+            memTotalKb = value;
+        } else if (key == "MemFree:") {
+            memFreeKb = value;
+        } else if (key == "Buffers:") {
+            buffersKb = value;
+        } else if (key == "Cached:") {
+            cachedKb = value;
+        }
+    }
+
+    if (memTotalKb > 0) {
+        // Used memory calculation: Total - Free - Buffers - Cached
+        unsigned long long memUsedKb = memTotalKb - memFreeKb - buffersKb - cachedKb;
+
+        // Convert KB to GB (or use / 1024.0 for MB)
+        systemStats.memTotal = roundToTenth(static_cast<double>(memTotalKb) / 1024.0 / 1024.0);
+        systemStats.memUsed = roundToTenth(static_cast<double>(memUsedKb) / 1024.0 / 1024.0);
+    }
+}
+
+
 void SystemMonitor::updateSystem() {
     getCpuTemp();
-
     calculateCpuUsage();
+    getMemoryUsage();
 
     emit systemChanged();
 }
