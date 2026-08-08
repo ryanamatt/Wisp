@@ -43,12 +43,20 @@ BarPopup {
             icon: "\uf2db"
             name: "CPU"
             beforeBarText: SystemMonitor.cpuTemp + "°C"
-            afterbarText: SystemMonitor.cpuUsage.toFixed(1) + "%"
+            afterBarText: SystemMonitor.cpuUsage.toFixed(1) + "%"
             barValue: SystemMonitor.cpuUsage
             warnAt: 60
             critAt: 85
         }
 
+        MonitorLayout {
+            id: memoryLayout
+
+            icon: "\udb80\udf5b"
+            name: "MEM"
+            afterBarText: SystemMonitor.memUsed + " / " + SystemMonitor.memTotal + " GB"
+            barValue: (SystemMonitor.memUsed / SystemMonitor.memTotal) * 100
+        }
 
 
         } // contentLayout

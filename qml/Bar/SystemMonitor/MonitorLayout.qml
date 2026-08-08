@@ -15,7 +15,7 @@ ColumnLayout {
     property string name: ""
 
     property string beforeBarText: ""
-    property string afterbarText: ""
+    property string afterBarText: ""
 
     property real barValue: -1.0
     property int warnAt: -1
@@ -23,8 +23,8 @@ ColumnLayout {
 
     // Small helper so every bar's fill color reacts to how "hot" the stat is
     function levelColor() {
-        if (barValue >= rootLayout.critAt) return Colors.colors.error
-        if (barValue >= rootLayout.warnAt) return Colors.colors.warning
+        if (barValue >= rootLayout.critAt && barValue != -1) return Colors.colors.error
+        if (barValue >= rootLayout.warnAt && barValue != -1) return Colors.colors.warning
         return Colors.colors.accent
     }
 
@@ -63,7 +63,7 @@ ColumnLayout {
         }
 
         Text {
-            text: rootLayout.afterbarText
+            text: rootLayout.afterBarText
             color: Colors.colors.foreground
             font.pixelSize: 12
         }
