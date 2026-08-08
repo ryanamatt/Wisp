@@ -42,7 +42,7 @@ Variants {
 
             Item { Layout.fillWidth: true }
 
-            Item { implicitWidth: 305 }
+            Item { implicitWidth: 170 }
 
             // Width 50
             PowerMenuWidget {
