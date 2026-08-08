@@ -24,13 +24,6 @@ BarPopup {
         resetSelection()
     }
 
-    // Small helper so every bar's fill color reacts to how "hot" the stat is
-    function levelColor(percent, warnAt, critAt) {
-        if (percent >= critAt) return Colors.colors.error
-        if (percent >= warnAt) return Colors.colors.warning
-        return Colors.colors.accent
-    }
-
     ScrollView {
         anchors.fill: parent
         clip: true
@@ -44,52 +37,17 @@ BarPopup {
             width: parent.width
             spacing: 8
 
-            ColumnLayout {
-                id: cpuLayout
-                Layout.fillWidth: true
-                spacing: 8
+        MonitorLayout {
+            id: cpuLayout
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 12
-
-                    RowLayout {
-
-                        Text {
-                            text: "\uf2db" // microchip icon
-                            font.family: "Symbols Nerd Font"
-                            font.pixelSize: 22
-                            color: Colors.colors.foreground
-                        }
-
-                        Text {
-                            text: "CPU"
-                            color: Colors.colors.foreground
-                            font.bold: true
-                            font.pixelSize: 14
-                        }
-                    }
-
-                    Text {
-                        text: SystemMonitor.cpuTemp + "°C"
-                        color: currentTempState.color
-                        font.pixelSize: 14
-                    }
-
-                    UsageBar {
-                        Layout.fillWidth: true
-                        barColor: Colors.colors.foregroundMuted
-                        barFillColor: monitorPopup.levelColor(SystemMonitor.cpuUsage, 60, 85)
-                        value: SystemMonitor.cpuUsage
-                    }
-
-                    Text {
-                        text: SystemMonitor.cpuUsage.toFixed(1) + "%"
-                        color: Colors.colors.foreground
-                        font.pixelSize: 12
-                    }
-                }
-            } // cpuLayout
+            icon: "\uf2db"
+            name: "CPU"
+            beforeBarText: SystemMonitor.cpuTemp + "°C"
+            afterbarText: SystemMonitor.cpuUsage.toFixed(1) + "%"
+            barValue: SystemMonitor.cpuUsage
+            warnAt: 60
+            critAt: 85
+        }
 
 
 
