@@ -9,7 +9,6 @@ import "TimeWorkspace"
 import "AppLauncher"
 import "PowerMenu"
 import "Notifications"
-import "ThemeSwitcher"
 import "Audio"
 import "Weather"
 import "SystemMonitor"
@@ -42,7 +41,7 @@ Variants {
 
             Item { Layout.fillWidth: true }
 
-            Item { implicitWidth: 170 }
+            Item { implicitWidth: 115 }
 
             // Width 50
             PowerMenuWidget {
@@ -65,10 +64,6 @@ Variants {
             AudioWidget {}
 
             Item { Layout.fillWidth: true }
-
-            ThemeSwitcherWidget {
-                screen: bar.modelData
-            }
 
             Item {implicitWidth: 20 }
 
