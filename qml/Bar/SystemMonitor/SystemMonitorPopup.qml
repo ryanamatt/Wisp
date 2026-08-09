@@ -51,6 +51,18 @@ BarPopup {
         }
 
         MonitorLayout {
+            id: gpuLayout
+
+            icon: "\uf2db"
+            name: "GPU"
+            beforeBarText: SystemMonitor.gpuTemp + "°C"
+            afterBarText: SystemMonitor.gpuUsage.toFixed(1) + "%"
+            barValue: SystemMonitor.gpuUsage
+            warnAt: 80
+            critAt: 90
+        }
+
+        MonitorLayout {
             id: memoryLayout
 
             icon: "\udb80\udf5b"

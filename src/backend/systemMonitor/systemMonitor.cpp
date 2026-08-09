@@ -9,6 +9,9 @@
 #include <filesystem>
 #include <cmath>
 #include <unordered_set>
+#include <cstdio>
+#include <array>
+#include <memory>
 
 namespace {
     void populate_defaults(SystemStats* systemStats) {
@@ -16,6 +19,22 @@ namespace {
         systemStats->cpuUsage = -1.0;
         systemStats->memTotal = -1.0;
         systemStats->memUsed = -1.0;
+        systemStats->gpuTemp = -1.0;
+        systemStats->gpuUsage = -1.0;
+    }
+
+    // Runs a shell command and returns its stdout, or empty string on failure.
+    std::string runCommand(const std::string& cmd) {
+        std::array<char, 256> buffer;
+        std::string result;
+        // Redirect stderr to /dev/null so a missing binary doesn't spam the console.
+        std::string fullCmd = cmd + " 2>/dev/null";
+        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(fullCmd.c_str(), "r"), pclose);
+        if (!pipe) return result;
+        while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
+            result += buffer.data();
+        }
+        return result;
     }
 
     double roundToTenth(double value) {
@@ -80,6 +99,9 @@ double SystemMonitor::cpuUsage() const { return systemStats.cpuUsage; }
 
 double SystemMonitor::memTotal() const { return systemStats.memTotal; }
 double SystemMonitor::memUsed() const { return systemStats.memUsed; }
+
+double SystemMonitor::gpuTemp() const { return systemStats.gpuTemp; }
+double SystemMonitor::gpuUsage() const { return systemStats.gpuUsage; }
 
 QVariantList SystemMonitor::partitions() const {
     QVariantList list;
@@ -241,11 +263,125 @@ void SystemMonitor::getPartitions() {
     m_partitions = std::move(found);
 }
 
+// Figures out once which GPU backend to use, then caches it (and any
+// sysfs paths it needs) so we're not re-probing every second.
+void SystemMonitor::detectGpuBackend() {
+    m_gpuBackend = GpuBackend::None;
+
+    // Prefer NVIDIA via nvidia-smi when it's present, since it reports
+    // both temp and utilization directly and needs no sysfs guessing.
+    std::string nvOutput = runCommand(
+        "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits");
+    if (!nvOutput.empty()) {
+        m_gpuBackend = GpuBackend::Nvidia;
+        return;
+    }
+
+    // Fall back to scanning /sys/class/drm for a card whose PCI vendor ID
+    // is AMD (0x1002), and cache the hwmon temp + gpu_busy_percent paths.
+    const std::string drmRoot = "/sys/class/drm";
+    if (!std::filesystem::exists(drmRoot)) return;
+
+    for (const auto& entry : std::filesystem::directory_iterator(drmRoot)) {
+        std::string name = entry.path().filename().string();
+        // Only look at bare "cardN" entries, not render nodes etc.
+        if (name.rfind("card", 0) != 0 || name.find('-') != std::string::npos) continue;
+
+        std::filesystem::path devicePath = entry.path() / "device";
+        std::ifstream vendorFile(devicePath / "vendor");
+        std::string vendor;
+        if (!vendorFile.is_open() || !(vendorFile >> vendor)) continue;
+
+        if (vendor != "0x1002") continue; // not AMD
+
+        std::filesystem::path busyPath = devicePath / "gpu_busy_percent";
+        if (!std::filesystem::exists(busyPath)) continue;
+
+        // hwmon dir name varies (hwmon0, hwmon1, ...), so find it.
+        std::filesystem::path hwmonRoot = devicePath / "hwmon";
+        if (!std::filesystem::exists(hwmonRoot)) continue;
+
+        for (const auto& hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
+            std::filesystem::path tempPath = hwmonEntry.path() / "temp1_input";
+            if (std::filesystem::exists(tempPath)) {
+                m_gpuHwmonTempPath = QString::fromStdString(tempPath.string());
+                m_gpuBusyPercentPath = QString::fromStdString(busyPath.string());
+                m_gpuBackend = GpuBackend::Amd;
+                return;
+            }
+        }
+    }
+}
+
+bool SystemMonitor::readNvidiaGpuStats() {
+    std::string output = runCommand(
+        "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits");
+    if (output.empty()) return false;
+
+    std::istringstream ss(output);
+    std::string tempStr, usageStr;
+    if (!std::getline(ss, tempStr, ',')) return false;
+    if (!std::getline(ss, usageStr)) return false;
+
+    try {
+        systemStats.gpuTemp = std::stod(tempStr);
+        systemStats.gpuUsage = std::stod(usageStr);
+    } catch (const std::exception&) {
+        return false;
+    }
+    return true;
+}
+
+bool SystemMonitor::readAmdGpuStats() {
+    if (m_gpuHwmonTempPath.isEmpty() || m_gpuBusyPercentPath.isEmpty()) return false;
+
+    std::ifstream tempFile(m_gpuHwmonTempPath.toStdString());
+    std::ifstream busyFile(m_gpuBusyPercentPath.toStdString());
+    if (!tempFile.is_open() || !busyFile.is_open()) return false;
+
+    long rawTemp = 0;
+    long busyPercent = 0;
+    if (!(tempFile >> rawTemp)) return false;
+    if (!(busyFile >> busyPercent)) return false;
+
+    // temp1_input is in millidegrees Celsius.
+    systemStats.gpuTemp = roundToTenth(static_cast<double>(rawTemp) / 1000.0);
+    systemStats.gpuUsage = static_cast<double>(busyPercent);
+    return true;
+}
+
+void SystemMonitor::getGpuStats() {
+    if (m_gpuBackend == GpuBackend::Unknown) {
+        detectGpuBackend();
+    }
+
+    bool ok = false;
+    switch (m_gpuBackend) {
+        case GpuBackend::Nvidia:
+            ok = readNvidiaGpuStats();
+            break;
+        case GpuBackend::Amd:
+            ok = readAmdGpuStats();
+            break;
+        case GpuBackend::None:
+        case GpuBackend::Unknown:
+        default:
+            ok = false;
+            break;
+    }
+
+    if (!ok) {
+        systemStats.gpuTemp = -1.0;
+        systemStats.gpuUsage = -1.0;
+    }
+}
+
 void SystemMonitor::updateSystem() {
     getCpuTemp();
     calculateCpuUsage();
     getMemoryUsage();
     getPartitions();
+    getGpuStats();
 
     emit systemChanged();
 }

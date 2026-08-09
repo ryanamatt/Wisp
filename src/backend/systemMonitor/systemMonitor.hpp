@@ -14,6 +14,8 @@ typedef struct {
     double cpuUsage;
     double memTotal;
     double memUsed;
+    double gpuTemp;
+    double gpuUsage;
 } SystemStats;
 
 // One real, physical partition discovered from /proc/mounts.
@@ -33,6 +35,8 @@ class SystemMonitor : public QObject {
     Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY systemChanged)
     Q_PROPERTY(double memTotal READ memTotal NOTIFY systemChanged)
     Q_PROPERTY(double memUsed READ memUsed NOTIFY systemChanged)
+    Q_PROPERTY(double gpuTemp READ gpuTemp NOTIFY systemChanged)
+    Q_PROPERTY(double gpuUsage READ gpuUsage NOTIFY systemChanged)
     Q_PROPERTY(QVariantList partitions READ partitions NOTIFY systemChanged)
 
 public:
@@ -42,6 +46,8 @@ public:
     double cpuUsage() const;
     double memTotal() const;
     double memUsed() const;
+    double gpuTemp() const;
+    double gpuUsage() const;
     double diskTotal() const;
     double diskUsed() const;
     QVariantList partitions() const;
@@ -67,5 +73,16 @@ private:
 
     void getPartitions();
     std::vector<PartitionStats> m_partitions;
-};
 
+    // GPU stats: supports NVIDIA (via nvidia-smi) and other vendors
+    // (AMD/Intel) via sysfs.
+    enum class GpuBackend { Unknown, None, Nvidia, Amd };
+    GpuBackend m_gpuBackend = GpuBackend::Unknown;
+    QString m_gpuHwmonTempPath;   // cached sysfs path, non-NVIDIA only
+    QString m_gpuBusyPercentPath; // cached sysfs path, non-NVIDIA only
+
+    void getGpuStats();
+    void detectGpuBackend();
+    bool readNvidiaGpuStats();
+    bool readAmdGpuStats();
+};
