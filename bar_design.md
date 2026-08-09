@@ -11,7 +11,7 @@ A SM WE BT P TTTT W VVV C TS N
 Legend:
 
 * A: App Launcher (Far left, trigger: SUPER \+ SPACE) - Done
-* SM: System Monitor (CPU/RAM, detailed hover)  
+* SM: System Monitor (CPU/RAM, detailed hover)  - Done
 * WE: WIFI/Ethernet Status  
 * BT: Bluetooth Status  
 * P: Power Button (Drops power menu)  - Done

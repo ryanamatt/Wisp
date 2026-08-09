@@ -51,6 +51,25 @@ target_link_libraries(wispsystem PRIVATE
     Qt6::Qml
 )
 
+# --- wispCalendar QML module ---
+qt_add_qml_module(wispcalendar
+    URI Wisp.Calendar
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Calendar
+    SOURCES
+        src/backend/calendar/calendar.hpp
+        src/backend/calendar/calendar.cpp
+)
+
+target_include_directories(wispcalendar PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/backend/calendar
+)
+
+target_link_libraries(wispcalendar PRIVATE
+    Qt6::Core
+    Qt6::Qml
+)
+
 # --- wispconfig library ---
 add_library(wispconfig STATIC
     src/config/config.cpp

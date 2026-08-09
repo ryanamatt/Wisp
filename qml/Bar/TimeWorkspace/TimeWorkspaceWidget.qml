@@ -65,7 +65,7 @@ BarWidgetContainer {
         color: "transparent"
 
         implicitHeight: 300
-        implicitWidth: 400
+        implicitWidth: 600
 
         visible: timeWorkspace.openProgress > 0.001 || timeWorkspace.isOpenHere
 
