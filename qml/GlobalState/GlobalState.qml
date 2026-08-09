@@ -12,5 +12,6 @@ Singleton {
     property PopupState powerMenu: PopupState { ipcName: "powerMenu" }
     property PopupState switcherWidget: PopupState { ipcName: "themeSwitcher" }
     property PopupState audioWidget: PopupState { ipcName: "audioPlayer" }
+    property PopupState systemMonitorWidget: PopupState { ipcName: "systemMonitor" }
 
 }

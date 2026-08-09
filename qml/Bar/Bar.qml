@@ -12,6 +12,7 @@ import "Notifications"
 import "ThemeSwitcher"
 import "Audio"
 import "Weather"
+import "SystemMonitor"
 
 Variants {
     model: Quickshell.screens
@@ -35,9 +36,13 @@ Variants {
             // Width 75
             AppsWidget { screen: bar.modelData }
 
+            Item { implicitWidth: 20}
+
+            SystemMonitorWidget { screen: bar.modelData }
+
             Item { Layout.fillWidth: true }
 
-            Item { implicitWidth: 305 }
+            Item { implicitWidth: 170 }
 
             // Width 50
             PowerMenuWidget {
