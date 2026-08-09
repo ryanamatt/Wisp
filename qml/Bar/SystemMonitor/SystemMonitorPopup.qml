@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../Colors"
 import "../../Components"
+import "../../Utils/Utils.js" as Utils
 import Wisp.System
 
 BarPopup {
@@ -54,8 +55,21 @@ BarPopup {
 
             icon: "\udb80\udf5b"
             name: "MEM"
-            afterBarText: SystemMonitor.memUsed + " / " + SystemMonitor.memTotal + " GB"
+            afterBarText: Utils.formatSizePair(SystemMonitor.memUsed, SystemMonitor.memTotal)
             barValue: (SystemMonitor.memUsed / SystemMonitor.memTotal) * 100
+        }
+
+        Repeater {
+            model: SystemMonitor.partitions
+
+            MonitorLayout {
+                required property var modelData
+
+                icon: "\uf0a0"
+                name: modelData.mountpoint  === "/" ? "disk" : modelData.mountpoint
+                afterBarText: Utils.formatSizePair(modelData.used, modelData.total)
+                barValue: modelData.total > 0 ? (modelData.used / modelData.total) * 100 : -1
+            }
         }
 
 

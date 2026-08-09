@@ -23,8 +23,8 @@ ColumnLayout {
 
     // Small helper so every bar's fill color reacts to how "hot" the stat is
     function levelColor() {
-        if (barValue >= rootLayout.critAt && barValue != -1) return Colors.colors.error
-        if (barValue >= rootLayout.warnAt && barValue != -1) return Colors.colors.warning
+        if (barValue >= rootLayout.critAt && rootLayout.critAt !== -1) return Colors.colors.error
+        if (barValue >= rootLayout.warnAt && rootLayout.warnAt !== -1) return Colors.colors.warning
         return Colors.colors.accent
     }
 

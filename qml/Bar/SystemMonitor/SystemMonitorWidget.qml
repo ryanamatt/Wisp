@@ -73,7 +73,7 @@ BarWidgetContainer {
         color: "transparent"
 
         implicitHeight: 200
-        implicitWidth: 300
+        implicitWidth: 400
 
         visible: systemMonitorWidget.openProgress > 0.001 || systemMonitorWidget.isOpenHere
 
