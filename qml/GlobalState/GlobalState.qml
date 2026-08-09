@@ -8,6 +8,7 @@ import QtQuick
 Singleton {
     id: globalState
 
+    property PopupState timeWorkspace: PopupState { ipcName: "calendar" }
     property PopupState appLauncher: PopupState { ipcName: "appLauncher" }
     property PopupState powerMenu: PopupState { ipcName: "powerMenu" }
     property PopupState switcherWidget: PopupState { ipcName: "themeSwitcher" }
