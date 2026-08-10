@@ -11,7 +11,7 @@ Rectangle {
     border.color: Colors.colors.background
     border.width: 2
 
-    implicitHeight: 40
+    implicitHeight: 36
 
     default property alias content: container.data
 

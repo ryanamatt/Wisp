@@ -2,6 +2,27 @@
 
 Wisp is a Shell.
 
+## Dependencies
+
+<table><tr><td>
+
+* Hyprland
+* Quickshell
+* jq
+
+</td><td>
+
+* gcalcli
+* curl
+* cava
+
+</td><td>
+
+* PipeWire
+* swaync
+
+</td></tr></table>
+
 ## Build & Run
 
 ```Bash
@@ -28,3 +49,4 @@ hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("qs -c ~/Projects/wisp/qml ipc call t
 ## License
 
 MIT
+
