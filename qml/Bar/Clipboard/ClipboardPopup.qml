@@ -63,11 +63,6 @@ BarPopup {
             onStreamFinished: {
                 clipboardPopup.clipboardList = this.text.split("\n").filter(line => line.length > 0)
             }
-            // onStreamFinished: {
-            //     clipboardPopup.clipboardList = this.text.split("\n")
-            //         .filter(line => line.length > 0)
-            //         .map(line => line.replace(/^\d+\t/, ""))
-            // }
         }
     }
 

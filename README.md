@@ -20,6 +20,8 @@ Wisp is a Shell.
 
 * PipeWire
 * swaync
+* cliphist
+* wl-clipboard
 
 </td></tr></table>
 
