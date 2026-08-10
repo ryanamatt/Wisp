@@ -12,6 +12,7 @@ import "Notifications"
 import "Audio"
 import "Weather"
 import "SystemMonitor"
+import "Clipboard"
 
 Variants {
     model: Quickshell.screens
@@ -41,7 +42,7 @@ Variants {
 
             Item { Layout.fillWidth: true }
 
-            Item { implicitWidth: 115 }
+            Item { implicitWidth: 165 }
 
             // Width 50
             PowerMenuWidget {
@@ -64,6 +65,8 @@ Variants {
             AudioWidget {}
 
             Item { Layout.fillWidth: true }
+
+            ClipboardWidget { screen: bar.modelData }
 
             Item {implicitWidth: 20 }
 
