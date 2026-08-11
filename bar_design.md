@@ -19,7 +19,7 @@ Legend:
 * O: Workspace Indicator (Underneath Time, 5 ovals)  -  Done
 * W: Small Weather Indicator (Drops down to show more info) - Done 
 * V: Audio Visualizer (Right of Time, hover for Mpris player/controls) - Done  
-* C: Clipboard Manager (Small button)  
+* C: Clipboard Manager (Small button)  - Dibe
 * N: SwayNC Notification Center trigger (Far right) - Done 
 * X: Empty space
 

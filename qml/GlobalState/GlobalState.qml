@@ -14,5 +14,6 @@ Singleton {
     property PopupState audioWidget: PopupState { ipcName: "audioPlayer" }
     property PopupState systemMonitorWidget: PopupState { ipcName: "systemMonitor" }
     property PopupState clipboardWidget: PopupState { ipcName: "clipboard" }
+    property PopupState networkWidget: PopupState { ipcName: "network" }
 
 }
