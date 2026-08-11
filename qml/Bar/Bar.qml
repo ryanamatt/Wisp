@@ -13,6 +13,7 @@ import "Audio"
 import "Weather"
 import "SystemMonitor"
 import "Clipboard"
+import "Network"
 
 Variants {
     model: Quickshell.screens
@@ -40,9 +41,13 @@ Variants {
 
             SystemMonitorWidget { screen: bar.modelData }
 
+            Item { implicitWidth: 20 }
+
+            NetworkWidget { screen: bar.modelData }
+
             Item { Layout.fillWidth: true }
 
-            Item { implicitWidth: 165 }
+            Item { implicitWidth: 95 }
 
             // Width 50
             PowerMenuWidget {
