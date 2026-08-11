@@ -10,13 +10,9 @@ Singleton {
     id: root
 
     readonly property string home: Quickshell.env("HOME")
-    readonly property string dotfiles: home + "/dotfiles"
+    readonly property string wispFiles: home + "/Projects/wisp"
 
-    property string currentTheme: ""
-
-    // Fallback palette, used until the active theme's colors.json loads
-    // (or if it's missing). Matches the shape every theme's
-    // theme_colors.json should have.
+    // Fallback palette
     property var colors: ({
         background: "#0d0010",
         backgroundAlt: "#1a0028",
@@ -38,30 +34,10 @@ Singleton {
         shadow: "#40b00ea2"
     })
 
-    // Watches themes/.current_theme on disk. switcher.sh overwrites this
-    // file on every switch; watchChanges makes Quickshell reload it
-    // automatically (inotify), so currentTheme updates live with no
-    // process restart and no signal from the bash script required.
-    FileView {
-        id: currentThemeFile
-        path: root.dotfiles + "/themes/.current_theme"
-        watchChanges: true
-        onFileChanged: reload()
-        onLoaded: {
-            const t = text().trim()
-            if (t.length > 0 && t !== root.currentTheme) root.currentTheme = t
-        }
-        onLoadFailed: (error) => console.log("top-bar: no current theme file yet")
-    }
-
-    // Watches the active theme's colors.json. Its `path` is derived from
-    // currentTheme, so it automatically re-points (and reloads) whenever
-    // currentTheme changes above. watchChanges also picks up in-place
-    // edits to the json for the currently active theme.
     FileView {
         id: colorsFile
-        path: root.currentTheme.length > 0
-            ? root.dotfiles + "/themes/" + root.currentTheme + "/quickshell/colors.json"
+        path: root.wispFiles + "/state/quickshell/colors.json"
+            ? root.wispFiles + "/state/quickshell/colors.json"
             : ""
         watchChanges: true
         onFileChanged: reload()
@@ -70,9 +46,8 @@ Singleton {
                 const parsed = JSON.parse(text())
                 root.colors = Object.assign({}, root.colors, parsed)
             } catch (e) {
-                console.log("top-bar: no valid colors.json for " + root.currentTheme)
+                console.log("Wisp QuickShell: fail to load colors.")
             }
         }
-        onLoadFailed: (error) => console.log("top-bar: couldn't load colors for " + root.currentTheme)
     }
 }
