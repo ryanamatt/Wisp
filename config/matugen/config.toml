@@ -1,0 +1,36 @@
+# config/matugen/config.toml
+
+[config]
+
+[config.custom_colors]
+success = { color = "#6fbf73", blend = true }
+warning = { color = "#c9a24a", blend = true }
+info    = { color = "#a8d8e0", blend = true }
+ember   = { color = "#d9884a", blend = true }
+
+[templates.quickshell_colors]
+input_path = '~/Projects/wisp/config/matugen/templates/quickshell-colors.json'
+output_path = '~/Projects/wisp/state/quickshell/colors.json'
+
+[templates.starship]
+input_path = '~/Projects/wisp/config/matugen/templates/starship.toml'
+output_path = '~/.config/starship.toml'
+
+[templates.kitty]
+input_path = '~/Projects/wisp/config/matugen/templates/kitty_theme_colors.conf'
+output_path = '~/.config/kitty/theme_colors.conf'
+post_hook = 'kill -SIGUSR1 $(pgrep kitty)'
+
+[templates.fish]
+input_path = '~/Projects/wisp/config/matugen/templates/fish-colors.fish'
+output_path = '~/.config/fish/conf.d/fish-colors.fish'
+
+[templates.hyprland]
+input_path = '~/Projects/wisp/config/matugen/templates/hyprland-colors.lua'
+output_path = '~/.config/hypr/modules/colors.lua'
+post_hook = 'hyprctl reload'
+
+[templates.swaync]
+input_path = '~/Projects/wisp/config/matugen/templates/swaync_theme_colors.css'
+output_path = '~/.config/swaync/colors/theme_colors.css'
+post_hook = 'swaync-client --reload-css'

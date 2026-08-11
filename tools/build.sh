@@ -1,4 +1,6 @@
-# scripts/build.sh
+#!/usr/bin/env bash
+
+# tools/build.sh
 
 rm -rf build/
 

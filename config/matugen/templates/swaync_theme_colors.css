@@ -1,0 +1,50 @@
+/* Theme */
+
+/* --- Backgrounds --- */
+@define-color bg0        {{ colors.background.default.hex }};
+@define-color bg1        {{ colors.surface_container.default.hex }};
+@define-color bg2        {{ colors.surface_container_low.default.hex }};
+@define-color bg3        {{ colors.surface.default.hex }};
+@define-color bg4        {{ colors.surface_container_high.default.hex }};
+
+/* --- Foregrounds --- */
+@define-color fg         {{ colors.on_background.default.hex }};
+@define-color silver     {{ colors.outline.default.hex }};
+@define-color mist       {{ colors.outline_variant.default.hex }};
+
+/* --- Accent colours --- */
+@define-color red        {{ colors.error.default.hex }};
+@define-color orange     {{ colors.ember.default.hex }};
+@define-color yellow     {{ colors.warning.default.hex }};
+@define-color green      {{ colors.success.default.hex }};
+@define-color aqua       {{ colors.info.default.hex | lighten: -20 }};
+@define-color blue       {{ colors.secondary.default.hex | lighten: 12 }};
+@define-color purple     {{ colors.secondary.default.hex }};
+@define-color dark-purple {{ colors.primary.default.hex }};
+@define-color fae        {{ colors.tertiary.default.hex }};
+
+/* --- Greys --- */
+@define-color grey0      {{ colors.outline_variant.default.hex }};
+@define-color grey1      {{ colors.outline.default.hex }};
+@define-color grey2      {{ colors.surface_container.default.hex }};
+
+/* --- Text --- */
+@define-color text              {{ colors.on_background.default.hex }};
+@define-color text-alt          {{ colors.outline_variant.default.hex }};
+
+/* --- Backgrounds --- */
+@define-color background        {{ colors.surface_container.default.hex }};
+@define-color background-alt    {{ colors.surface_container_low.default.hex }};
+
+/* --- Notification surfaces --- */
+@define-color notification-bg         {{ colors.surface_container.default.hex }};
+@define-color center-bg               alpha({{ colors.background.default.hex }}, 0.92);
+@define-color center-notification-bg  {{ colors.surface_container_low.default.hex }};
+
+/* --- Interactive states --- */
+@define-color hover             {{ colors.surface_container_high.default.hex }};
+@define-color selected          {{ colors.primary.default.hex }};
+
+/* --- Semantic accents --- */
+@define-color urgent            {{ colors.error.default.hex }};
+@define-color accent            {{ colors.secondary.default.hex }};

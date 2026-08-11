@@ -9,9 +9,11 @@ Wisp is a Shell.
 * Hyprland
 * Quickshell
 * jq
+* Matugen
 
 </td><td>
 
+* awww
 * gcalcli
 * curl
 * cava

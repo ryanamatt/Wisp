@@ -1,0 +1,20 @@
+{
+  "background": "{{ colors.background.default.hex }}",
+  "backgroundAlt": "{{ colors.surface_container.default.hex }}",
+  "surface": "{{ colors.surface.default.hex }}",
+  "surfaceAlt": "{{ colors.surface_container_high.default.hex }}",
+  "foreground": "{{ colors.on_background.default.hex }}",
+  "foregroundMuted": "{{ colors.on_surface_variant.default.hex }}",
+  "accent": "{{ colors.primary.default.hex }}",
+  "accentAlt": "{{ colors.tertiary.default.hex }}",
+  "border": "{{ colors.outline_variant.default.hex }}",
+  "borderActive": "{{ colors.primary.default.hex }}",
+  "borderSoft": "{{ colors.surface_variant.default.hex }}",
+  "borderStrong": "{{ colors.outline.default.hex }}",
+  "hover": "{{ colors.surface_container_highest.default.hex }}",
+  "success": "{{ colors.success.default.hex }}",
+  "warning": "{{ colors.warning.default.hex }}",
+  "error": "{{ colors.error.default.hex }}",
+  "info": "{{ colors.info.default.hex }}",
+  "shadow": "#40{{ colors.primary.default.hex_stripped }}"
+}
