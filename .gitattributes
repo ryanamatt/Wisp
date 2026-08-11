@@ -13,4 +13,6 @@
 third_party/n/json.hpp linguist-vendored
 third_party/**           linguist-vendored
 
+config/** linguist-vendored
+
 scripts/*.sh text eol=lf
