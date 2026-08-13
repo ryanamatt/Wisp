@@ -35,8 +35,8 @@ BarWidgetContainer {
 
     property var currentTempState: {
         let temp = SystemMonitor.cpuTemp;
-        if (temp < 60) return systemIconList[0]
-        if (temp < 80) return systemIconList[1]
+        if (temp < 70) return systemIconList[0]
+        if (temp < 90) return systemIconList[1]
         return systemIconList[2]
     }
 
