@@ -91,6 +91,17 @@ BarPopup {
         id: clipboardWatcher
         running: clipboardPopup.cliphistEnabled
         command: ["wl-paste", "--watch", "cliphist", "store"]
+
+        onRunningChanged: {
+            if (!running) {
+                killWatcher.running = true
+            }
+        }
+    }
+
+    Process {
+        id: killWatcher
+        command: ["pkill", "-f", "wl-paste --watch"]
     }
 
     ColumnLayout {
