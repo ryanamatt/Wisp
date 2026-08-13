@@ -3,6 +3,7 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
 import QtQuick
 
 Singleton {
@@ -16,4 +17,22 @@ Singleton {
     property PopupState clipboardWidget: PopupState { ipcName: "clipboard" }
     property PopupState networkWidget: PopupState { ipcName: "network" }
 
+    QtObject {
+        id: themeSwitcherState
+
+        property bool isOpen: false
+
+        function open() { isOpen = true }
+        function close() { isOpen = false }
+        function toggle() { isOpen = !isOpen }
+
+        property IpcHandler ipc: IpcHandler {
+            target: "themeSwitcher"
+            function open(): void { themeSwitcherState.open() }
+            function close(): void { themeSwitcherState.close() }
+            function toggle(): void { themeSwitcherState.toggle() }
+        }
+    }
+
+    property alias themeSwitcher: themeSwitcherState
 }

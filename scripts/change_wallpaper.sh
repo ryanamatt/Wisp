@@ -16,6 +16,7 @@ c_blue() { printf '\033[1;34m%s\033[0m\n' "$*"; }
 
 function update_wallpaper() {
     awww img --transition-type center --transition-step 90 --transition-fps 60 --transition-duration 2 "$wallpaper"
+    sleep 1
     matugen image "$wallpaper" -c config/matugen/config.toml -t scheme-vibrant --source-color-index 0
     c_green "Update Wallpaper and Ran Matugen"
 }
