@@ -90,7 +90,7 @@ BarPopup {
     Process {
         id: clipboardWatcher
         running: clipboardPopup.cliphistEnabled
-        command: ["wl-paste", "--watch", "bash", "-c", "if [ \"$(cat /tmp/cliphist_saving_enabled 2>/dev/null)\" = \"true\" ]; then cliphist store; fi"]
+        command: ["wl-paste", "--watch", "cliphist", "store"]
 
         onRunningChanged: {
             if (!running) {
