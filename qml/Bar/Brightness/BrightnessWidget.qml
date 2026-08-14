@@ -23,7 +23,7 @@ BarWidgetContainer {
 
         // Desktop monitors with no controllable backlight: only the
         // night-light state is meaningful here.
-        return popup.nightlightEnabled ? "\uf186 On" : "\uf186"
+        return popup.nightlightEnabled ? "\udb86\udc29" : "\uf186"
     }
 
     isOpenHere: GlobalState.brightnessWidget.isOpenOn(brightnessWidget.screen)
