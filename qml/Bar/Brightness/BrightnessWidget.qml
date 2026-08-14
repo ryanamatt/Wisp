@@ -13,7 +13,7 @@ BarWidgetContainer {
 
     implicitWidth: 75
 
-    icon.font.pixelSize: popup.nightlightEnabled ? 13 : 25
+    icon.font.pixelSize: popup.hasBacklight ? popup.nightlightEnabled ? 15 : 20 : 30
     icon.font.family: "Noto Sans Mono"
     icon.text: {
         const nightGlyph = popup.nightlightEnabled ? "\uf186 " : ""
