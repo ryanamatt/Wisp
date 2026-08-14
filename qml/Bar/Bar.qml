@@ -14,6 +14,7 @@ import "Weather"
 import "SystemMonitor"
 import "Clipboard"
 import "Network"
+import "Brightness"
 
 Variants {
     model: Quickshell.screens
@@ -45,6 +46,10 @@ Variants {
 
             NetworkWidget { screen: bar.modelData }
 
+            Item { implicitWidth: 50 }
+
+            BrightnessWidget { screen: bar.modelData }
+
             Item { Layout.fillWidth: true }
 
             Item { implicitWidth: 95 }
@@ -68,6 +73,8 @@ Variants {
             Item  {implicitWidth: 20 }
 
             AudioWidget {}
+
+            Item { implicitWidth: 125 }
 
             Item { Layout.fillWidth: true }
 
