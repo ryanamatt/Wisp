@@ -16,6 +16,7 @@ Singleton {
     property PopupState systemMonitorWidget: PopupState { ipcName: "systemMonitor" }
     property PopupState clipboardWidget: PopupState { ipcName: "clipboard" }
     property PopupState networkWidget: PopupState { ipcName: "network" }
+    property PopupState brightnessWidget: PopupState { ipcName: "brightness" }
 
     QtObject {
         id: themeSwitcherState
