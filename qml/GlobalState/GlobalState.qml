@@ -35,4 +35,23 @@ Singleton {
     }
 
     property alias themeSwitcher: themeSwitcherState
+
+    QtObject {
+        id: workspaceSwitcherState
+
+        property bool isOpen: false
+
+        function open() { isOpen = true }
+        function close() { isOpen = false }
+        function toggle() { isOpen = !isOpen }
+
+        property IpcHandler ipc: IpcHandler {
+            target: "workspaceSwitcher"
+            function open(): void { workspaceSwitcherState.open() }
+            function close(): void { workspaceSwitcherState.close() }
+            function toggle(): void { workspaceSwitcherState.toggle() }
+        }
+    }
+    
+    property alias workspaceSwitcher: workspaceSwitcherState
 }
