@@ -93,7 +93,7 @@ Rectangle {
         id: icon
         anchors.centerIn: parent
         color: Colors.colors.foreground
-        font.pixelSize: 30
+        font.pixelSize: container.implicitWidth * 0.4
         font.family: "Noto Sans Mono"
     }
 
