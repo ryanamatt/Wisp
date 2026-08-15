@@ -21,6 +21,7 @@ BarWidgetContainer {
 
     icon.text: connectionType === "ethernet" ? "\udb80\ude01" : "\uf1eb"
     icon.color: connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.foreground
+    icon.font.pixelSize: implicitWidth * 0.6
 
     isOpenHere: GlobalState.networkWidget.isOpenOn(networkWidget.screen)
 

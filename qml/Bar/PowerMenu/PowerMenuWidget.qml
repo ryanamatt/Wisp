@@ -15,6 +15,7 @@ BarWidgetContainer {
     implicitWidth: 50
 
     icon.text: "\udb81\udc25"
+    icon.font.pixelSize: implicitWidth * 0.6
 
     isOpenHere: GlobalState.powerMenu.isOpenOn(powerMenu.screen)
 
