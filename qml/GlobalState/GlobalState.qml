@@ -17,6 +17,7 @@ Singleton {
     property PopupState clipboardWidget: PopupState { ipcName: "clipboard" }
     property PopupState networkWidget: PopupState { ipcName: "network" }
     property PopupState brightnessWidget: PopupState { ipcName: "brightness" }
+    property PopupState batteryWidget: PopupState { ipcName: "battery" }
 
     QtObject {
         id: themeSwitcherState
