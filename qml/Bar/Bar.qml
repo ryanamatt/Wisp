@@ -31,63 +31,102 @@ Variants {
         implicitHeight: 40
 
         RowLayout {
+            id: rowLayout
             anchors.fill: parent
             anchors.leftMargin: 10
             anchors.rightMargin: 10
             spacing: 0
 
-            // Width 75
-            AppsWidget { screen: bar.modelData }
+            // ~3.95% (75px)
+            AppsWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (75 / 1900)
+            }
 
-            Item { implicitWidth: 20}
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
-            SystemMonitorWidget { screen: bar.modelData }
+            // ~6.32% (120px)
+            SystemMonitorWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (120 / 1900)
+            }
 
-            Item { implicitWidth: 20 }
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
-            NetworkWidget { screen: bar.modelData }
+            // ~2.63% (50px)
+            NetworkWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (50 / 1900)
+            }
 
-            Item { implicitWidth: 50 }
+            Item { implicitWidth: rowLayout.width * (50 / 1900) }
 
-            BrightnessWidget { screen: bar.modelData }
+            // ~2.63% (50px)
+            BrightnessWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (50 / 1900)
+            }
 
-            Item { implicitWidth: 20 }
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
-            BatteryWidget { screen: bar.modelData }
+            // ~5.26% (100px)
+            BatteryWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (100 / 1900)
+            }
 
             Item { Layout.fillWidth: true }
 
-            Item { implicitWidth: 95 }
+            Item { implicitWidth: rowLayout.width * (95 / 1900) }
 
-            // Width 50
-            PowerMenuWidget {
-                screen: bar.modelData
+            // ~2.63% (50px)
+            PowerMenuWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (50 / 1900)
             }
 
-            Item { implicitWidth: 20 }
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
+            // Adjusted from 20 to 30 to account for the extra 20px centering offset
+            Item { implicitWidth: rowLayout.width * (30 / 1900) }
+
+            // ~10.53% (200px) - Perfectly centered now
             TimeWorkspaceWidget {
                 screen: bar.modelData
                 Layout.alignment: Qt.AlignHCenter
+                implicitWidth: rowLayout.width * (200 / 1900)
             }
 
-            Item  {implicitWidth: 20 }
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
-            WeatherWidget {}
+            // ~3.95% (75px)
+            WeatherWidget {
+                implicitWidth: rowLayout.width * (75 / 1900)
+            }
 
-            Item  {implicitWidth: 20 }
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
-            AudioWidget {}
+            // ~11.58% (220px)
+            AudioWidget {
+                implicitWidth: rowLayout.width * (220 / 1900)
+            }
 
-            Item { implicitWidth: 250 }
+            Item { implicitWidth: rowLayout.width * (250 / 1900) }
 
             Item { Layout.fillWidth: true }
 
-            ClipboardWidget { screen: bar.modelData }
+            // ~2.63% (50px)
+            ClipboardWidget { 
+                screen: bar.modelData 
+                implicitWidth: rowLayout.width * (50 / 1900)
+            }
 
-            Item {implicitWidth: 20 }
+            Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
-            NotificationsWidget {}
+            // ~2.63% (50px)
+            NotificationsWidget {
+                implicitWidth: rowLayout.width * (50 / 1900)
+            }
         }
     }
 }
