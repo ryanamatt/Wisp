@@ -79,7 +79,7 @@ Variants {
 
             AudioWidget {}
 
-            Item { implicitWidth: 125 }
+            Item { implicitWidth: 250 }
 
             Item { Layout.fillWidth: true }
 
