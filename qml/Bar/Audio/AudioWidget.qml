@@ -9,8 +9,6 @@ import "../../Components"
 BarWidgetContainer {
     id: audioWidget
 
-    implicitWidth: 220
-
     property int barCount: 16
     property int maxRange: 7
 
@@ -66,7 +64,7 @@ BarWidgetContainer {
     }
 
     icon.text: "…"
-    icon.font.pixelSize: 20
+    icon.font.pixelSize: implicitWidth * 0.09
 
     icon.anchors.centerIn: undefined
     icon.anchors.horizontalCenter: audioWidget.horizontalCenter

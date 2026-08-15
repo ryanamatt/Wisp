@@ -13,8 +13,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 120
-
     property var systemIconList: [
         {
             label: "cool",
@@ -40,7 +38,7 @@ BarWidgetContainer {
         return systemIconList[2]
     }
 
-    icon.font.pixelSize: 15
+    icon.font.pixelSize: implicitWidth * 0.125
     icon.text: currentTempState.glyph + SystemMonitor.cpuTemp + "°C|"+ SystemMonitor.cpuUsage.toFixed(1) + "%"
     icon.color: currentTempState.color
 

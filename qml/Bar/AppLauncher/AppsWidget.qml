@@ -13,8 +13,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 75
-
     icon.text: "\uf40e"
 
     isOpenHere: GlobalState.appLauncher.isOpenOn(appsWidget.screen)
