@@ -37,6 +37,8 @@ Variants {
             anchors.rightMargin: 10
             spacing: 0
 
+            // Math Based on a 1920x1080 Monitor
+
             // ~3.95% (75px)
             AppsWidget { 
                 screen: bar.modelData 
@@ -79,6 +81,9 @@ Variants {
 
             Item { implicitWidth: rowLayout.width * (95 / 1900) }
 
+            // Adjusted from 20 to 30 to account for the extra 20px centering offset
+            Item { implicitWidth: rowLayout.width * (30 / 1900) }
+
             // ~2.63% (50px)
             PowerMenuWidget { 
                 screen: bar.modelData 
@@ -86,9 +91,6 @@ Variants {
             }
 
             Item { implicitWidth: rowLayout.width * (20 / 1900) }
-
-            // Adjusted from 20 to 30 to account for the extra 20px centering offset
-            Item { implicitWidth: rowLayout.width * (30 / 1900) }
 
             // ~10.53% (200px) - Perfectly centered now
             TimeWorkspaceWidget {
