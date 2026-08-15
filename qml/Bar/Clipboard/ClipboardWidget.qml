@@ -12,9 +12,8 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 50
-
     icon.text: "\udb82\ude38"
+    icon.font.pixelSize: implicitWidth * 0.6
 
     isOpenHere: GlobalState.clipboardWidget.isOpenOn(clipboardWidget.screen)
 
