@@ -15,6 +15,7 @@ import "SystemMonitor"
 import "Clipboard"
 import "Network"
 import "Brightness"
+import "Battery"
 
 Variants {
     model: Quickshell.screens
@@ -49,6 +50,10 @@ Variants {
             Item { implicitWidth: 50 }
 
             BrightnessWidget { screen: bar.modelData }
+
+            Item { implicitWidth: 20 }
+
+            BatteryWidget { screen: bar.modelData }
 
             Item { Layout.fillWidth: true }
 
