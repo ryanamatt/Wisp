@@ -96,7 +96,8 @@ Variants {
             TimeWorkspaceWidget {
                 screen: bar.modelData
                 Layout.alignment: Qt.AlignHCenter
-                implicitWidth: rowLayout.width * (200 / 1900)
+                implicitWidth: 200
+                // implicitWidth: rowLayout.width * (200 / 1900)
             }
 
             Item { implicitWidth: rowLayout.width * (20 / 1900) }

@@ -12,8 +12,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 50
-
     icon.text: "\udb81\udc25"
     icon.font.pixelSize: implicitWidth * 0.6
 

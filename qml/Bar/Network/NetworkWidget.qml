@@ -13,8 +13,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 50
-
     // Polled independently of the popup so the bar icon stays accurate
     // even while the popup is closed.
     property string connectionType: "none" // "ethernet" | "wifi" | "none"
