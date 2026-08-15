@@ -66,7 +66,7 @@ Variants {
             // ~2.63% (50px)
             BrightnessWidget { 
                 screen: bar.modelData 
-                implicitWidth: rowLayout.width * (50 / 1900)
+                implicitWidth: rowLayout.width * (100 / 1900)
             }
 
             Item { implicitWidth: rowLayout.width * (20 / 1900) }
@@ -114,7 +114,7 @@ Variants {
                 implicitWidth: rowLayout.width * (220 / 1900)
             }
 
-            Item { implicitWidth: rowLayout.width * (250 / 1900) }
+            Item { implicitWidth: rowLayout.width * (300 / 1900) }
 
             Item { Layout.fillWidth: true }
 

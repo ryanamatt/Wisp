@@ -11,8 +11,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 75
-
     icon.font.pixelSize: popup.hasBacklight ? popup.nightlightEnabled ? 15 : 20 : 30
     icon.font.family: "Noto Sans Mono"
     icon.text: {
