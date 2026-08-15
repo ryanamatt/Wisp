@@ -9,8 +9,6 @@ import "../../Colors"
 BarWidgetContainer {
     id: weatherWidget 
 
-    implicitWidth: 75
-
     property int weatherCode: -1
     property int weatherTemp: 0
 
@@ -91,6 +89,6 @@ BarWidgetContainer {
         weatherUpdateTimer.start()
     }
 
-    icon.font.pixelSize: 20
     icon.text: getWeatherIcon(weatherCode) + " " + weatherWidget.weatherTemp + "\ue33e"
+    icon.font.pixelSize: implicitWidth * 0.3
 }

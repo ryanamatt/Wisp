@@ -11,8 +11,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    implicitWidth: 100
-
     // ----- Cycling through accessories -----
     readonly property var accessories: popup.accessories
     property int cycleIndex: 0
@@ -31,7 +29,7 @@ BarWidgetContainer {
     icon.anchors.centerIn: undefined
     icon.anchors.horizontalCenter: batteryWidget.horizontalCenter
     icon.anchors.verticalCenter: batteryWidget.verticalCenter
-    icon.font.pixelSize: 20
+    icon.font.pixelSize: implicitWidth * 0.2
     icon.font.family: "Noto Sans Mono"
 
     icon.text: batteryWidget.currentAccessory
