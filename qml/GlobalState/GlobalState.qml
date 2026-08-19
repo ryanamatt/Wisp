@@ -19,41 +19,7 @@ Singleton {
     property PopupState brightnessWidget: PopupState { ipcName: "brightness" }
     property PopupState batteryWidget: PopupState { ipcName: "battery" }
 
-    QtObject {
-        id: themeSwitcherState
+    property WindowState themeSwitcher: WindowState { ipcName: "themeSwitcher" }
+    property WindowState workspaceSwitcher: WindowState { ipcName: "workspaceSwitcher" }
 
-        property bool isOpen: false
-
-        function open() { isOpen = true }
-        function close() { isOpen = false }
-        function toggle() { isOpen = !isOpen }
-
-        property IpcHandler ipc: IpcHandler {
-            target: "themeSwitcher"
-            function open(): void { themeSwitcherState.open() }
-            function close(): void { themeSwitcherState.close() }
-            function toggle(): void { themeSwitcherState.toggle() }
-        }
-    }
-
-    property alias themeSwitcher: themeSwitcherState
-
-    QtObject {
-        id: workspaceSwitcherState
-
-        property bool isOpen: false
-
-        function open() { isOpen = true }
-        function close() { isOpen = false }
-        function toggle() { isOpen = !isOpen }
-
-        property IpcHandler ipc: IpcHandler {
-            target: "workspaceSwitcher"
-            function open(): void { workspaceSwitcherState.open() }
-            function close(): void { workspaceSwitcherState.close() }
-            function toggle(): void { workspaceSwitcherState.toggle() }
-        }
-    }
-    
-    property alias workspaceSwitcher: workspaceSwitcherState
 }
