@@ -17,6 +17,7 @@
 
 #include "config/config.hpp"
 #include "env.hpp"
+#include "ipc/ipc.hpp"
 #include "logging/log.hpp"
 
 #ifndef WISP_VERSION
@@ -48,6 +49,9 @@ void printUsage(const char *argv0) {
         "  run                 Launch the bar\n"
         "  kill                Stop a running wisp instance\n"
         "  reload              Restart the quickshell process of a running wisp instance\n"
+        "  open <target>       Open a widget/popup, e.g. `wisp open themeSwitcher`\n"
+        "  close <target>      Close a widget/popup, e.g. `wisp close calendar`\n"
+        "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
         "\n"
         "Options:\n"
         "  -f <dir>            Directory containing shell.qml\n"
@@ -322,8 +326,10 @@ int main(int argc, char *argv[]) {
     std::string configPath = wisp::config::defaultPath();
     std::vector<std::string> args(argv + 1, argv + argc);
 
-    enum class Command { None, Run, Kill, Reload };
+    enum class Command { None, Run, Kill, Reload, Ipc };
     Command command = Command::None;
+    std::string ipcAction;
+    std::string ipcTarget;
 
     for (size_t i = 0; i < args.size(); ++i) {
         const std::string &arg = args[i];
@@ -364,6 +370,16 @@ int main(int argc, char *argv[]) {
             command = Command::Reload;
             continue;
         }
+        if (arg == "open" || arg == "close" || arg == "toggle") {
+            command = Command::Ipc;
+            ipcAction = arg;
+            if (i + 1 >= args.size()) {
+                std::cerr << "wisp: '" << arg << "' requires a target, e.g. `wisp " << arg << " themeSwitcher`\n";
+                return 1;
+            }
+            ipcTarget = args[++i];
+            continue;
+        }
 
         std::cerr << "wisp: unrecognized argument '" << arg << "'\n\n";
         printUsage(argv[0]);
@@ -377,6 +393,8 @@ int main(int argc, char *argv[]) {
             return killBar();
         case Command::Reload:
             return reloadBar();
+        case Command::Ipc:
+            return wisp::ipc::exec(qmlDir, ipcTarget, ipcAction);
         case Command::None:
             break;
     }
