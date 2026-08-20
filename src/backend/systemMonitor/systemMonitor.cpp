@@ -12,8 +12,18 @@
 #include <cstdio>
 #include <array>
 #include <memory>
+#include <stdio.h>
 
 namespace {
+
+    struct PcloseDeleter {
+        void operator()(FILE* fp) const {
+            if (fp) {
+                pclose(fp);
+            }
+        }
+    };
+
     void populate_defaults(SystemStats* systemStats) {
         systemStats->cpuTemp = -1.0;
         systemStats->cpuUsage = -1.0;
@@ -29,8 +39,10 @@ namespace {
         std::string result;
         // Redirect stderr to /dev/null so a missing binary doesn't spam the console.
         std::string fullCmd = cmd + " 2>/dev/null";
-        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(fullCmd.c_str(), "r"), pclose);
+
+        std::unique_ptr<FILE, PcloseDeleter> pipe(popen(fullCmd.c_str(), "r"));
         if (!pipe) return result;
+
         while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
             result += buffer.data();
         }
@@ -83,6 +95,7 @@ namespace {
         }
         return result;
     }
+    
 } // namespace
 
 // SystemMonitorWorker: runs on its own QThread, does all the blocking
