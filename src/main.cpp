@@ -15,14 +15,11 @@
 #include <unistd.h>
 #include <vector>
 
+#include "version.hpp"
 #include "config/config.hpp"
 #include "env.hpp"
 #include "ipc/ipc.hpp"
 #include "logging/log.hpp"
-
-#ifndef WISP_VERSION
-#define WISP_VERSION "0.0.0"
-#endif
 
 #ifndef WISP_DEFAULT_QML_DIR
 #define WISP_DEFAULT_QML_DIR ""
