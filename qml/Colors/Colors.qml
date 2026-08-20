@@ -11,7 +11,6 @@ Singleton {
 
     readonly property string home: Quickshell.env("HOME")
     readonly property string config: home + "/.config/wisp"
-    readonly property string wispFiles: home + "/Projects/wisp"
 
     // Fallback palette
     property var colors: ({
