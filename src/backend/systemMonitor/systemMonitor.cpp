@@ -41,7 +41,7 @@ namespace {
         return std::round(value * 10.0) / 10.0;
     }
 
-    // Only these fstypes count as "real" partitions worth showing. Everything else 
+    // Only these fstypes count as "real" partitions worth showing. Everything else
     // (tmpfs, proc, sysfs, overlay, squashfs snap mounts, cgroup, etc.) not counted.
     bool isRealFilesystem(const std::string& fstype) {
         static const std::unordered_set<std::string> realFsTypes = {
@@ -85,39 +85,28 @@ namespace {
     }
 } // namespace
 
-SystemMonitor::SystemMonitor(QObject *parent) : QObject(parent) {
+// ---------------------------------------------------------------------
+// SystemMonitorWorker: runs on its own QThread, does all the blocking
+// work, and hands finished results back to the main thread via a
+// queued signal.
+// ---------------------------------------------------------------------
+
+SystemMonitorWorker::SystemMonitorWorker() {
     populate_defaults(&systemStats);
+}
+
+void SystemMonitorWorker::start() {
+    // Populate immediately so the UI isn't stuck at defaults for the
+    // first second, then keep polling on our own timer.
     updateSystem();
 
-    m_timer.setInterval(1000);
-    connect(&m_timer, &QTimer::timeout, this, &SystemMonitor::updateSystem);
-    m_timer.start();
+    m_timer = new QTimer(this);
+    m_timer->setInterval(1000);
+    connect(m_timer, &QTimer::timeout, this, &SystemMonitorWorker::updateSystem);
+    m_timer->start();
 }
 
-double SystemMonitor::cpuTemp() const { return systemStats.cpuTemp; }
-double SystemMonitor::cpuUsage() const { return systemStats.cpuUsage; }
-
-double SystemMonitor::memTotal() const { return systemStats.memTotal; }
-double SystemMonitor::memUsed() const { return systemStats.memUsed; }
-
-double SystemMonitor::gpuTemp() const { return systemStats.gpuTemp; }
-double SystemMonitor::gpuUsage() const { return systemStats.gpuUsage; }
-
-QVariantList SystemMonitor::partitions() const {
-    QVariantList list;
-    list.reserve(static_cast<int>(m_partitions.size()));
-    for (const auto& p : m_partitions) {
-        QVariantMap entry;
-        entry["device"] = p.device;
-        entry["mountpoint"] = p.mountpoint;
-        entry["total"] = p.total;
-        entry["used"] = p.used;
-        list.append(entry);
-    }
-    return list;
-}
-
-void SystemMonitor::getCpuTemp() {
+void SystemMonitorWorker::getCpuTemp() {
     for (const auto & entry : std::filesystem::directory_iterator("/sys/class/thermal/")) {
         std::string zone_path = entry.path().string();
         std::string type_path = zone_path + "/type";
@@ -147,7 +136,7 @@ void SystemMonitor::getCpuTemp() {
     }
 }
 
-void SystemMonitor::calculateCpuUsage() {
+void SystemMonitorWorker::calculateCpuUsage() {
     std::ifstream stat_file("/proc/stat");
     if (!stat_file.is_open()) return;
 
@@ -165,7 +154,7 @@ void SystemMonitor::calculateCpuUsage() {
         if (m_prevTotal != 0 && total_time > m_prevTotal) {
             unsigned long long total_delta = total_time - m_prevTotal;
             unsigned long long idle_delta = idle_time - m_prevIdle;
-            
+
             double usage = static_cast<double>(total_delta - idle_delta) / static_cast<double>(total_delta) * 100.0;
             systemStats.cpuUsage = roundToTenth(usage);
         }
@@ -175,7 +164,7 @@ void SystemMonitor::calculateCpuUsage() {
     }
 }
 
-void SystemMonitor::getMemoryUsage() {
+void SystemMonitorWorker::getMemoryUsage() {
     std::ifstream meminfo_file("/proc/meminfo");
     if (!meminfo_file.is_open()) return;
 
@@ -214,7 +203,7 @@ void SystemMonitor::getMemoryUsage() {
     }
 }
 
-void SystemMonitor::getPartitions() {
+void SystemMonitorWorker::getPartitions() {
     std::vector<PartitionStats> found;
     std::unordered_set<MountKey, MountKeyHash> seen;
 
@@ -263,9 +252,23 @@ void SystemMonitor::getPartitions() {
     m_partitions = std::move(found);
 }
 
+QVariantList SystemMonitorWorker::partitionsAsVariantList() const {
+    QVariantList list;
+    list.reserve(static_cast<int>(m_partitions.size()));
+    for (const auto& p : m_partitions) {
+        QVariantMap entry;
+        entry["device"] = p.device;
+        entry["mountpoint"] = p.mountpoint;
+        entry["total"] = p.total;
+        entry["used"] = p.used;
+        list.append(entry);
+    }
+    return list;
+}
+
 // Figures out once which GPU backend to use, then caches it (and any
 // sysfs paths it needs) so we're not re-probing every second.
-void SystemMonitor::detectGpuBackend() {
+void SystemMonitorWorker::detectGpuBackend() {
     m_gpuBackend = GpuBackend::None;
 
     // Prefer NVIDIA via nvidia-smi when it's present, since it reports
@@ -313,7 +316,7 @@ void SystemMonitor::detectGpuBackend() {
     }
 }
 
-bool SystemMonitor::readNvidiaGpuStats() {
+bool SystemMonitorWorker::readNvidiaGpuStats() {
     std::string output = runCommand(
         "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu --format=csv,noheader,nounits");
     if (output.empty()) return false;
@@ -332,7 +335,7 @@ bool SystemMonitor::readNvidiaGpuStats() {
     return true;
 }
 
-bool SystemMonitor::readAmdGpuStats() {
+bool SystemMonitorWorker::readAmdGpuStats() {
     if (m_gpuHwmonTempPath.isEmpty() || m_gpuBusyPercentPath.isEmpty()) return false;
 
     std::ifstream tempFile(m_gpuHwmonTempPath.toStdString());
@@ -350,7 +353,7 @@ bool SystemMonitor::readAmdGpuStats() {
     return true;
 }
 
-void SystemMonitor::getGpuStats() {
+void SystemMonitorWorker::getGpuStats() {
     if (m_gpuBackend == GpuBackend::Unknown) {
         detectGpuBackend();
     }
@@ -376,12 +379,58 @@ void SystemMonitor::getGpuStats() {
     }
 }
 
-void SystemMonitor::updateSystem() {
+void SystemMonitorWorker::updateSystem() {
     getCpuTemp();
     calculateCpuUsage();
     getMemoryUsage();
     getPartitions();
     getGpuStats();
 
+    emit statsReady(systemStats, partitionsAsVariantList());
+}
+
+// SystemMonitor: lives on the main/QML thread. Owns the worker thread
+// and just mirrors whatever the worker last reported.
+SystemMonitor::SystemMonitor(QObject *parent) : QObject(parent) {
+    populate_defaults(&systemStats);
+
+    qRegisterMetaType<SystemStats>("SystemStats");
+
+    auto *worker = new SystemMonitorWorker();
+    worker->moveToThread(&m_workerThread);
+
+    // Start polling once the worker thread's event loop is actually running.
+    connect(&m_workerThread, &QThread::started, worker, &SystemMonitorWorker::start);
+
+    // Queued connection: statsReady is emitted on the worker thread,
+    // onStatsReady runs on this (main) thread.
+    connect(worker, &SystemMonitorWorker::statsReady,
+            this, &SystemMonitor::onStatsReady, Qt::QueuedConnection);
+
+    // Clean up the worker once the thread is done.
+    connect(&m_workerThread, &QThread::finished, worker, &QObject::deleteLater);
+
+    m_workerThread.start();
+}
+
+SystemMonitor::~SystemMonitor() {
+    m_workerThread.quit();
+    m_workerThread.wait();
+}
+
+double SystemMonitor::cpuTemp() const { return systemStats.cpuTemp; }
+double SystemMonitor::cpuUsage() const { return systemStats.cpuUsage; }
+
+double SystemMonitor::memTotal() const { return systemStats.memTotal; }
+double SystemMonitor::memUsed() const { return systemStats.memUsed; }
+
+double SystemMonitor::gpuTemp() const { return systemStats.gpuTemp; }
+double SystemMonitor::gpuUsage() const { return systemStats.gpuUsage; }
+
+QVariantList SystemMonitor::partitions() const { return m_partitions; }
+
+void SystemMonitor::onStatsReady(SystemStats stats, QVariantList partitions) {
+    systemStats = stats;
+    m_partitions = std::move(partitions);
     emit systemChanged();
 }

@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include <QMetaType>
 #include <QObject>
 #include <QQmlEngine>
 #include <QString>
+#include <QThread>
 #include <QTimer>
 #include <QVariantList>
 #include <vector>
@@ -18,6 +20,8 @@ typedef struct {
     double gpuUsage;
 } SystemStats;
 
+Q_DECLARE_METATYPE(SystemStats)
+
 // One real, physical partition discovered from /proc/mounts.
 typedef struct {
     QString device;      // e.g. /dev/nvme0n1p2
@@ -25,6 +29,54 @@ typedef struct {
     double total;        // GB
     double used;         // GB
 } PartitionStats;
+
+// Does the actual (blocking) work of polling /proc, /sys, and spawning
+// nvidia-smi. Lives on a dedicated QThread so none of this can stall the
+// QML/UI thread.
+class SystemMonitorWorker : public QObject {
+    Q_OBJECT
+
+public:
+    explicit SystemMonitorWorker();
+
+public slots:
+    // Connected to QThread::started(), so this only runs once the
+    // worker thread's own event loop is live. Creates and starts the
+    // QTimer here (a QTimer must be created on the thread it runs on).
+    void start();
+    void updateSystem();
+
+signals:
+    void statsReady(SystemStats stats, QVariantList partitions);
+
+private:
+    SystemStats systemStats;
+    QTimer *m_timer = nullptr;
+
+    void getCpuTemp();
+
+    unsigned long long m_prevIdle = 0;
+    unsigned long long m_prevTotal = 0;
+    void calculateCpuUsage();
+
+    void getMemoryUsage();
+
+    void getPartitions();
+    std::vector<PartitionStats> m_partitions;
+    QVariantList partitionsAsVariantList() const;
+
+    // GPU stats: supports NVIDIA (via nvidia-smi) and other vendors
+    // (AMD/Intel) via sysfs.
+    enum class GpuBackend { Unknown, None, Nvidia, Amd };
+    GpuBackend m_gpuBackend = GpuBackend::Unknown;
+    QString m_gpuHwmonTempPath;   // cached sysfs path, non-NVIDIA only
+    QString m_gpuBusyPercentPath; // cached sysfs path, non-NVIDIA only
+
+    void getGpuStats();
+    void detectGpuBackend();
+    bool readNvidiaGpuStats();
+    bool readAmdGpuStats();
+};
 
 class SystemMonitor : public QObject {
     Q_OBJECT
@@ -41,6 +93,7 @@ class SystemMonitor : public QObject {
 
 public:
     explicit SystemMonitor(QObject *parent = nullptr);
+    ~SystemMonitor() override;
 
     double cpuTemp() const;
     double cpuUsage() const;
@@ -48,41 +101,17 @@ public:
     double memUsed() const;
     double gpuTemp() const;
     double gpuUsage() const;
-    double diskTotal() const;
-    double diskUsed() const;
     QVariantList partitions() const;
 
 signals:
     void systemChanged();
 
 private slots:
-    void updateSystem();
+    // Runs on the main thread (queued connection from the worker).
+    void onStatsReady(SystemStats stats, QVariantList partitions);
 
 private:
-    QTimer m_timer;
-
+    QThread m_workerThread;
     SystemStats systemStats;
-
-    void getCpuTemp();
-
-    unsigned long long m_prevIdle = 0;
-    unsigned long long m_prevTotal = 0;
-    void calculateCpuUsage();
-
-    void getMemoryUsage();
-
-    void getPartitions();
-    std::vector<PartitionStats> m_partitions;
-
-    // GPU stats: supports NVIDIA (via nvidia-smi) and other vendors
-    // (AMD/Intel) via sysfs.
-    enum class GpuBackend { Unknown, None, Nvidia, Amd };
-    GpuBackend m_gpuBackend = GpuBackend::Unknown;
-    QString m_gpuHwmonTempPath;   // cached sysfs path, non-NVIDIA only
-    QString m_gpuBusyPercentPath; // cached sysfs path, non-NVIDIA only
-
-    void getGpuStats();
-    void detectGpuBackend();
-    bool readNvidiaGpuStats();
-    bool readAmdGpuStats();
+    QVariantList m_partitions;
 };
