@@ -117,7 +117,10 @@ target_include_directories(wispconfig
 )
 
 # --- wisp Executable ---
-add_executable(wisp src/main.cpp)
+add_executable(wisp
+    src/main.cpp
+    src/ipc/ipc.cpp
+)
 
 target_link_libraries(wisp PRIVATE wispconfig wisplogcore)
 
