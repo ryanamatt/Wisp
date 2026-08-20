@@ -2,8 +2,6 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(wisp VERSION 0.0.0 LANGUAGES CXX)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
@@ -116,16 +114,31 @@ target_include_directories(wispconfig
         ${CMAKE_SOURCE_DIR}/third_party
 )
 
+# --- Version header from git ---
+set(WISP_VERSION_HEADER ${CMAKE_BINARY_DIR}/generated/version.hpp)
+
+add_custom_target(wisp_version_header ALL
+    COMMAND ${CMAKE_COMMAND}
+        -DSRC_DIR=${CMAKE_SOURCE_DIR}
+        -DOUTPUT_FILE=${WISP_VERSION_HEADER}
+        -P ${CMAKE_SOURCE_DIR}/cmake/GenerateVersionHeader.cmake
+    BYPRODUCTS ${WISP_VERSION_HEADER}
+    COMMENT "Checking git version"
+    VERBATIM
+)
+
 # --- wisp Executable ---
 add_executable(wisp
     src/main.cpp
     src/ipc/ipc.cpp
 )
 
+add_dependencies(wisp wisp_version_header)
+target_include_directories(wisp PRIVATE ${CMAKE_BINARY_DIR}/generated)
+
 target_link_libraries(wisp PRIVATE wispconfig wisplogcore)
 
 target_compile_definitions(wisp PRIVATE
-    WISP_VERSION="${PROJECT_VERSION}"
     WISP_DEFAULT_QML_DIR="${WISP_SHARE_DIR}/qml"
     WISP_QML_IMPORT_PATH="${WISP_SHARE_DIR}/qml"
     WISP_SHARE_DIR="${WISP_SHARE_DIR}"

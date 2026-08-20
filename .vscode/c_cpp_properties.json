@@ -4,11 +4,11 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/build/generated",
                 "/usr/include/qt6",
                 "/usr/include/qt6/QtCore",
                 "/usr/include/qt6/QtQml",
-                "/usr/include/qt6/QtQmlCore",
-                "${workspaceFolder}/include"
+                "/usr/include/qt6/QtQmlCore"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
