@@ -54,6 +54,8 @@ void printUsage(const char *argv0) {
         "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
         "\n"
         "Options:\n"
+        "  -d                  Disown: return control to the shell immediately\n"
+        "                      and keep running detached, even if the terminal\n"
         "  -f <dir>            Directory containing shell.qml\n"
         "                      (default: " << WISP_DEFAULT_QML_DIR << ")\n"
         "  -c <file>           Path to config.json\n"
@@ -161,6 +163,24 @@ void installSupervisorSignalHandlers() {
     sigaction(SIGTERM, &sa, nullptr);
     sigaction(SIGINT, &sa, nullptr);
     sigaction(SIGUSR1, &sa, nullptr);
+}
+
+// Detaches from the invoking shell
+void daemonize() {
+    pid_t pid = fork();
+    if (pid < 0) {
+        wisp::log::error(std::string("failed to disown: fork failed: ") + std::strerror(errno));
+        return; // fall back to running in the foreground
+    }
+    if (pid > 0) {
+        // Parent: nothing left to do, hand control back to the shell.
+        _exit(0);
+    }
+    // Child: start a new session so we're detached from the controlling
+    // terminal entirely, not just backgrounded within the old one.
+    if (setsid() < 0) {
+        wisp::log::warning(std::string("setsid failed: ") + std::strerror(errno));
+    }
 }
 
 // Forks and execs quickshell for the given qmlDir. Returns the child's
@@ -328,6 +348,7 @@ int main(int argc, char *argv[]) {
 
     enum class Command { None, Run, Kill, Reload, Ipc };
     Command command = Command::None;
+    bool disown = false;
     std::string ipcAction;
     std::string ipcTarget;
 
@@ -341,6 +362,10 @@ int main(int argc, char *argv[]) {
         if (arg == "-v" || arg == "--version") {
             printVersion();
             return 0;
+        }
+        if (arg == "-d" || arg == "--disown") {
+            disown = true;
+            continue;
         }
         if (arg == "-f") {
             if (i + 1 >= args.size()) {
@@ -384,6 +409,10 @@ int main(int argc, char *argv[]) {
         std::cerr << "wisp: unrecognized argument '" << arg << "'\n\n";
         printUsage(argv[0]);
         return 1;
+    }
+
+    if (disown && command != Command::None) {
+        daemonize();
     }
 
     switch (command) {
