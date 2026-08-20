@@ -13,6 +13,8 @@ qt_standard_project_setup()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+set(WISP_SHARE_DIR "/usr/share/wisp" CACHE PATH "Fixed install location for wisp's QML tree")
+
 # --- wisptime QML module ---
 qt_add_qml_module(wisptime
     URI Wisp.Time
@@ -121,6 +123,26 @@ target_link_libraries(wisp PRIVATE wispconfig wisplogcore)
 
 target_compile_definitions(wisp PRIVATE
     WISP_VERSION="${PROJECT_VERSION}"
-    WISP_DEFAULT_QML_DIR="${CMAKE_SOURCE_DIR}/qml"
-    WISP_QML_IMPORT_PATH="${CMAKE_BINARY_DIR}/qml"
+    WISP_DEFAULT_QML_DIR="${WISP_SHARE_DIR}/qml"
+    WISP_QML_IMPORT_PATH="${WISP_SHARE_DIR}/qml"
+    WISP_SHARE_DIR="${WISP_SHARE_DIR}"
+)
+
+# --- Install: QML tree ---
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/qml/
+    DESTINATION ${WISP_SHARE_DIR}/qml
+)
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/qml/
+    DESTINATION ${WISP_SHARE_DIR}/qml
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/
+    DESTINATION ${WISP_SHARE_DIR}/scripts
+    USE_SOURCE_PERMISSIONS
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/config/matugen/
+    DESTINATION ${WISP_SHARE_DIR}/matugen
+    USE_SOURCE_PERMISSIONS
 )

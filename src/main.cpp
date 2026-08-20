@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "config/config.hpp"
+#include "env.hpp"
 #include "logging/log.hpp"
 
 #ifndef WISP_VERSION
@@ -28,6 +29,10 @@
 
 #ifndef WISP_QML_IMPORT_PATH
 #define WISP_QML_IMPORT_PATH ""
+#endif
+
+#ifndef WISP_SHARE_DIR
+#define WISP_SHARE_DIR ""
 #endif
 
 namespace {
@@ -209,6 +214,7 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
         importPath += existing;
     }
     setenv("QML2_IMPORT_PATH", importPath.c_str(), 1);
+    setenv(wisp::env::kShareDir, WISP_SHARE_DIR, 1);
 
     installSupervisorSignalHandlers();
     writePidFile(getpid());

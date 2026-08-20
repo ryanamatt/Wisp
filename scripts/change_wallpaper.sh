@@ -6,6 +6,12 @@ set -euo pipefail
 
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 
+WISP_SHARE_DIR="${WISP_SHARE_DIR:-/usr/share/wisp}"
+MATUGEN_CONFIG="$WISP_SHARE_DIR/matugen/config.toml"
+
+WISP_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/wisp"
+mkdir -p "$WISP_STATE_DIR"
+
 input_arg="$1"
 wallpaper=""
 
@@ -17,12 +23,12 @@ c_blue() { printf '\033[1;34m%s\033[0m\n' "$*"; }
 function update_wallpaper() {
     awww img --transition-type center --transition-step 90 --transition-fps 60 --transition-duration 2 "$wallpaper"
     sleep 1
-    matugen image "$wallpaper" -c config/matugen/config.toml -t scheme-vibrant --source-color-index 0
+    (cd "$WISP_STATE_DIR" && matugen image "$wallpaper" -c "$MATUGEN_CONFIG" -t scheme-vibrant --source-color-index 0)
     c_green "Update Wallpaper and Ran Matugen"
 }
 
 apply_razer_colors() {
-    local json_file=state/quickshell/colors.json
+    local json_file="$HOME/.config/wisp/colors.json"
 
     if [[ ! -f "$json_file" ]]; then
         c_yellow "No Razer color file found at $json_file"
