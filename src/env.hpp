@@ -9,4 +9,6 @@ namespace wisp::env {
 
 inline constexpr const char *kTimeFormat = "WISP_TIME_FORMAT";
 
+inline constexpr const char *kShareDir = "WISP_SHARE_DIR";
+
 } // namespace wisp::env

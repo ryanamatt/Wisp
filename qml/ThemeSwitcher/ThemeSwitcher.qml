@@ -80,8 +80,7 @@ PanelWindow {
         function confirmSelection() {
             if (wallpaperModel.count > 0 && focusedIndex >= 0 && focusedIndex < wallpaperModel.count) {
                 let path = wallpaperModel.get(focusedIndex).filePath
-                // Call your change_wallpaper.sh script
-                let scriptPath = Quickshell.env("HOME") + "/Projects/wisp/scripts/change_wallpaper.sh"
+                let scriptPath = Quickshell.env("WISP_SHARE_DIR") + "/scripts/change_wallpaper.sh"
                 wallpaperProcess.command = ["bash", scriptPath, path]
                 wallpaperProcess.running = true
                 GlobalState.themeSwitcher.close()
