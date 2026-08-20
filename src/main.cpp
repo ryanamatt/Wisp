@@ -239,6 +239,10 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
             if (g_gotReloadSignal) {
                 g_gotReloadSignal = 0;
                 wisp::log::info("reload requested, restarting quickshell");
+
+                wisp::config::load(configPath);
+                wisp::log::info("reloaded config from " + configPath);
+
                 kill(child, SIGTERM);
                 waitpid(child, &status, 0);
                 child = spawnQuickshell(qmlDir);
