@@ -1,23 +1,6 @@
 #!/usr/bin/env bash
 #
 # install.sh - build wisp and install it to standard locations
-#
-# What this does:
-#   1. Configures + builds the project with CMake (Release build) into ./build
-#   2. Installs wisp's QML tree (shell.qml, Bar/, Components/, the compiled
-#      Wisp.Time/System/Calendar/Log modules, ...) to /usr/share/wisp/qml
-#      via `cmake --install` (needs sudo, since /usr/share is root-owned)
-#   3. Installs the `wisp` binary itself to ~/.local/bin (no sudo)
-#   4. Seeds ~/.config/wisp/config.json from config/config.json if you don't
-#      already have one
-#   5. Sanity-checks that quickshell is installed and that ~/.local/bin is
-#      actually on your PATH
-#
-# The wisp binary is compiled with /usr/share/wisp/qml baked in as both its
-# default QML dir and its QML2_IMPORT_PATH (see CMakeLists.txt). That path
-# is fixed, not derived from wherever this repo is checked out, so once
-# installed you can move or delete this source tree and wisp keeps working.
-# Rerunning this script after pulling changes re-syncs /usr/share/wisp/qml.
 
 set -euo pipefail
 
@@ -30,8 +13,6 @@ WISP_SHARE_DIR="/usr/share/wisp"
 info()  { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 warn()  { printf '\033[1;33m==> warning:\033[0m %s\n' "$1"; }
 error() { printf '\033[1;31m==> error:\033[0m %s\n' "$1" >&2; }
-
-# --- sanity checks -----------------------------------------------------
 
 if [[ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]]; then
     error "CMakeLists.txt not found next to this script. Run install.sh from the repo root."
@@ -53,8 +34,6 @@ if ! command -v quickshell >/dev/null 2>&1; then
     warn "Install it (e.g. from the AUR: yay -S quickshell-git) before running 'wisp run'."
 fi
 
-# --- build ---------------------------------------------------------------
-
 info "Configuring build in ${BUILD_DIR}"
 cmake -S "${SCRIPT_DIR}" -B "${BUILD_DIR}" -DCMAKE_BUILD_TYPE=Release
 
@@ -67,18 +46,12 @@ if [[ ! -x "${BUILT_BIN}" ]]; then
     exit 1
 fi
 
-# --- install the QML tree (needs root: /usr/share is root-owned) ----------
-
 info "Installing QML tree to ${WISP_SHARE_DIR}/qml (sudo)"
 sudo cmake --install "${BUILD_DIR}"
-
-# --- install the binary (no root needed) -----------------------------
 
 info "Installing wisp binary to ${INSTALL_BIN_DIR}"
 mkdir -p "${INSTALL_BIN_DIR}"
 install -m 755 "${BUILT_BIN}" "${INSTALL_BIN_DIR}/wisp"
-
-# --- seed a default config -------------------------------------------------
 
 if [[ ! -f "${CONFIG_DIR}/config.json" ]]; then
     if [[ -f "${SCRIPT_DIR}/config/config.json" ]]; then
@@ -89,8 +62,6 @@ if [[ ! -f "${CONFIG_DIR}/config.json" ]]; then
 else
     info "Existing config found at ${CONFIG_DIR}/config.json, leaving it alone"
 fi
-
-# --- PATH check -------------------------------------------------------
 
 case ":${PATH}:" in
     *":${INSTALL_BIN_DIR}:"*)
