@@ -8,7 +8,7 @@ find_package(Git QUIET)
 
 if(GIT_EXECUTABLE)
     execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags --long --always --dirty
+        COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
         WORKING_DIRECTORY ${SRC_DIR}
         OUTPUT_VARIABLE _describe
         OUTPUT_STRIP_TRAILING_WHITESPACE
