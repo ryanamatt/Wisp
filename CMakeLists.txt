@@ -70,6 +70,37 @@ target_link_libraries(wispcalendar PRIVATE
     Qt6::Qml
 )
 
+# --- wisplogcore: plain C++ logging, no Qt dependency ---
+add_library(wisplogcore STATIC
+    src/logging/log.cpp
+)
+
+target_include_directories(wisplogcore PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(wisplogcore PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+# --- wispLog QML module ---
+qt_add_qml_module(wisplog
+    URI Wisp.Log
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Log
+    SOURCES
+        src/backend/logger/logger.hpp
+        src/backend/logger/logger.cpp
+)
+
+target_include_directories(wisplog PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/backend/logger
+)
+
+target_link_libraries(wisplog PRIVATE
+    Qt6::Core
+    Qt6::Qml
+    wisplogcore
+)
+
 # --- wispconfig library ---
 add_library(wispconfig STATIC
     src/config/config.cpp
@@ -86,7 +117,7 @@ target_include_directories(wispconfig
 # --- wisp Executable ---
 add_executable(wisp src/main.cpp)
 
-target_link_libraries(wisp PRIVATE wispconfig)
+target_link_libraries(wisp PRIVATE wispconfig wisplogcore)
 
 target_compile_definitions(wisp PRIVATE
     WISP_VERSION="${PROJECT_VERSION}"
