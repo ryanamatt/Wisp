@@ -85,11 +85,9 @@ namespace {
     }
 } // namespace
 
-// ---------------------------------------------------------------------
 // SystemMonitorWorker: runs on its own QThread, does all the blocking
 // work, and hands finished results back to the main thread via a
 // queued signal.
-// ---------------------------------------------------------------------
 
 SystemMonitorWorker::SystemMonitorWorker() {
     populate_defaults(&systemStats);
