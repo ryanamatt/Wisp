@@ -10,7 +10,7 @@ ember   = { color = "#d9884a", blend = true }
 
 [templates.quickshell_colors]
 input_path = '~/Projects/wisp/config/matugen/templates/quickshell-colors.json'
-output_path = '~/Projects/wisp/state/quickshell/colors.json'
+output_path = '~/.config/wisp/colors.json'
 
 [templates.starship]
 input_path = '~/Projects/wisp/config/matugen/templates/starship.toml'

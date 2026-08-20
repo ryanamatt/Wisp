@@ -10,6 +10,7 @@ Singleton {
     id: root
 
     readonly property string home: Quickshell.env("HOME")
+    readonly property string config: home + "/.config/wisp"
     readonly property string wispFiles: home + "/Projects/wisp"
 
     // Fallback palette
@@ -36,8 +37,8 @@ Singleton {
 
     FileView {
         id: colorsFile
-        path: root.wispFiles + "/state/quickshell/colors.json"
-            ? root.wispFiles + "/state/quickshell/colors.json"
+        path: root.config + "/colors.json"
+            ? root.config + "/colors.json"
             : ""
         watchChanges: true
         onFileChanged: reload()
