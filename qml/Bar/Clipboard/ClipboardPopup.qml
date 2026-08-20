@@ -90,7 +90,18 @@ BarPopup {
     Process {
         id: clipboardWatcher
         running: clipboardPopup.cliphistEnabled
-        command: ["wl-paste", "--watch", "cliphist", "store"]
+
+        // wl-paste --watch fires its command once immediately for whatever is
+        // *currently* on the clipboard, in addition to firing on future changes.
+        // That means a plain "wl-paste --watch cliphist store" will re-store
+        // the last thing added to the clipboard.
+        command: [
+            "bash", "-c",
+            "touch /tmp/wisp-cliphist-skip; " +
+            "exec wl-paste --watch bash -c '" +
+            "if [ -e /tmp/wisp-cliphist-skip ]; then rm -f /tmp/wisp-cliphist-skip; else cliphist store; fi" +
+            "'"
+        ]
 
         onRunningChanged: {
             if (!running) {
