@@ -9,33 +9,33 @@ import "../../Colors"
 BarWidgetContainer {
     id: weatherWidget 
 
-    property int weatherCode: -1
-    property int weatherTemp: 0
+    property int weatherCode: WeatherSingleton.weatherCode
+    property int weatherTemp: WeatherSingleton.weatherTemp
 
-    Process {
-        id: getCurrentWeather
-        command: ["bash", "-c", "curl -s \"wttr.in/?format=j1&u\" | jq -c '.current_condition[0] | {temp: (.temp_F | tonumber), code: (.weatherCode | tonumber)}'"]
-        // running: true
+    // Process {
+    //     id: getCurrentWeather
+    //     command: ["bash", "-c", "curl -s \"wttr.in/?format=j1&u\" | jq -c '.current_condition[0] | {temp: (.temp_F | tonumber), code: (.weatherCode | tonumber)}'"]
+    //     // running: true
 
-        stdout: SplitParser {
-            onRead: data => {
-                let weatherData = JSON.parse(data);
-                weatherWidget.weatherTemp = weatherData.temp;
-                weatherWidget.weatherCode = weatherData.code;
-            }
-        }
+    //     stdout: SplitParser {
+    //         onRead: data => {
+    //             let weatherData = JSON.parse(data);
+    //             weatherWidget.weatherTemp = weatherData.temp;
+    //             weatherWidget.weatherCode = weatherData.code;
+    //         }
+    //     }
 
-    }
+    // }
 
-    Timer {
-        id: weatherUpdateTimer
-        // 5 Minutes = 5 * 60 seconds in a minute * 1000 milliseconds
-        interval: 5 * 60 * 1000 
-        repeat: true
-        onTriggered: {
-            getCurrentWeather.running = true
-        }
-    }
+    // Timer {
+    //     id: weatherUpdateTimer
+    //     // 5 Minutes = 5 * 60 seconds in a minute * 1000 milliseconds
+    //     interval: 5 * 60 * 1000 
+    //     repeat: true
+    //     onTriggered: {
+    //         getCurrentWeather.running = true
+    //     }
+    // }
 
     property var weatherCodeMap: [
         { 
@@ -84,10 +84,10 @@ BarWidgetContainer {
         return "E";
     }
 
-    Component.onCompleted: {
-        getCurrentWeather.running = true
-        weatherUpdateTimer.start()
-    }
+    // Component.onCompleted: {
+    //     getCurrentWeather.running = true
+    //     weatherUpdateTimer.start()
+    // }
 
     icon.text: getWeatherIcon(weatherCode) + " " + weatherWidget.weatherTemp + "\ue33e"
     icon.font.pixelSize: implicitWidth * 0.3
