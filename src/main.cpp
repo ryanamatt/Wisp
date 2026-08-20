@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "config/config.hpp"
+#include "logging/log.hpp"
 
 #ifndef WISP_VERSION
 #define WISP_VERSION "0.0.0"
@@ -71,7 +72,11 @@ void writePidFile(pid_t pid) {
     std::error_code ec;
     std::filesystem::create_directories(runtimeDir(), ec);
     std::ofstream out(pidFilePath(), std::ios::trunc);
-    if (out) out << pid << "\n";
+    if (out) {
+        out << pid << "\n";
+    } else {
+        wisp::log::warning("could not write pid file at " + pidFilePath().string());
+    }
 }
 
 void removePidFileIfOwnedBySelf() {
@@ -155,7 +160,7 @@ void installSupervisorSignalHandlers() {
 pid_t spawnQuickshell(const std::string &qmlDir) {
     pid_t pid = fork();
     if (pid < 0) {
-        std::cerr << "wisp: fork failed: " << std::strerror(errno) << "\n";
+        wisp::log::error(std::string("fork failed: ") + std::strerror(errno));
         return -1;
     }
 
@@ -170,8 +175,8 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
         execvp("quickshell", args.data());
 
         // Only reached if execvp itself failed.
-        std::cerr << "wisp: failed to launch quickshell: " << std::strerror(errno) << "\n";
-        std::cerr << "wisp: is quickshell installed and on PATH?\n";
+        wisp::log::error(std::string("failed to launch quickshell: ") + std::strerror(errno));
+        wisp::log::error("is quickshell installed and on PATH?");
         _exit(127);
     }
 
@@ -186,16 +191,17 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";
 
     if (!std::filesystem::exists(shellQml)) {
-        std::cerr << "wisp: cannot find shell.qml under " << qmlDir << "\n";
+        wisp::log::error("cannot find shell.qml under " + qmlDir);
         return 1;
     }
 
     if (auto existing = findRunningWispPid()) {
-        std::cerr << "wisp: an instance is already running (pid " << *existing << ")\n";
+        wisp::log::warning("an instance is already running (pid " + std::to_string(*existing) + ")");
         return 1;
     }
 
     wisp::config::load(configPath);
+    wisp::log::info("loaded config from " + configPath);
 
     std::string importPath = WISP_QML_IMPORT_PATH;
     if (const char *existing = std::getenv("QML2_IMPORT_PATH"); existing && *existing) {
@@ -209,9 +215,12 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
 
     pid_t child = spawnQuickshell(qmlDir);
     if (child < 0) {
+        wisp::log::error("failed to start the bar");
         removePidFileIfOwnedBySelf();
         return 1;
     }
+
+    wisp::log::info("bar started (quickshell pid " + std::to_string(child) + ")");
 
     int exitCode = 0;
     for (;;) {
@@ -222,19 +231,23 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
             if (errno != EINTR) break;
 
             if (g_gotTermSignal) {
+                wisp::log::info("stop signal received, shutting down");
                 kill(child, SIGTERM);
                 waitpid(child, &status, 0);
                 break;
             }
             if (g_gotReloadSignal) {
                 g_gotReloadSignal = 0;
+                wisp::log::info("reload requested, restarting quickshell");
                 kill(child, SIGTERM);
                 waitpid(child, &status, 0);
                 child = spawnQuickshell(qmlDir);
                 if (child < 0) {
+                    wisp::log::error("failed to respawn quickshell during reload");
                     exitCode = 1;
                     break;
                 }
+                wisp::log::info("quickshell restarted (pid " + std::to_string(child) + ")");
             }
             continue;
         }
@@ -243,13 +256,20 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
         // there's nothing left to supervise, so wisp exits too.
         if (WIFEXITED(status)) {
             exitCode = WEXITSTATUS(status);
+            if (exitCode == 0) {
+                wisp::log::info("quickshell exited normally");
+            } else {
+                wisp::log::warning("quickshell exited with code " + std::to_string(exitCode));
+            }
         } else if (WIFSIGNALED(status)) {
             exitCode = 128 + WTERMSIG(status);
+            wisp::log::warning("quickshell terminated by signal " + std::to_string(WTERMSIG(status)));
         }
         break;
     }
 
     removePidFileIfOwnedBySelf();
+    wisp::log::info("bar stopped");
     return exitCode;
 }
 

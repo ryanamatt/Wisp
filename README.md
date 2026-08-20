@@ -40,6 +40,10 @@ cmake --build build
 ./build/wisp
 ```
 
+## Log File
+
+Log file is located at ~/.local/state/wisp/wisp.log
+
 ## Other
 
 Keybinds Added to binds.lua
