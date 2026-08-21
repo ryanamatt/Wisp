@@ -20,15 +20,50 @@ PanelWindow {
 
     property var sectionColumns: [
         {
+            id: "welcome",
             text: "Welcome"
         },
         {
+            id: "column2",
             text: "Column 2"
         },
         {
+            id: "column3",
             text: "Column 3"
         }        
     ]
+
+    // Which section card is currently selected
+    property int currentIndex: 0
+    readonly property var currentSection: sectionColumns[currentIndex]
+
+    // Maps a section's id -> the Component that should be shown for it.
+    // Add a new entry here whenever a new section gets its own file.
+    property var sectionComponents: ({
+        "welcome": welcomeComponent,
+        "column2": column2Component,
+        "column3": placeholderComponent
+    })
+
+    Component {
+        id: welcomeComponent
+        WelcomeSection {}
+    }
+
+    // Generic stand-in used by any section id that doesn't have a real
+    // component wired up yet.
+    Component {
+        id: placeholderComponent
+        Item {
+            Text {
+                anchors.centerIn: parent
+                font.family: "Iosevka Nerd Font Propo"
+                font.pixelSize: 14
+                color: Colors.colors.accentAlt
+                text: "Coming soon"
+            }
+        }
+    }
 
     FocusScope {
         id: focusScope 
@@ -101,11 +136,13 @@ PanelWindow {
                             required property var modelData
                             required property int index
 
+                            readonly property bool isActive: commandCenter.currentIndex === index
+
                             Layout.fillWidth: true
                             Layout.preferredHeight: 20
                             Layout.alignment: Qt.AlignTop
 
-                            color: Colors.colors.surfaceAlt
+                            color: columnCard.isActive ? Colors.colors.accent : Colors.colors.surfaceAlt
                             border.color: Colors.colors.border
                             border.width: 1
                             radius: 10
@@ -114,8 +151,14 @@ PanelWindow {
                                 text: columnCard.modelData.text
                                 font.family: "Iosevka Nerd Font Propo"
                                 font.pixelSize: 12
-                                color: Colors.colors.accentAlt
+                                color: columnCard.isActive ? Colors.colors.background : Colors.colors.accentAlt
                                 anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: commandCenter.currentIndex = columnCard.index
                             }
                         }
                     }
@@ -159,31 +202,13 @@ PanelWindow {
                     clip: true
                     spacing: 20
 
-                    Rectangle {
-                        id: welcomeBanner
+                    Loader {
+                        id: sectionLoader
 
                         Layout.fillWidth: true
-                        Layout.maximumWidth: welcomeText.width + 25
-                        Layout.preferredHeight: 45
-                        Layout.alignment: Qt.AlignHCenter
-
-                        color: Colors.colors.surfaceAlt
-                        border.color: Colors.colors.border
-                        border.width: 2
-                        radius: welcomeBanner.width / 2
-
-                        Text {
-                            id: welcomeText
-                            text: "Welcome to Wisp"
-                            font.family: "Iosevka Nerd Font Propo"
-                            font.pixelSize: 25
-                            color: Colors.colors.accentAlt
-                            anchors.centerIn: parent
-                        }
-                    }
-
-                    Item {
                         Layout.fillHeight: true
+
+                        sourceComponent: commandCenter.sectionComponents[commandCenter.currentSection.id]
                     }
                 }
 
