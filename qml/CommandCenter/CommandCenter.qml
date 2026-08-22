@@ -1,0 +1,214 @@
+// qml/CommandCenter/CommandCenter.qml
+
+import Quickshell
+import Quickshell.Io
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import "../Colors"
+import "../GlobalState"
+
+PanelWindow {
+    id: commandCenter
+
+    anchors { top: true; bottom: true; left: true; right: true }
+    color: "transparent"
+    focusable: true
+
+    // Starts closed by default, opens only when IPC command triggers it
+    visible: GlobalState.commandCenter.isOpen
+
+    property var sectionColumns: [
+        {
+            id: "welcome",
+            text: "Welcome"
+        },
+        {
+            id: "column2",
+            text: "Column 2"
+        },     
+    ]
+
+    // Which section card is currently selected
+    property int currentIndex: 0
+    readonly property var currentSection: sectionColumns[currentIndex]
+
+    // Maps a section's id -> the Component that should be shown for it.
+    // Add a new entry here whenever a new section gets its own file.
+    property var sectionComponents: ({
+        "welcome": welcomeComponent,
+        "column2": placeholderComponent,
+    })
+
+    Component {
+        id: welcomeComponent
+        WelcomeSection {}
+    }
+
+    // Generic stand-in used by any section id that doesn't have a real
+    // component wired up yet.
+    Component {
+        id: placeholderComponent
+        Item {
+            Text {
+                anchors.centerIn: parent
+                font.family: "Iosevka Nerd Font Propo"
+                font.pixelSize: 14
+                color: Colors.colors.accentAlt
+                text: "Coming soon"
+            }
+        }
+    }
+
+    FocusScope {
+        id: focusScope 
+        anchors.fill: parent
+        focus: true
+
+        Keys.onEscapePressed: GlobalState.commandCenter.close()
+
+        // Dim Screen behind
+        Rectangle {
+            anchors.fill: parent
+            color: Qt.rgba(Colors.colors.surfaceAlt.r, Colors.colors.surfaceAlt.g, Colors.colors.surfaceAlt.b, 0.2)
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: GlobalState.commandCenter.close()
+            }    
+        }
+
+        Rectangle {
+            id: winRect 
+            anchors.centerIn: parent
+            width: Math.min(800, parent.width - 80)
+            height: Math.min(600, parent.height - 80)
+            radius: 14
+            color: Colors.colors.background
+            border.color: Colors.colors.border
+            border.width: 2
+
+            // Swallow clicks so the dim screen's MouseArea doesn't see them
+            MouseArea {
+                anchors.fill: parent
+                onClicked: (mouse) => mouse.accepted = true
+            }
+
+            RowLayout {
+                id: mainRow
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 0
+
+                ColumnLayout {
+                    id: sectionsLayout
+
+                    Layout.preferredWidth: mainRow.width * 0.2
+                    Layout.minimumWidth: Layout.preferredWidth
+                    Layout.maximumWidth: Layout.preferredWidth
+                    Layout.fillWidth: false
+                    Layout.fillHeight: true
+
+                    clip: true
+
+                    spacing: 10
+
+                    Text {
+                        text: "Command Center"
+                        font.family: "Iosevka Nerd Font Propo"
+                        font.pixelSize: 16
+                        font.bold: true
+                        color: Colors.colors.accent
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Repeater {
+                        model: commandCenter.sectionColumns
+
+                        delegate : Rectangle {
+                            id: columnCard
+
+                            required property var modelData
+                            required property int index
+
+                            readonly property bool isActive: commandCenter.currentIndex === index
+
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 20
+                            Layout.alignment: Qt.AlignTop
+
+                            color: columnCard.isActive ? Colors.colors.accent : Colors.colors.surfaceAlt
+                            border.color: Colors.colors.border
+                            border.width: 1
+                            radius: 10
+
+                            Text {
+                                text: columnCard.modelData.text
+                                font.family: "Iosevka Nerd Font Propo"
+                                font.pixelSize: 12
+                                color: columnCard.isActive ? Colors.colors.background : Colors.colors.accentAlt
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: commandCenter.currentIndex = columnCard.index
+                            }
+                        }
+                    }
+
+                    Item {
+                        Layout.fillHeight: true
+                    }
+                }
+
+                Item {
+                    Layout.preferredWidth: 8
+                    Layout.fillHeight: true
+                    clip: true
+                }
+
+                Rectangle {
+                    id: splitter
+                    clip: true
+
+                    Layout.fillHeight: true
+                    implicitWidth: 5
+
+                    radius: 10
+
+                    color: Colors.colors.borderSoft
+                }
+
+                Item {
+                    Layout.preferredWidth: 8
+                    Layout.fillHeight: true
+                    clip: true
+                }
+
+                ColumnLayout {
+                    id: informationLayout
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.maximumWidth: Infinity
+
+                    clip: true
+                    spacing: 20
+
+                    Loader {
+                        id: sectionLoader
+
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        sourceComponent: commandCenter.sectionComponents[commandCenter.currentSection.id]
+                    }
+                }
+
+            }
+        }
+
+    } // commandCenter
+}

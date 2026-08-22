@@ -21,5 +21,5 @@ Singleton {
 
     property WindowState themeSwitcher: WindowState { ipcName: "themeSwitcher" }
     property WindowState workspaceSwitcher: WindowState { ipcName: "workspaceSwitcher" }
-
+    property WindowState commandCenter: WindowState { ipcName: "commandCenter" }
 }

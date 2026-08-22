@@ -127,6 +127,28 @@ add_custom_target(wisp_version_header ALL
     VERBATIM
 )
 
+# --- wispVersion QML module ---
+qt_add_qml_module(wispversion
+    URI Wisp.Version
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Version
+    SOURCES
+        src/backend/version/versionInfo.hpp
+        src/backend/version/versionInfo.cpp
+)
+
+add_dependencies(wispversion wisp_version_header)
+
+target_include_directories(wispversion PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/backend/version
+    ${CMAKE_BINARY_DIR}/generated
+)
+
+target_link_libraries(wispversion PRIVATE
+    Qt6::Core
+    Qt6::Qml
+)
+
 # --- wisp Executable ---
 add_executable(wisp
     src/main.cpp

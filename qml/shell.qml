@@ -4,6 +4,7 @@ import Quickshell
 import "Bar"
 import "ThemeSwitcher"
 import "WorkspaceSwitcher"
+import "CommandCenter"
 
 Scope {
     Bar {}
@@ -11,4 +12,6 @@ Scope {
     ThemeSwitcher {}
 
     WorkspaceSwitcher {}
+
+    CommandCenter {}
 }
