@@ -2,7 +2,7 @@
 
 import QtQuick
 import QtQuick.Layouts
-import "../Colors"
+import "../../Colors"
 import "../Components"
 import Wisp.Version
 

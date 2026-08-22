@@ -7,6 +7,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
 import "../GlobalState"
+import "SystemSection"
+import "WelcomeSection"
 
 PanelWindow {
     id: commandCenter
@@ -24,8 +26,8 @@ PanelWindow {
             text: "Welcome"
         },
         {
-            id: "column2",
-            text: "Column 2"
+            id: "system",
+            text: "System"
         },     
     ]
 
@@ -33,32 +35,26 @@ PanelWindow {
     property int currentIndex: 0
     readonly property var currentSection: sectionColumns[currentIndex]
 
-    // Maps a section's id -> the Component that should be shown for it.
-    // Add a new entry here whenever a new section gets its own file.
-    property var sectionComponents: ({
-        "welcome": welcomeComponent,
-        "column2": placeholderComponent,
-    })
-
-    Component {
-        id: welcomeComponent
-        WelcomeSection {}
+    function sectionFile(id) {
+        return id.charAt(0).toUpperCase() + id.slice(1) + "Section/" + id.charAt(0).toUpperCase() + id.slice(1) + "Section.qml"
     }
 
-    // Generic stand-in used by any section id that doesn't have a real
-    // component wired up yet.
-    Component {
-        id: placeholderComponent
-        Item {
-            Text {
-                anchors.centerIn: parent
-                font.family: "Iosevka Nerd Font Propo"
-                font.pixelSize: 14
-                color: Colors.colors.accentAlt
-                text: "Coming soon"
-            }
-        }
-    }
+    // // Maps a section's id -> the Component that should be shown for it.
+    // // Add a new entry here whenever a new section gets its own file.
+    // property var sectionComponents: ({
+    //     "welcome": welcomeComponent,
+    //     "system": SystemSection,
+    // })
+
+    // Component {
+    //     id: welcomeComponent
+    //     WelcomeSection {}
+    // }
+
+    // Component {
+    //     id: systemComponent
+    //     SystemSection {}
+    // }
 
     FocusScope {
         id: focusScope 
@@ -203,7 +199,8 @@ PanelWindow {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        sourceComponent: commandCenter.sectionComponents[commandCenter.currentSection.id]
+                        // sourceComponent: commandCenter.sectionComponents[commandCenter.currentSection.id]
+                        source: commandCenter.sectionFile(commandCenter.currentSection.id)
                     }
                 }
 
