@@ -52,7 +52,7 @@ void printUsage(const char *argv0) {
         "\n"
         "Options:\n"
         "  -d                  Disown: return control to the shell immediately\n"
-        "                      and keep running detached, even if the terminal\n"
+        "                      and keep running detached\n"
         "  -f <dir>            Directory containing shell.qml\n"
         "                      (default: " << WISP_DEFAULT_QML_DIR << ")\n"
         "  -c <file>           Path to config.json\n"
