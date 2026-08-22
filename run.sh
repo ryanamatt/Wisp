@@ -2,5 +2,5 @@
 
 set -euo pipefail
 
-./build/wisp -f ~/Projects/wisp/qml run
+echo ./build/wisp -f ~/Projects/wisp/qml run
 ./build/wisp -f ~/Projects/wisp/qml run
