@@ -26,11 +26,7 @@ PanelWindow {
         {
             id: "column2",
             text: "Column 2"
-        },
-        {
-            id: "column3",
-            text: "Column 3"
-        }        
+        },     
     ]
 
     // Which section card is currently selected
@@ -41,8 +37,7 @@ PanelWindow {
     // Add a new entry here whenever a new section gets its own file.
     property var sectionComponents: ({
         "welcome": welcomeComponent,
-        "column2": column2Component,
-        "column3": placeholderComponent
+        "column2": placeholderComponent,
     })
 
     Component {

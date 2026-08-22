@@ -3,6 +3,8 @@
 import QtQuick
 import QtQuick.Layouts
 import "../Colors"
+import "../Components"
+import Wisp.Version
 
 ColumnLayout {
     id: root
@@ -11,30 +13,47 @@ ColumnLayout {
     clip: true
     spacing: 20
 
-    Rectangle {
-        id: welcomeBanner
+    function greeting() {
+        const hour = new Date().getHours()
+        if (hour < 5) return "Burning the midnight oil"
+        if (hour < 12) return "Good Morning!"
+        if (hour < 17) return "Good Afternoon!"
+        if (hour < 21) return "Good Evening!"
+        return "Good Night"
+    }
 
-        Layout.fillWidth: true
-        Layout.maximumWidth: welcomeText.width + 25
-        Layout.preferredHeight: 45
+    Text {
+        id: greetingText
         Layout.alignment: Qt.AlignHCenter
+        Layout.topMargin: 10
 
-        color: Colors.colors.surfaceAlt
-        border.color: Colors.colors.border
-        border.width: 2
-        radius: welcomeBanner.width / 2
+        text: root.greeting()
+        font.family: "Iosevka Nerd Font Propo"
+        font.pixelSize: 25
+        color: Colors.colors.foregroundMuted
 
-        Text {
-            id: welcomeText
-            text: "Welcome to Wisp"
-            font.family: "Iosevka Nerd Font Propo"
-            font.pixelSize: 25
-            color: Colors.colors.accentAlt
-            anchors.centerIn: parent
+        Timer {
+            interval: 60000
+            running: true
+            repeat: true
+            onTriggered: greetingText.text = root.greeting()
         }
     }
 
     Item {
         Layout.fillHeight: true
+    }
+
+    Text {
+        id: versionText
+        Layout.alignment: Qt.AlignRight
+        Layout.rightMargin: 6
+        Layout.bottomMargin: 4
+
+        text: WispVersion.version
+        font.family: "Iosevka Nerd Font Propo"
+        font.pixelSize: 10
+        color: Colors.colors.foregroundMuted
+        opacity: 0.7
     }
 }
