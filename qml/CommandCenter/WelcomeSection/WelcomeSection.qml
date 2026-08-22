@@ -3,7 +3,6 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
-import "../Components"
 import Wisp.Version
 
 ColumnLayout {
