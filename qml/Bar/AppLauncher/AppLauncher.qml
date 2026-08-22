@@ -18,64 +18,30 @@ BarPopup {
         root.currentIndex = 0
     }
 
-    // ----- App List -----
-
-    property var appsModel: [
-        {
-            name: "Chrome",
-            command: ["google-chrome-stable"],
-            icon: "google-chrome",
-            fallback: "\uf268" // chrome glyph
-        },
-        {
-            name: "Discord",
-            command: ["discord"],
-            icon: "discord",
-            fallback: "\uf392" // discord glyph
-        },
-        {
-            name: "Spotify",
-            command: ["spotify-launcher"],
-            icon: "spotify-launcher",
-            fallback: "\uf1bc" // spotify glyph
-        },
-        {
-            name: "Obsidian",
-            command: ["flatpak", "run", "md.obsidian.Obsidian"],
-            icon: "md.obsidian.Obsidian",
-            fallback: "\uf02d" // book glyph
-        },
-        {
-            name: "VS Code",
-            command: ["code"],
-            icon: "vscode",
-            fallback: "\ue70c" // vscode glyph
-        },
-        {
-            name: "OBS Studio",
-            command: ["flatpak", "run", "com.obsproject.Studio"],
-            icon: "com.obsproject.Studio",
-            fallback: "\uf03d" // video camera glyph
-        },
-        {
-            name: "Steam",
-            command: ["steam"],
-            icon: "steam",
-            fallback: "\uf1b6" // steam glyph
-        },
-        {
-            name: "Dolphin",
-            command: ["dolphin"],
-            icon: "org.kde.dolphin",
-            fallback: "\uf07c" // open folder glyph
-        },
-        {
-            name: "Polychromatic",
-            command: ["polychromatic-controller"],
-            icon: "polychromatic",
-            fallback: "\uf0eb" // lightbulb/RGB glyph
-        }
+    readonly property var defaultApps: [
+        { name: "Chrome", command: ["google-chrome-stable"], icon: "google-chrome" },
+        { name: "Discord", command: ["discord"], icon: "discord" },
+        { name: "Spotify", command: ["spotify-launcher"], icon: "spotify-launcher" },
+        { name: "VS Code", command: ["code"], icon: "vscode" }
     ]
+
+    function loadAppsModel() {
+        const raw = Quickshell.env("WISP_APPS_JSON")
+        if (!raw || raw.length === 0) return root.defaultApps
+
+        let parsed
+        try {
+            parsed = JSON.parse(raw)
+        } catch (e) {
+            console.warn("wisp: failed to parse WISP_APPS_JSON, using defaults:", e)
+            return root.defaultApps
+        }
+
+        if (!Array.isArray(parsed) || parsed.length === 0) return root.defaultApps
+        return parsed
+    }
+
+    property var appsModel: loadAppsModel()
 
     function launch(cmd) {
         launchProc.command = cmd
@@ -194,29 +160,15 @@ BarPopup {
                             anchors.margins: 8
                             spacing: 6
 
-                            Item {
+                            Image {
+                                id: iconImage
                                 Layout.preferredWidth: 32
                                 Layout.preferredHeight: 32
                                 Layout.alignment: Qt.AlignHCenter
-
-                                Image {
-                                    id: iconImage
-                                    anchors.fill: parent
-                                    source: "image://icon/" + modelData.icon
-                                    sourceSize.width: 32
-                                    sourceSize.height: 32
-                                    fillMode: Image.PreserveAspectFit
-                                    visible: status === Image.Ready
-                                }
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    visible: iconImage.status !== Image.Ready
-                                    text: modelData.fallback
-                                    font.family: "Symbols Nerd Font"
-                                    font.pixelSize: 22
-                                    color: Colors.colors.foreground
-                                }
+                                source: "image://icon/" + modelData.icon
+                                sourceSize.width: 32
+                                sourceSize.height: 32
+                                fillMode: Image.PreserveAspectFit
                             }
 
                             Text {

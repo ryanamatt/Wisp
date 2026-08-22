@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace wisp::config {
 
@@ -11,8 +12,20 @@ namespace wisp::config {
 // ---------------------------------------------------------------------
 inline constexpr const char *kDefaultTimeFormat = "ddd MMM d hh:mm:ss AP";
 
+// One entry in the app launcher's grid.
+struct AppEntry {
+    std::string name;
+    std::vector<std::string> command;
+    std::string icon;
+};
+
+// The launcher's built-in app list, used whenever config.json has no
+// (valid) appLauncher.apps array of its own.
+std::vector<AppEntry> defaultApps();
+
 struct Config {
     std::string timeFormat = kDefaultTimeFormat;
+    std::vector<AppEntry> apps = defaultApps();
 };
 
 // Resolves the default config file location:
