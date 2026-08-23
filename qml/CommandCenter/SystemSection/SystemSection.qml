@@ -26,4 +26,58 @@ ColumnLayout {
         font.pixelSize: 25
         color: Colors.colors.foregroundMuted
     }
+
+    RowLayout {
+
+        MetricGroupCard {
+            title: "CPU"
+
+            MetricGauge {
+                label: "Temp"
+                value: SystemMonitor.cpuTemp
+                maxValue: 100
+                unit: "°C"
+                warnThreshold: 70
+                critThreshold: 85
+            }
+
+            MetricGauge {
+                label: "Usage"
+                value: SystemMonitor.cpuUsage
+                maxValue: 100
+                unit: "%"
+                warnThreshold: 70
+                critThreshold: 90
+            }
+        }
+
+        MetricGroupCard {
+            title: "GPU"
+
+            MetricGauge {
+                label: "Temp"
+                value: SystemMonitor.gpuTemp
+                maxValue: 100
+                unit: "°C"
+                warnThreshold: 70
+                critThreshold: 85
+            }
+
+            MetricGauge {
+                label: "Usage"
+                value: SystemMonitor.gpuUsage
+                maxValue: 100
+                unit: "%"
+                warnThreshold: 70
+                critThreshold: 90
+            }
+        }
+
+    }
+
+    Item {
+        Layout.fillHeight: true
+    }
+
+
 }
