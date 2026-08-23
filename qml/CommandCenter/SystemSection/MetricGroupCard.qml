@@ -22,7 +22,7 @@ Rectangle {
         id: innerColumn
         anchors.fill: parent
         anchors.margins: 16
-        spacing: 12
+        spacing: 2
 
         Text {
             text: root.title

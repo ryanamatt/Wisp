@@ -28,6 +28,16 @@ ColumnLayout {
         return rows
     }
 
+    component HSpacer : Rectangle {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 5
+        Layout.leftMargin: 25
+        Layout.rightMargin: 25
+
+        color: Colors.colors.shadow
+        radius: 10
+    }
+
     Text {
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 10
@@ -113,15 +123,7 @@ ColumnLayout {
                 }
             }
 
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 5
-                Layout.leftMargin: 25
-                Layout.rightMargin: 25
-
-                color: Colors.colors.shadow
-                radius: 10
-            }
+            HSpacer {}
 
             Repeater {
                 model: root.partitionRows
@@ -149,6 +151,8 @@ ColumnLayout {
                     }
                 }
             }
+
+            HSpacer {}
 
         }
     }
