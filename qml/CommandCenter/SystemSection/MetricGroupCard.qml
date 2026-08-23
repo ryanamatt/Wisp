@@ -14,8 +14,8 @@ Rectangle {
     implicitHeight: innerColumn.implicitHeight + innerColumn.anchors.margins * 2
 
     color: Colors.colors.surface
-    border.color: Colors.colors.border
-    border.width: 1
+    // border.color: Colors.colors.border
+    // border.width: 1
     radius: 12
 
     ColumnLayout {
@@ -27,16 +27,17 @@ Rectangle {
         Text {
             text: root.title
             font.family: "Iosevka Nerd Font Propo"
-            font.pixelSize: 14
+            font.pixelSize: 20
             font.bold: true
             color: Colors.colors.accentAlt
+            Layout.alignment: Qt.AlignHCenter
         }
 
         RowLayout {
             id: contentRow
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
-            spacing: 32
+            spacing: 16
         }
     }
 }

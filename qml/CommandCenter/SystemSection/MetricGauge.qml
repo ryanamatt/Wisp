@@ -23,7 +23,7 @@ ColumnLayout {
     property color critColor: Colors.colors.error
     property color trackColor: Colors.colors.surfaceAlt
 
-    property real size: 120
+    property real size: 80
     property real thickness: 10
 
     spacing: 8

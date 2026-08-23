@@ -15,7 +15,18 @@ ColumnLayout {
 
     anchors.fill: parent
     clip: true
-    spacing: 20
+    spacing: 10
+
+    readonly property int maxPartitionsPerRow: 4
+
+    readonly property var partitionRows: {
+        var rows = []
+        var parts = SystemMonitor.partitions
+        for (var i = 0; i < parts.length; i += root.maxPartitionsPerRow) {
+            rows.push(parts.slice(i, i + root.maxPartitionsPerRow))
+        }
+        return rows
+    }
 
     Text {
         Layout.alignment: Qt.AlignHCenter
@@ -27,57 +38,118 @@ ColumnLayout {
         color: Colors.colors.foregroundMuted
     }
 
-    RowLayout {
+    ScrollView {
+        id: scrollView
 
-        MetricGroupCard {
-            title: "CPU"
-
-            MetricGauge {
-                label: "Temp"
-                value: SystemMonitor.cpuTemp
-                maxValue: 100
-                unit: "°C"
-                warnThreshold: 70
-                critThreshold: 85
-            }
-
-            MetricGauge {
-                label: "Usage"
-                value: SystemMonitor.cpuUsage
-                maxValue: 100
-                unit: "%"
-                warnThreshold: 70
-                critThreshold: 90
-            }
-        }
-
-        MetricGroupCard {
-            title: "GPU"
-
-            MetricGauge {
-                label: "Temp"
-                value: SystemMonitor.gpuTemp
-                maxValue: 100
-                unit: "°C"
-                warnThreshold: 70
-                critThreshold: 85
-            }
-
-            MetricGauge {
-                label: "Usage"
-                value: SystemMonitor.gpuUsage
-                maxValue: 100
-                unit: "%"
-                warnThreshold: 70
-                critThreshold: 90
-            }
-        }
-
-    }
-
-    Item {
+        Layout.fillWidth: true
         Layout.fillHeight: true
+        clip: true
+        spacing: 10
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+        ColumnLayout {
+            width: scrollView.availableWidth
+            spacing: 20
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 1
+
+                MetricGroupCard {
+                    title: "CPU"
+
+                    MetricGauge {
+                        label: "Temp"
+                        value: SystemMonitor.cpuTemp
+                        maxValue: 100
+                        unit: "°C"
+                        warnThreshold: 70
+                        critThreshold: 85
+                    }
+
+                    MetricGauge {
+                        label: "Usage"
+                        value: SystemMonitor.cpuUsage
+                        maxValue: 100
+                        unit: "%"
+                        warnThreshold: 70
+                        critThreshold: 90
+                    }
+                }
+
+                MetricGroupCard {
+                    title: "GPU"
+
+                    MetricGauge {
+                        label: "Temp"
+                        value: SystemMonitor.gpuTemp
+                        maxValue: 100
+                        unit: "°C"
+                        warnThreshold: 70
+                        critThreshold: 85
+                    }
+
+                    MetricGauge {
+                        label: "Usage"
+                        value: SystemMonitor.gpuUsage
+                        maxValue: 100
+                        unit: "%"
+                        warnThreshold: 70
+                        critThreshold: 90
+                    }
+                }
+
+                MetricGroupCard {
+                    title: "RAM"
+
+                    MetricGauge {
+                        label: "Usage"
+                        value: SystemMonitor.memUsed / SystemMonitor.memTotal * 100
+                        maxValue: 100
+                        unit: "%"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 5
+                Layout.leftMargin: 25
+                Layout.rightMargin: 25
+
+                color: Colors.colors.shadow
+                radius: 10
+            }
+
+            Repeater {
+                model: root.partitionRows
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 1
+
+                    Repeater {
+                        model: modelData
+
+                        MetricGroupCard {
+                            title: modelData.mountpoint
+
+                            MetricGauge {
+                                label: "Used"
+                                value: modelData.used / modelData.total * 100
+                                maxValue: 100
+                                unit: "%"
+                                decimals: 1
+                                warnThreshold: 80
+                                critThreshold: 95
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
     }
-
-
 }
