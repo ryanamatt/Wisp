@@ -11,17 +11,17 @@ BarWidgetContainer {
 
     required property var screen
 
-    icon.font.pixelSize: popup.hasBacklight ? popup.nightlightEnabled ? 12 : 15 : 30
+    icon.font.pixelSize: BrightnessSingleton.hasBacklight ? BrightnessSingleton.nightlightEnabled ? 12 : 15 : 30
     icon.font.family: "Noto Sans Mono"
     icon.text: {
-        const nightGlyph = popup.nightlightEnabled ? "\uf186 " : ""
+        const nightGlyph = BrightnessSingleton.nightlightEnabled ? "\uf186 " : ""
 
-        if (popup.hasBacklight)
-            return nightGlyph + "\uf185 " + popup.brightnessPercent + "%"
+        if (BrightnessSingleton.hasBacklight)
+            return nightGlyph + "\uf185 " + BrightnessSingleton.brightnessPercent + "%"
 
         // Desktop monitors with no controllable backlight: only the
         // night-light state is meaningful here.
-        return popup.nightlightEnabled ? "\udb86\udc29" : "\uf186"
+        return BrightnessSingleton.nightlightEnabled ? "\udb86\udc29" : "\uf186"
     }
 
     isOpenHere: GlobalState.brightnessWidget.isOpenOn(brightnessWidget.screen)
@@ -33,7 +33,7 @@ BarWidgetContainer {
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
-            popup.refreshBrightness()
+            BrightnessSingleton.refreshBrightness()
             popup.forceActiveFocus()
             activateFocusGrab()
         } else {
