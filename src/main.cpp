@@ -55,6 +55,10 @@ void printUsage(const char *argv0) {
         "                      and keep running detached\n"
         "  -f <dir>            Directory containing shell.qml\n"
         "                      (default: " << WISP_DEFAULT_QML_DIR << ")\n"
+        "  -m <dir>            Extra QML module import path, checked before\n"
+        "                      the installed modules. Useful for testing an\n"
+        "                      unreleased build without installing it, e.g.\n"
+        "                      `-m build/qml` alongside `-f`.\n"
         "  -c <file>           Path to config.json\n"
         "                      (default: " << wisp::config::defaultPath() << ")\n"
         "  -h, --help          Show this help message\n"
@@ -213,7 +217,7 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
 // The wisp process itself stays alive (and named "wisp") for the
 // lifetime of the bar, which is what lets `pgrep wisp`, `wisp kill`,
 // and `wisp reload` find and control it.
-int runBar(const std::string &qmlDir, const std::string &configPath) {
+int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath) {
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";
 
     if (!std::filesystem::exists(shellQml)) {
@@ -229,7 +233,16 @@ int runBar(const std::string &qmlDir, const std::string &configPath) {
     wisp::config::load(configPath);
     wisp::log::info("loaded config from " + configPath);
 
-    std::string importPath = WISP_QML_IMPORT_PATH;
+    // -m lets a dev point at their build tree's QML modules before
+    // installing, so it takes priority over both the installed
+    // location and whatever the caller's shell already set.
+    std::string importPath;
+    if (!modulePath.empty()) {
+        importPath += modulePath;
+        importPath += ':';
+        wisp::log::info("using extra QML module path " + modulePath);
+    }
+    importPath += WISP_QML_IMPORT_PATH;
     if (const char *existing = std::getenv("QML2_IMPORT_PATH"); existing && *existing) {
         importPath += ':';
         importPath += existing;
@@ -341,6 +354,7 @@ int reloadBar() {
 int main(int argc, char *argv[]) {
     std::string qmlDir = WISP_DEFAULT_QML_DIR;
     std::string configPath = wisp::config::defaultPath();
+    std::string modulePath;
     std::vector<std::string> args(argv + 1, argv + argc);
 
     enum class Command { None, Run, Kill, Reload, Ipc };
@@ -380,6 +394,14 @@ int main(int argc, char *argv[]) {
             configPath = args[++i];
             continue;
         }
+        if (arg == "-m") {
+            if (i + 1 >= args.size()) {
+                std::cerr << "wisp: " << arg << " requires a directory argument\n";
+                return 1;
+            }
+            modulePath = args[++i];
+            continue;
+        }
         if (arg == "run") {
             command = Command::Run;
             continue;
@@ -414,7 +436,7 @@ int main(int argc, char *argv[]) {
 
     switch (command) {
         case Command::Run:
-            return runBar(qmlDir, configPath);
+            return runBar(qmlDir, configPath, modulePath);
         case Command::Kill:
             return killBar();
         case Command::Reload:
