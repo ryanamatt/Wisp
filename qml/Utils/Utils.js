@@ -33,3 +33,16 @@ function unitFor(gbValue) {
 function convert(gbValue, unit) {
     return unit === "TB" ? gbValue / 1024 : gbValue
 }
+
+function formatUptime(seconds) {
+    if (seconds < 0) return "—"
+
+    var totalMinutes = Math.floor(seconds / 60)
+    var days = Math.floor(totalMinutes / 1440)
+    var hours = Math.floor((totalMinutes % 1440) / 60)
+    var minutes = totalMinutes % 60
+
+    if (days > 0) return days + "d " + hours + "h " + minutes + "m"
+    if (hours > 0) return hours + "h " + minutes + "m"
+    return minutes + "m"
+}
