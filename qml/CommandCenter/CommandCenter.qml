@@ -39,23 +39,6 @@ PanelWindow {
         return id.charAt(0).toUpperCase() + id.slice(1) + "Section/" + id.charAt(0).toUpperCase() + id.slice(1) + "Section.qml"
     }
 
-    // // Maps a section's id -> the Component that should be shown for it.
-    // // Add a new entry here whenever a new section gets its own file.
-    // property var sectionComponents: ({
-    //     "welcome": welcomeComponent,
-    //     "system": SystemSection,
-    // })
-
-    // Component {
-    //     id: welcomeComponent
-    //     WelcomeSection {}
-    // }
-
-    // Component {
-    //     id: systemComponent
-    //     SystemSection {}
-    // }
-
     FocusScope {
         id: focusScope 
         anchors.fill: parent
