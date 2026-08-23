@@ -18,6 +18,7 @@ typedef struct {
     double memUsed;
     double gpuTemp;
     double gpuUsage;
+    double uptimeSeconds;
 } SystemStats;
 
 Q_DECLARE_METATYPE(SystemStats)
@@ -61,6 +62,8 @@ private:
 
     void getMemoryUsage();
 
+    void getUptime();
+
     void getPartitions();
     std::vector<PartitionStats> m_partitions;
     QVariantList partitionsAsVariantList() const;
@@ -89,6 +92,7 @@ class SystemMonitor : public QObject {
     Q_PROPERTY(double memUsed READ memUsed NOTIFY systemChanged)
     Q_PROPERTY(double gpuTemp READ gpuTemp NOTIFY systemChanged)
     Q_PROPERTY(double gpuUsage READ gpuUsage NOTIFY systemChanged)
+    Q_PROPERTY(double uptimeSeconds READ uptimeSeconds NOTIFY systemChanged)
     Q_PROPERTY(QVariantList partitions READ partitions NOTIFY systemChanged)
 
 public:
@@ -101,6 +105,7 @@ public:
     double memUsed() const;
     double gpuTemp() const;
     double gpuUsage() const;
+    double uptimeSeconds() const;
     QVariantList partitions() const;
 
 signals:
