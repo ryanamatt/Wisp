@@ -9,6 +9,7 @@ import "../Colors"
 import "../GlobalState"
 import "SystemSection"
 import "WelcomeSection"
+import Wisp.Version
 
 PanelWindow {
     id: commandCenter
@@ -139,6 +140,19 @@ PanelWindow {
 
                     Item {
                         Layout.fillHeight: true
+                    }
+
+                    Text {
+                        id: versionText
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.rightMargin: 6
+                        Layout.bottomMargin: 4
+
+                        text: WispVersion.version
+                        font.family: "Iosevka Nerd Font Propo"
+                        font.pixelSize: 10
+                        color: Colors.colors.foregroundMuted
+                        opacity: 0.7
                     }
                 }
 
