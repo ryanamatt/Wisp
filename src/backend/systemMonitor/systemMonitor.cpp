@@ -31,6 +31,7 @@ namespace {
         systemStats->memUsed = -1.0;
         systemStats->gpuTemp = -1.0;
         systemStats->gpuUsage = -1.0;
+        systemStats->uptimeSeconds = -1.0;
     }
 
     // Runs a shell command and returns its stdout, or empty string on failure.
@@ -214,6 +215,16 @@ void SystemMonitorWorker::getMemoryUsage() {
     }
 }
 
+void SystemMonitorWorker::getUptime() {
+    std::ifstream uptime_file("/proc/uptime");
+    if (!uptime_file.is_open()) return;
+
+    double uptime = 0.0;
+    if (uptime_file >> uptime) {
+        systemStats.uptimeSeconds = uptime;
+    }
+}
+
 void SystemMonitorWorker::getPartitions() {
     std::vector<PartitionStats> found;
     std::unordered_set<MountKey, MountKeyHash> seen;
@@ -394,6 +405,7 @@ void SystemMonitorWorker::updateSystem() {
     getCpuTemp();
     calculateCpuUsage();
     getMemoryUsage();
+    getUptime();
     getPartitions();
     getGpuStats();
 
@@ -437,6 +449,8 @@ double SystemMonitor::memUsed() const { return systemStats.memUsed; }
 
 double SystemMonitor::gpuTemp() const { return systemStats.gpuTemp; }
 double SystemMonitor::gpuUsage() const { return systemStats.gpuUsage; }
+
+double SystemMonitor::uptimeSeconds() const { return systemStats.uptimeSeconds; }
 
 QVariantList SystemMonitor::partitions() const { return m_partitions; }
 
