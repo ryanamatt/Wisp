@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <vector>
 
 #include "version.hpp"
@@ -195,7 +196,18 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
     }
 
     if (pid == 0) {
-        // Child: become quickshell.
+        // Child
+        
+        int devNull = open("/dev/null", O_RDWR);
+        if (devNull >= 0) {
+            dup2(devNull, STDOUT_FILENO);
+            dup2(devNull, STDERR_FILENO);
+            if (devNull > STDERR_FILENO) {
+                close(devNull);
+            }
+        }
+        
+        // become quickshell.
         std::vector<char *> args;
         args.push_back(const_cast<char *>("quickshell"));
         args.push_back(const_cast<char *>("-c"));
