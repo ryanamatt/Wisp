@@ -25,7 +25,7 @@ Wisp is a Shell for Arch + Hyprland.
 * cliphist
 * wl-clipboard
 
-</td></tr>
+</td><td>
 
 * hyprsunset
 
