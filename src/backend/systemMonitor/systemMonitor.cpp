@@ -32,6 +32,9 @@ namespace {
         systemStats->gpuTemp = -1.0;
         systemStats->gpuUsage = -1.0;
         systemStats->uptimeSeconds = -1.0;
+        systemStats->loadAvg1 = -1.0;
+        systemStats->loadAvg5 = -1.0;
+        systemStats->loadAvg15 = -1.0;
     }
 
     // Runs a shell command and returns its stdout, or empty string on failure.
@@ -216,12 +219,28 @@ void SystemMonitorWorker::getMemoryUsage() {
 }
 
 void SystemMonitorWorker::getUptime() {
+    // First field is seconds since boot (may have a fractional part);
+    // the second field is the sum of idle time across cores, which we
+    // don't need here.
     std::ifstream uptime_file("/proc/uptime");
     if (!uptime_file.is_open()) return;
 
     double uptime = 0.0;
     if (uptime_file >> uptime) {
         systemStats.uptimeSeconds = uptime;
+    }
+}
+
+void SystemMonitorWorker::getLoadAverage() {
+    // First three fields are the 1/5/15-minute load averages.
+    std::ifstream loadavg_file("/proc/loadavg");
+    if (!loadavg_file.is_open()) return;
+
+    double load1 = 0.0, load5 = 0.0, load15 = 0.0;
+    if (loadavg_file >> load1 >> load5 >> load15) {
+        systemStats.loadAvg1 = load1;
+        systemStats.loadAvg5 = load5;
+        systemStats.loadAvg15 = load15;
     }
 }
 
@@ -406,6 +425,7 @@ void SystemMonitorWorker::updateSystem() {
     calculateCpuUsage();
     getMemoryUsage();
     getUptime();
+    getLoadAverage();
     getPartitions();
     getGpuStats();
 
@@ -451,6 +471,10 @@ double SystemMonitor::gpuTemp() const { return systemStats.gpuTemp; }
 double SystemMonitor::gpuUsage() const { return systemStats.gpuUsage; }
 
 double SystemMonitor::uptimeSeconds() const { return systemStats.uptimeSeconds; }
+
+double SystemMonitor::loadAvg1() const { return systemStats.loadAvg1; }
+double SystemMonitor::loadAvg5() const { return systemStats.loadAvg5; }
+double SystemMonitor::loadAvg15() const { return systemStats.loadAvg15; }
 
 QVariantList SystemMonitor::partitions() const { return m_partitions; }
 
