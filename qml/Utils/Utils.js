@@ -46,3 +46,7 @@ function formatUptime(seconds) {
     if (hours > 0) return hours + "h " + minutes + "m"
     return minutes + "m"
 }
+
+function formatLoad(value) {
+    return value < 0 ? "—" : value.toFixed(2)
+}

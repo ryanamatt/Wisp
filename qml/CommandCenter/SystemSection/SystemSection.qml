@@ -48,14 +48,31 @@ ColumnLayout {
         color: Colors.colors.foregroundMuted
     }
 
-    Text {
+    RowLayout {
         Layout.alignment: Qt.AlignHCenter
+        spacing: 40
 
-        text: "Uptime: " + Utils.formatUptime(SystemMonitor.uptimeSeconds)
-        font.family: "Iosevka Nerd Font Propo"
-        font.pixelSize: 20
-        color: Colors.colors.foregroundMuted
-        opacity: 0.7
+        Text {
+            Layout.alignment: Qt.AlignHCenter
+
+            text: "Uptime: " + Utils.formatUptime(SystemMonitor.uptimeSeconds)
+            font.family: "Iosevka Nerd Font Propo"
+            font.pixelSize: 20
+            color: Colors.colors.foregroundMuted
+            opacity: 0.7
+        }
+
+        Text {
+            Layout.alignment: Qt.AlignHCenter
+
+            text: "Load: " + Utils.formatLoad(SystemMonitor.loadAvg1)
+                + "  " + Utils.formatLoad(SystemMonitor.loadAvg5)
+                + "  " + Utils.formatLoad(SystemMonitor.loadAvg15)
+            font.family: "Iosevka Nerd Font Propo"
+            font.pixelSize: 20
+            color: Colors.colors.foregroundMuted
+            opacity: 0.7
+        }
     }
 
     ScrollView {
