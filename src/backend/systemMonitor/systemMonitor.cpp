@@ -8,6 +8,8 @@
 #include <string>
 #include <filesystem>
 #include <cmath>
+#include <algorithm>
+#include <chrono>
 #include <unordered_set>
 #include <cstdio>
 #include <array>
@@ -322,7 +324,7 @@ void SystemMonitorWorker::detectGpuBackend() {
     }
 
     // Fall back to scanning /sys/class/drm for a card whose PCI vendor ID
-    // is AMD (0x1002), and cache the hwmon temp + gpu_busy_percent paths.
+    // is AMD (0x1002) or Intel (0x8086).
     const std::string drmRoot = "/sys/class/drm";
     if (!std::filesystem::exists(drmRoot)) return;
 
@@ -336,21 +338,73 @@ void SystemMonitorWorker::detectGpuBackend() {
         std::string vendor;
         if (!vendorFile.is_open() || !(vendorFile >> vendor)) continue;
 
-        if (vendor != "0x1002") continue; // not AMD
+        if (vendor == "0x1002") {
+            // AMD: amdgpu exposes gpu_busy_percent plus an hwmon temp1_input.
+            // Both must be present to use this card.
+            std::filesystem::path busyPath = devicePath / "gpu_busy_percent";
+            if (!std::filesystem::exists(busyPath)) continue;
 
-        std::filesystem::path busyPath = devicePath / "gpu_busy_percent";
-        if (!std::filesystem::exists(busyPath)) continue;
+            std::filesystem::path hwmonRoot = devicePath / "hwmon";
+            if (!std::filesystem::exists(hwmonRoot)) continue;
 
-        // hwmon dir name varies (hwmon0, hwmon1, ...), so find it.
-        std::filesystem::path hwmonRoot = devicePath / "hwmon";
-        if (!std::filesystem::exists(hwmonRoot)) continue;
+            for (const auto& hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
+                std::filesystem::path tempPath = hwmonEntry.path() / "temp1_input";
+                if (std::filesystem::exists(tempPath)) {
+                    m_gpuHwmonTempPath = QString::fromStdString(tempPath.string());
+                    m_gpuBusyPercentPath = QString::fromStdString(busyPath.string());
+                    m_gpuBackend = GpuBackend::Amd;
+                    return;
+                }
+            }
+        } else if (vendor == "0x8086") {
+            // Intel: some driver/kernel combos (newer xe/i915 builds with
+            // GPU power-capping support) expose the same gpu_busy_percent +
+            // hwmon shape AMD uses. Prefer that when it's there.
+            std::filesystem::path busyPath = devicePath / "gpu_busy_percent";
+            std::filesystem::path hwmonRoot = devicePath / "hwmon";
+            bool foundSysfsShape = false;
 
-        for (const auto& hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
-            std::filesystem::path tempPath = hwmonEntry.path() / "temp1_input";
-            if (std::filesystem::exists(tempPath)) {
-                m_gpuHwmonTempPath = QString::fromStdString(tempPath.string());
-                m_gpuBusyPercentPath = QString::fromStdString(busyPath.string());
-                m_gpuBackend = GpuBackend::Amd;
+            if (std::filesystem::exists(busyPath) && std::filesystem::exists(hwmonRoot)) {
+                for (const auto& hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
+                    std::filesystem::path tempPath = hwmonEntry.path() / "temp1_input";
+                    if (std::filesystem::exists(tempPath)) {
+                        m_gpuHwmonTempPath = QString::fromStdString(tempPath.string());
+                        m_gpuBusyPercentPath = QString::fromStdString(busyPath.string());
+                        foundSysfsShape = true;
+                        break;
+                    }
+                }
+            }
+
+            if (foundSysfsShape) {
+                m_gpuBackend = GpuBackend::Intel;
+                return;
+            }
+
+            // Most integrated "Arc Graphics" iGPUs (plain i915, no hwmon)
+            // don't expose either of those. Fall back to RC6 idle-residency,
+            // preferring the per-GT path and falling back to the older
+            // top-level power/ path. Note: unlike vendor/hwmon/gpu_busy_percent,
+            // these live directly under the card directory, not under device/.
+            std::filesystem::path rc6Path;
+            std::filesystem::path gtRoot = entry.path() / "gt";
+            if (std::filesystem::exists(gtRoot)) {
+                for (const auto& gtEntry : std::filesystem::directory_iterator(gtRoot)) {
+                    std::filesystem::path candidate = gtEntry.path() / "rc6_residency_ms";
+                    if (std::filesystem::exists(candidate)) {
+                        rc6Path = candidate;
+                        break;
+                    }
+                }
+            }
+            if (rc6Path.empty()) {
+                std::filesystem::path candidate = entry.path() / "power" / "rc6_residency_ms";
+                if (std::filesystem::exists(candidate)) rc6Path = candidate;
+            }
+
+            if (!rc6Path.empty()) {
+                m_gpuRc6Path = QString::fromStdString(rc6Path.string());
+                m_gpuBackend = GpuBackend::Intel;
                 return;
             }
         }
@@ -394,6 +448,62 @@ bool SystemMonitorWorker::readAmdGpuStats() {
     return true;
 }
 
+bool SystemMonitorWorker::readIntelGpuStats() {
+    // Preferred path: same hwmon temp1_input + gpu_busy_percent shape
+    // amdgpu uses, on the driver/kernel combos that expose it. Identical
+    // read logic to the AMD path.
+    if (!m_gpuHwmonTempPath.isEmpty() && !m_gpuBusyPercentPath.isEmpty()) {
+        std::ifstream tempFile(m_gpuHwmonTempPath.toStdString());
+        std::ifstream busyFile(m_gpuBusyPercentPath.toStdString());
+        if (!tempFile.is_open() || !busyFile.is_open()) return false;
+
+        long rawTemp = 0;
+        long busyPercent = 0;
+        if (!(tempFile >> rawTemp)) return false;
+        if (!(busyFile >> busyPercent)) return false;
+
+        // temp1_input is in millidegrees Celsius.
+        systemStats.gpuTemp = roundToTenth(static_cast<double>(rawTemp) / 1000.0);
+        systemStats.gpuUsage = static_cast<double>(busyPercent);
+        return true;
+    }
+
+    // Fallback for plain i915 (most integrated "Arc Graphics" iGPUs): no
+    // gpu_busy_percent and no GPU-specific temp sensor exists, since the
+    // GPU shares the CPU die (already covered by cpuTemp). Instead, derive
+    // busy % from how much of the last interval the GPU spent idle in RC6,
+    // the same delta-over-time approach calculateCpuUsage() uses for /proc/stat.
+    if (m_gpuRc6Path.isEmpty()) return false;
+
+    std::ifstream rc6File(m_gpuRc6Path.toStdString());
+    if (!rc6File.is_open()) return false;
+
+    unsigned long long rc6Ms = 0;
+    if (!(rc6File >> rc6Ms)) return false;
+
+    auto now = std::chrono::steady_clock::now();
+
+    if (m_hasPrevGpuSample && rc6Ms >= m_prevGpuRc6Ms) {
+        double elapsedMs = std::chrono::duration<double, std::milli>(now - m_prevGpuSampleTime).count();
+        if (elapsedMs > 0.0) {
+            double idleMs = static_cast<double>(rc6Ms - m_prevGpuRc6Ms);
+            double busyPercent = 100.0 - (idleMs / elapsedMs * 100.0);
+            busyPercent = std::clamp(busyPercent, 0.0, 100.0);
+            systemStats.gpuUsage = roundToTenth(busyPercent);
+        }
+    }
+
+    // No dedicated GPU temp sensor in this fallback; leave it unavailable
+    // rather than guessing.
+    systemStats.gpuTemp = -1.0;
+
+    m_prevGpuRc6Ms = rc6Ms;
+    m_prevGpuSampleTime = now;
+    m_hasPrevGpuSample = true;
+
+    return true;
+}
+
 void SystemMonitorWorker::getGpuStats() {
     if (m_gpuBackend == GpuBackend::Unknown) {
         detectGpuBackend();
@@ -406,6 +516,9 @@ void SystemMonitorWorker::getGpuStats() {
             break;
         case GpuBackend::Amd:
             ok = readAmdGpuStats();
+            break;
+        case GpuBackend::Intel:
+            ok = readIntelGpuStats();
             break;
         case GpuBackend::None:
         case GpuBackend::Unknown:
