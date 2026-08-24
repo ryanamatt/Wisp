@@ -9,6 +9,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QVariantList>
+#include <chrono>
 #include <vector>
 
 typedef struct {
@@ -75,15 +76,24 @@ private:
 
     // GPU stats: supports NVIDIA (via nvidia-smi) and other vendors
     // (AMD/Intel) via sysfs.
-    enum class GpuBackend { Unknown, None, Nvidia, Amd };
+    enum class GpuBackend { Unknown, None, Nvidia, Amd, Intel };
     GpuBackend m_gpuBackend = GpuBackend::Unknown;
-    QString m_gpuHwmonTempPath;   // cached sysfs path, non-NVIDIA only
-    QString m_gpuBusyPercentPath; // cached sysfs path, non-NVIDIA only
+    QString m_gpuHwmonTempPath;   // cached sysfs path, AMD/Intel with hwmon support
+    QString m_gpuBusyPercentPath; // cached sysfs path, AMD/Intel with hwmon support
+
+    // Fallback path for plain i915 Intel GPUs (most integrated "Arc
+    // Graphics" iGPUs) that don't expose gpu_busy_percent or a GPU hwmon
+    // sensor. Busy % is derived from the delta in RC6 idle residency.
+    QString m_gpuRc6Path;
+    unsigned long long m_prevGpuRc6Ms = 0;
+    std::chrono::steady_clock::time_point m_prevGpuSampleTime;
+    bool m_hasPrevGpuSample = false;
 
     void getGpuStats();
     void detectGpuBackend();
     bool readNvidiaGpuStats();
     bool readAmdGpuStats();
+    bool readIntelGpuStats();
 };
 
 class SystemMonitor : public QObject {
