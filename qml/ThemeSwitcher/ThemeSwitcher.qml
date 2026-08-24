@@ -49,6 +49,9 @@ PanelWindow {
             window.wallpapers = []
             wallpaperModel.clear()
         }
+        onExited: (exitCode) => {
+            wallpaperModel.append({ filePath: "", isRandom: true })
+        }
     }
 
     ListModel {
@@ -79,7 +82,17 @@ PanelWindow {
 
         function confirmSelection() {
             if (wallpaperModel.count > 0 && focusedIndex >= 0 && focusedIndex < wallpaperModel.count) {
-                let path = wallpaperModel.get(focusedIndex).filePath
+                let entry = wallpaperModel.get(focusedIndex)
+                let path
+
+                if (entry.isRandom) {
+                    if (window.wallpapers.length === 0) return
+                    let randomIdx = Math.floor(Math.random() * window.wallpapers.length)
+                    path = window.wallpapers[randomIdx]
+                } else {
+                    path = entry.filePath
+                }
+
                 let scriptPath = Quickshell.env("WISP_SHARE_DIR") + "/scripts/change_wallpaper.sh"
                 wallpaperProcess.command = ["bash", scriptPath, path]
                 wallpaperProcess.running = true
@@ -141,10 +154,16 @@ PanelWindow {
                     currentIndex: window.focusedIndex
 
                     Keys.onLeftPressed: {
-                        if (count > 0) window.focusedIndex = Math.max(0, window.focusedIndex - 1)
+                        if (count > 0) {
+                            window.focusedIndex = (window.focusedIndex - 1 + count) % count
+                            listView.positionViewAtIndex(window.focusedIndex, ListView.Contain)
+                        }
                     }
                     Keys.onRightPressed: {
-                        if (count > 0) window.focusedIndex = Math.min(count - 1, window.focusedIndex + 1)
+                        if (count > 0) {
+                            window.focusedIndex = (window.focusedIndex + 1) % count
+                            listView.positionViewAtIndex(window.focusedIndex, ListView.Contain)
+                        }
                     }
 
                     // Allow mouse wheel scrolling and clicking items directly
@@ -167,10 +186,30 @@ PanelWindow {
                             Image {
                                 anchors.fill: parent
                                 anchors.margins: 4
-                                source: "file://" + filePath
+                                source: filePath ? "file://" + filePath : ""
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 cache: true
+                                visible: !isRandom
+                            }
+
+                            ColumnLayout {
+                                anchors.centerIn: parent
+                                spacing: 6
+                                visible: isRandom === true
+
+                                Text {
+                                    text: "🎲"
+                                    font.pixelSize: 32
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+                                Text {
+                                    text: "Random"
+                                    color: Colors.colors.foreground
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
                             }
 
                             MouseArea {
@@ -185,7 +224,7 @@ PanelWindow {
                 }
 
                 Text {
-                    text: "Use ← / → arrows to navigate, Enter to confirm, Esc to close"
+                    text: "Use ← / → arrows to navigate (wraps around), Enter to confirm, Esc to close"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 12
                     Layout.alignment: Qt.AlignHCenter
