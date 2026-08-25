@@ -243,10 +243,14 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         wisp::log::info("using extra QML module path " + modulePath);
     }
     importPath += WISP_QML_IMPORT_PATH;
+
     if (const char *existing = std::getenv("QML2_IMPORT_PATH"); existing && *existing) {
-        importPath += ':';
-        importPath += existing;
+        wisp::log::warning(
+            "QML2_IMPORT_PATH is set in the environment (" + std::string(existing) +
+            "); ignoring it for the installed module path to avoid shadowing " +
+            std::string(WISP_QML_IMPORT_PATH));
     }
+
     setenv("QML2_IMPORT_PATH", importPath.c_str(), 1);
     setenv(wisp::env::kShareDir, WISP_SHARE_DIR, 0);
 
