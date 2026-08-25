@@ -248,7 +248,7 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         importPath += existing;
     }
     setenv("QML2_IMPORT_PATH", importPath.c_str(), 1);
-    setenv(wisp::env::kShareDir, WISP_SHARE_DIR, 1);
+    setenv(wisp::env::kShareDir, WISP_SHARE_DIR, 0);
 
     installSupervisorSignalHandlers();
     writePidFile(getpid());

@@ -1,6 +1,12 @@
-# Wisp
+<div align="center">
+  <h1>Wisp</h1>
+  <img src="assets/wisp.svg" width="10%">
+</div>
 
-Wisp is a Shell for Arch + Hyprland. 
+<div align="center">
+<text>Wisp is a Shell for Arch + Hyprland.</text>
+</div>
+
 
 ## Dependencies
 

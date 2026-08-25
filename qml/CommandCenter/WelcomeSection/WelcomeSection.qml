@@ -2,6 +2,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Io
 import "../../Colors"
 
@@ -51,6 +52,15 @@ ColumnLayout {
             repeat: true
             onTriggered: greetingText.text = root.greeting()
         }
+    }
+
+    Image {
+        id: mascot
+        Layout.alignment: Qt.AlignHCenter
+        Layout.topMargin: 10
+        source: Quickshell.env("WISP_SHARE_DIR") + "/assets/wisp.svg"
+        sourceSize.width: 256
+        fillMode: Image.PreserveAspectFit
     }
 
     Item {

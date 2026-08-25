@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 14 256 256">
+  <defs>
+    <linearGradient id="flame" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#cc64ef"/>
+      <stop offset="38%" stop-color="#c94446"/>
+      <stop offset="78%" stop-color="#970522"/>
+      <stop offset="100%" stop-color="#b24c32"/>
+    </linearGradient>
+    <linearGradient id="tail" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#970522" stop-opacity=".95"/>
+      <stop offset="100%" stop-color="#5a118b" stop-opacity=".15"/>
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="soft">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <!-- Main flame -->
+  <path d="M128 39
+           C111 62 103 78 109 97
+           C91 86 76 105 78 128
+           C79 151 93 177 111 190
+           C120 197 121 207 116 220
+           C113 228 119 239 128 245
+           C137 239 143 228 140 219
+           C135 205 137 198 147 190
+           C165 176 177 151 178 128
+           C179 103 163 84 147 96
+           C151 73 140 54 128 39 Z"
+        fill="url(#flame)"
+        stroke="#370621"
+        stroke-width="0.5"
+        stroke-opacity=".65"/>
+
+  <!-- Inner flame -->
+  <path d="M128 91
+           C118 106 113 117 118 130
+           C108 126 102 139 105 151
+           C108 165 117 176 128 184
+           C139 176 148 165 151 151
+           C154 138 147 126 138 130
+           C142 114 136 101 128 91 Z"
+        fill="#ee88a5"
+        opacity=".72"/>
+
+  <!-- Face -->
+  <ellipse cx="109" cy="151" rx="7" ry="11" fill="#41063b"/>
+  <ellipse cx="147" cy="151" rx="7" ry="11" fill="#41063b"/>
+  <circle cx="111" cy="147" r="2.2" fill="#ffefea"/>
+  <circle cx="149" cy="147" r="2.2" fill="#ffefea"/>
+
+  <!-- Tiny smile -->
+  <path d="M119 168 Q128 176 137 168"
+        fill="none"
+        stroke="#41063b"
+        stroke-width="4"
+        stroke-linecap="round"/>
+</svg>
