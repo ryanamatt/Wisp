@@ -1,5 +1,3 @@
-// qml/CommandCenter/CommandCenter.qml
-
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -47,20 +45,13 @@ PanelWindow {
 
         Keys.onEscapePressed: GlobalState.commandCenter.close()
 
-        // Dim Screen behind
-        Rectangle {
-            anchors.fill: parent
-            color: Qt.rgba(Colors.colors.surfaceAlt.r, Colors.colors.surfaceAlt.g, Colors.colors.surfaceAlt.b, 0.2)
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: GlobalState.commandCenter.close()
-            }    
-        }
-
         Rectangle {
             id: winRect 
-            anchors.centerIn: parent
+            
+            // Initial positioning (centered by default when first rendered)
+            x: (parent.width - width) / 2
+            y: (parent.height - height) / 2
+            
             width: Math.min(800, parent.width - 80)
             height: Math.min(600, parent.height - 80)
             radius: 14
@@ -68,10 +59,17 @@ PanelWindow {
             border.color: Colors.colors.border
             border.width: 2
 
-            // Swallow clicks so the dim screen's MouseArea doesn't see them
+            // Swallow clicks so the background MouseArea doesn't trigger a close when clicking inside
             MouseArea {
                 anchors.fill: parent
                 onClicked: (mouse) => mouse.accepted = true
+            }
+
+            DragHandler {
+                id: dragHandler
+                // Restrict dragging to stay within the parent window bounds
+                target: winRect
+                cursorShape: Qt.SizeAllCursor
             }
 
             RowLayout {
@@ -196,7 +194,6 @@ PanelWindow {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        // sourceComponent: commandCenter.sectionComponents[commandCenter.currentSection.id]
                         source: commandCenter.sectionFile(commandCenter.currentSection.id)
                     }
                 }
@@ -204,5 +201,5 @@ PanelWindow {
             }
         }
 
-    } // commandCenter
+    } 
 }
