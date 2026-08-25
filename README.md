@@ -25,6 +25,10 @@ Wisp is a Shell for Arch + Hyprland.
 * cliphist
 * wl-clipboard
 
+</td><td>
+
+* hyprsunset
+
 </td></tr></table>
 
 ## Install
@@ -95,6 +99,7 @@ Every widget below can be controlled with `wisp open <target>`, `wisp close <tar
 | `battery` | Battery widget |
 | `themeSwitcher` | Theme/wallpaper switcher |
 | `workspaceSwitcher` | Workspace switcher |
+| `commandCenter` | Command Center |
 
 ## Configuration
 
