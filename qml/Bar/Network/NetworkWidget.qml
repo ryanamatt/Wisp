@@ -13,9 +13,10 @@ BarWidgetContainer {
 
     required property var screen
 
-    // Polled independently of the popup so the bar icon stays accurate
+    // Shared status now lives in NetworkSingleton, polled centrally instead
+    // of once per monitor, so the bar icon on every screen stays accurate
     // even while the popup is closed.
-    property string connectionType: "none" // "ethernet" | "wifi" | "none"
+    readonly property string connectionType: NetworkSingleton.connectionType
 
     icon.text: connectionType === "ethernet" ? "\udb80\ude01" : "\uf1eb"
     icon.color: connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.foreground
@@ -37,58 +38,6 @@ BarWidgetContainer {
         } else {
             popup.closePopup()
             releaseFocusGrab()
-        }
-    }
-
-    // Lightweight status poll, independent from the popup's own (more
-    // detailed) refresh so the pill icon reflects reality at a glance.
-    function splitNmcli(line) {
-        const fields = []
-        let current = ""
-        for (let i = 0; i < line.length; i++) {
-            const ch = line[i]
-            if (ch === "\\" && i + 1 < line.length) {
-                current += line[i + 1]
-                i++
-            } else if (ch === ":") {
-                fields.push(current)
-                current = ""
-            } else {
-                current += ch
-            }
-        }
-        fields.push(current)
-        return fields
-    }
-
-    Timer {
-        interval: 5000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: statusPollProc.running = true
-    }
-
-    Process {
-        id: statusPollProc
-        command: ["nmcli", "-t", "-f", "TYPE,STATE", "device", "status"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let ethernetConnected = false
-                let wifiConnected = false
-
-                for (const raw of this.text.split("\n")) {
-                    if (raw.length === 0) continue
-                    const f = networkWidget.splitNmcli(raw)
-                    if (f.length < 2) continue
-                    const [type, state] = f
-
-                    if (type === "ethernet" && state === "connected") ethernetConnected = true
-                    if (type === "wifi" && state === "connected") wifiConnected = true
-                }
-
-                networkWidget.connectionType = ethernetConnected ? "ethernet" : (wifiConnected ? "wifi" : "none")
-            }
         }
     }
 
