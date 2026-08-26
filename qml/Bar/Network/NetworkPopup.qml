@@ -13,26 +13,25 @@ BarPopup {
 
     signal requestClose()
 
-    // ----- Status -----
-    property string connectionType: "none"   // "ethernet" | "wifi" | "none"
-    property string wifiDevice: ""
-    property string ethernetConnectionName: ""
-    property string activeSsid: ""
-    property bool wifiRadioOn: true
-    property bool busy: false
+    // ----- Status (shared via NetworkSingleton so it stays in sync across monitors) -----
+    readonly property string connectionType: NetworkSingleton.connectionType
+    readonly property string wifiDevice: NetworkSingleton.wifiDevice
+    readonly property string ethernetConnectionName: NetworkSingleton.ethernetConnectionName
+    readonly property string activeSsid: NetworkSingleton.activeSsid
+    readonly property bool wifiRadioOn: NetworkSingleton.wifiRadioOn
+    readonly property bool busy: NetworkSingleton.busy
 
-    // ----- Wifi list -----
-    property var networks: []
+    // ----- Wifi list (shared) -----
+    readonly property var networks: NetworkSingleton.networks
 
-    // ----- Inline connect form -----
+    // ----- Inline connect form (kept local: it's this popup's own in-progress input) -----
     property string connectingSsid: ""
     property string passwordInput: ""
-    property string statusMessage: ""
+    readonly property string statusMessage: NetworkSingleton.statusMessage
 
     readonly property bool showingConnectForm: connectingSsid.length > 0
 
     function resetSelection() {
-        networkPopup.statusMessage = ""
         networkPopup.connectingSsid = ""
         networkPopup.passwordInput = ""
     }
@@ -41,50 +40,23 @@ BarPopup {
         networkPopup.requestClose()
     }
 
-    // nmcli -t output escapes literal ':' inside a field as '\:'. Split by
-    // hand instead of a naive line.split(":") so SSIDs/names with colons
-    // survive intact.
-    function splitNmcli(line) {
-        const fields = []
-        let current = ""
-        for (let i = 0; i < line.length; i++) {
-            const ch = line[i]
-            if (ch === "\\" && i + 1 < line.length) {
-                current += line[i + 1]
-                i++
-            } else if (ch === ":") {
-                fields.push(current)
-                current = ""
-            } else {
-                current += ch
-            }
-        }
-        fields.push(current)
-        return fields
-    }
-
     function refreshAll() {
-        statusProc.running = true
-        radioProc.running = true
-        refreshWifiList()
+        NetworkSingleton.refreshAll()
     }
 
     function refreshWifiList() {
-        wifiListProc.running = true
+        NetworkSingleton.refreshWifiList()
     }
 
     function rescan() {
-        networkPopup.busy = true
-        rescanProc.running = true
+        NetworkSingleton.rescan()
     }
 
     function toggleWifiRadio() {
-        radioToggleProc.command = ["nmcli", "radio", "wifi", networkPopup.wifiRadioOn ? "off" : "on"]
-        radioToggleProc.running = true
+        NetworkSingleton.toggleWifiRadio()
     }
 
     function beginConnect(ssid) {
-        networkPopup.statusMessage = ""
         networkPopup.passwordInput = ""
         networkPopup.connectingSsid = ssid
     }
@@ -95,156 +67,27 @@ BarPopup {
     }
 
     function connectOpen(ssid) {
-        networkPopup.statusMessage = ""
-        connectProc.ssid = ssid
-        connectProc.command = ["nmcli", "device", "wifi", "connect", ssid]
-        connectProc.running = true
+        NetworkSingleton.connectOpen(ssid)
     }
 
     function submitConnect() {
-        const ssid = networkPopup.connectingSsid
-        connectProc.ssid = ssid
-        connectProc.command = ["nmcli", "device", "wifi", "connect", ssid, "password", networkPopup.passwordInput]
-        connectProc.running = true
+        NetworkSingleton.connectWithPassword(networkPopup.connectingSsid, networkPopup.passwordInput)
     }
 
     function disconnectCurrent() {
-        if (networkPopup.wifiDevice.length === 0)
-            return
-        disconnectProc.command = ["nmcli", "device", "disconnect", networkPopup.wifiDevice]
-        disconnectProc.running = true
+        NetworkSingleton.disconnectCurrent()
     }
 
-    // ----- Backing processes -----
-
-    Process {
-        id: statusProc
-        command: ["nmcli", "-t", "-f", "DEVICE,TYPE,STATE,CONNECTION", "device", "status"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let ethernetConnected = false
-                let ethernetName = ""
-                let wifiDev = ""
-                let wifiConnected = false
-                let wifiName = ""
-
-                for (const raw of this.text.split("\n")) {
-                    if (raw.length === 0) continue
-                    const f = networkPopup.splitNmcli(raw)
-                    if (f.length < 4) continue
-                    const [device, type, state, connection] = f
-
-                    if (type === "ethernet" && state === "connected") {
-                        ethernetConnected = true
-                        ethernetName = connection
-                    }
-                    if (type === "wifi") {
-                        wifiDev = device
-                        if (state === "connected") {
-                            wifiConnected = true
-                            wifiName = connection
-                        }
-                    }
-                }
-
-                networkPopup.wifiDevice = wifiDev
-                networkPopup.ethernetConnectionName = ethernetName
-                networkPopup.activeSsid = wifiConnected ? wifiName : ""
-                networkPopup.connectionType = ethernetConnected ? "ethernet" : (wifiConnected ? "wifi" : "none")
-            }
-        }
-    }
-
-    Process {
-        id: radioProc
-        command: ["nmcli", "-t", "-f", "WIFI", "radio"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                networkPopup.wifiRadioOn = this.text.trim().toLowerCase().startsWith("enabled")
-            }
-        }
-    }
-
-    Process {
-        id: radioToggleProc
-        onExited: {
-            radioProc.running = true
-            networkPopup.refreshWifiList()
-        }
-    }
-
-    Process {
-        id: wifiListProc
-        command: ["nmcli", "-t", "-f", "IN-USE,SIGNAL,SECURITY,SSID", "device", "wifi", "list"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const seen = new Set()
-                const list = []
-
-                for (const raw of this.text.split("\n")) {
-                    if (raw.length === 0) continue
-                    const f = networkPopup.splitNmcli(raw)
-                    if (f.length < 4) continue
-
-                    const inUse = f[0].trim() === "*"
-                    const signal = parseInt(f[1], 10) || 0
-                    const security = f[2]
-                    const ssid = f.slice(3).join(":")
-
-                    if (ssid.length === 0) continue
-                    if (seen.has(ssid)) continue
-                    seen.add(ssid)
-
-                    list.push({
-                        ssid: ssid,
-                        signal: signal,
-                        secured: security.length > 0 && security !== "--",
-                        inUse: inUse
-                    })
-                }
-
-                list.sort((a, b) => {
-                    if (a.inUse !== b.inUse) return a.inUse ? -1 : 1
-                    return b.signal - a.signal
-                })
-
-                networkPopup.networks = list
-                networkPopup.busy = false
-            }
-        }
-    }
-
-    Process {
-        id: rescanProc
-        command: ["nmcli", "device", "wifi", "rescan"]
-        onExited: rescanTimer.start()
-    }
-
-    // Rescan needs a beat before the results settle.
-    Timer {
-        id: rescanTimer
-        interval: 1500
-        onTriggered: networkPopup.refreshWifiList()
-    }
-
-    Process {
-        id: connectProc
-        property string ssid: ""
-        onExited: (exitCode) => {
-            if (exitCode === 0) {
-                networkPopup.statusMessage = ""
+    // Only close the inline form on a successful connect; on failure it
+    // stays open so the person can see statusMessage and retry.
+    Connections {
+        target: NetworkSingleton
+        function onConnectResult(success, ssid) {
+            if (success && networkPopup.connectingSsid === ssid) {
                 networkPopup.connectingSsid = ""
                 networkPopup.passwordInput = ""
-            } else {
-                networkPopup.statusMessage = "Couldn't connect to " + connectProc.ssid + ". Check the password and try again."
             }
-            networkPopup.refreshAll()
         }
-    }
-
-    Process {
-        id: disconnectProc
-        onExited: networkPopup.refreshAll()
     }
 
     Keys.onEscapePressed: {
