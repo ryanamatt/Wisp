@@ -18,7 +18,7 @@ FloatingWindow {
 
     implicitWidth: 800
     implicitHeight: 600
-    minimumSize: Qt.size(500, 400)
+    minimumSize: Qt.size(800, 600)
 
     color: "transparent"
 
