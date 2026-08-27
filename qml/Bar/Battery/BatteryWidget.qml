@@ -29,7 +29,7 @@ BarWidgetContainer {
     icon.anchors.centerIn: undefined
     icon.anchors.horizontalCenter: batteryWidget.horizontalCenter
     icon.anchors.verticalCenter: batteryWidget.verticalCenter
-    icon.font.pixelSize: implicitWidth * 0.2
+    icon.font.pixelSize: batteryWidget.currentAccessory.charging ? implicitWidth * 0.15 : implicitWidth * 0.2
     icon.font.family: "Noto Sans Mono"
 
     icon.text: batteryWidget.currentAccessory
