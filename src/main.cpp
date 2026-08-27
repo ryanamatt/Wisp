@@ -46,6 +46,7 @@ void printUsage(const char *argv0) {
         "  run                 Launch the bar\n"
         "  kill                Stop a running wisp instance\n"
         "  reload              Restart the quickshell process of a running wisp instance\n"
+        "  log                 Prints the contents of the log file to the terminal\n"
         "  open <target>       Open a widget/popup, e.g. `wisp open themeSwitcher`\n"
         "  close <target>      Close a widget/popup, e.g. `wisp close calendar`\n"
         "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
@@ -388,6 +389,27 @@ int reloadBar() {
     return 0;
 }
 
+int printLog() {
+    std::filesystem::path logPath;
+    if (const char *xdgState = std::getenv("XDG_STATE_HOME"); xdgState && *xdgState)
+        logPath = std::filesystem::path(xdgState) / "wisp" / "wisp.log";
+    else if (const char *home = std::getenv("HOME"); home && *home)
+        logPath = std::filesystem::path(home) / ".local" / "state" / "wisp" / "wisp.log";
+    else {
+        std::cerr << "wisp: unable to determine home or state directory for log path\n";
+        return 1;
+    }
+
+    std::ifstream logFile(logPath);
+    if (!logFile) {
+        std::cerr << "wisp: could not open log file at " << logPath << ": " << std::strerror(errno) << "\n";
+        return 1;
+    }
+
+    std::cout << logFile.rdbuf();
+    return 0;
+}
+
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -396,7 +418,7 @@ int main(int argc, char *argv[]) {
     std::string modulePath;
     std::vector<std::string> args(argv + 1, argv + argc);
 
-    enum class Command { None, Run, Kill, Reload, Ipc };
+    enum class Command { None, Run, Kill, Reload, Log, Ipc };
     Command command = Command::None;
     bool disown = false;
     std::string ipcAction;
@@ -453,6 +475,10 @@ int main(int argc, char *argv[]) {
             command = Command::Reload;
             continue;
         }
+        if (arg == "log") {
+            command = Command::Log;
+            continue;
+        }
         if (arg == "open" || arg == "close" || arg == "toggle") {
             command = Command::Ipc;
             ipcAction = arg;
@@ -480,6 +506,8 @@ int main(int argc, char *argv[]) {
             return killBar();
         case Command::Reload:
             return reloadBar();
+        case Command::Log:
+            return printLog();
         case Command::Ipc:
             return wisp::ipc::exec(qmlDir, ipcTarget, ipcAction);
         case Command::None:
