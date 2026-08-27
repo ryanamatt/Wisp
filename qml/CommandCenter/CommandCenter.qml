@@ -1,3 +1,5 @@
+//qml/CommandCenter/CommandCenter.qml
+
 import Quickshell
 import Quickshell.Io
 import QtQuick
