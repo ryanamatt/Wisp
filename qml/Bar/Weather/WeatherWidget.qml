@@ -60,5 +60,5 @@ BarWidgetContainer {
     }
 
     icon.text: getWeatherIcon(weatherCode) + " " + weatherWidget.weatherTemp + "\ue33e"
-    icon.font.pixelSize: implicitWidth * 0.3
+    icon.font.pixelSize: implicitWidth * 0.25
 }
