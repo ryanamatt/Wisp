@@ -9,12 +9,16 @@ import "SystemSection"
 import "WelcomeSection"
 import Wisp.Version
 
-PanelWindow {
+FloatingWindow {
     id: commandCenter
 
-    anchors { top: true; bottom: true; left: true; right: true }
+    title: "Command Center"
+
+    implicitWidth: 800
+    implicitHeight: 600
+    minimumSize: Qt.size(500, 400)
+
     color: "transparent"
-    focusable: true
 
     // Starts closed by default, opens only when IPC command triggers it
     visible: GlobalState.commandCenter.isOpen
@@ -46,30 +50,19 @@ PanelWindow {
         Keys.onEscapePressed: GlobalState.commandCenter.close()
 
         Rectangle {
-            id: winRect 
-            
-            // Initial positioning (centered by default when first rendered)
-            x: (parent.width - width) / 2
-            y: (parent.height - height) / 2
-            
-            width: Math.min(800, parent.width - 80)
-            height: Math.min(600, parent.height - 80)
+            id: winRect
+
+            anchors.fill: parent
             radius: 14
             color: Colors.colors.background
             border.color: Colors.colors.border
             border.width: 2
 
-            // Swallow clicks so the background MouseArea doesn't trigger a close when clicking inside
             MouseArea {
                 anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                onPressed: (mouse) => commandCenter.startSystemMove()
                 onClicked: (mouse) => mouse.accepted = true
-            }
-
-            DragHandler {
-                id: dragHandler
-                // Restrict dragging to stay within the parent window bounds
-                target: winRect
-                cursorShape: Qt.SizeAllCursor
             }
 
             RowLayout {
