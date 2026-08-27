@@ -86,6 +86,7 @@ void writePidFile(pid_t pid) {
     std::ofstream out(pidFilePath(), std::ios::trunc);
     if (out) {
         out << pid << "\n";
+        wisp::log::debug("wrote pid file " + pidFilePath().string() + " (pid " + std::to_string(pid) + ")");
     } else {
         wisp::log::warning("could not write pid file at " + pidFilePath().string());
     }
@@ -97,6 +98,11 @@ void removePidFileIfOwnedBySelf() {
     if (in && (in >> recorded) && recorded == getpid()) {
         std::error_code ec;
         std::filesystem::remove(pidFilePath(), ec);
+        if (ec) {
+            wisp::log::warning("could not remove pid file " + pidFilePath().string() + ": " + ec.message());
+        } else {
+            wisp::log::debug("removed pid file " + pidFilePath().string());
+        }
     }
 }
 
@@ -144,8 +150,15 @@ std::optional<pid_t> findRunningWispPid() {
         if (kill(recorded, 0) == 0 && isProcessNamedWisp(recorded)) {
             return recorded;
         }
+        wisp::log::debug(
+            "pid file " + pidFilePath().string() + " has stale pid " + std::to_string(recorded) +
+            ", falling back to /proc scan");
     }
-    return scanProcForWisp();
+    auto found = scanProcForWisp();
+    if (found) {
+        wisp::log::debug("found running wisp instance via /proc scan (pid " + std::to_string(*found) + ")");
+    }
+    return found;
 }
 
 void handleSupervisorSignal(int sig) {
@@ -175,12 +188,15 @@ void daemonize() {
     }
     if (pid > 0) {
         // Parent: nothing left to do, hand control back to the shell.
+        wisp::log::debug("disowned, parent exiting (child pid " + std::to_string(pid) + ")");
         _exit(0);
     }
     // Child: start a new session so we're detached from the controlling
     // terminal entirely, not just backgrounded within the old one.
     if (setsid() < 0) {
         wisp::log::warning(std::string("setsid failed: ") + std::strerror(errno));
+    } else {
+        wisp::log::debug("disowned, running detached (pid " + std::to_string(getpid()) + ")");
     }
 }
 
@@ -202,6 +218,8 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
         args.push_back(const_cast<char *>(qmlDir.c_str()));
         args.push_back(nullptr);
 
+        wisp::log::debug("exec: quickshell -c " + qmlDir);
+
         execvp("quickshell", args.data());
 
         // Only reached if execvp itself failed.
@@ -218,6 +236,10 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
 // lifetime of the bar, which is what lets `pgrep wisp`, `wisp kill`,
 // and `wisp reload` find and control it.
 int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath) {
+    wisp::log::debug(
+        "runBar: qmlDir=" + qmlDir + " configPath=" + configPath +
+        " modulePath=" + (modulePath.empty() ? "<none>" : modulePath));
+
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";
 
     if (!std::filesystem::exists(shellQml)) {
@@ -251,8 +273,21 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
             std::string(WISP_QML_IMPORT_PATH));
     }
 
+    wisp::log::debug("setting QML2_IMPORT_PATH=" + importPath);
     setenv("QML2_IMPORT_PATH", importPath.c_str(), 1);
+
+    if (const char *existingShareDir = std::getenv(wisp::env::kShareDir); existingShareDir && *existingShareDir) {
+        wisp::log::debug(
+            std::string(wisp::env::kShareDir) + " already set in the environment (" +
+            existingShareDir + "); leaving it as-is");
+    } else {
+        wisp::log::debug(std::string("setting ") + wisp::env::kShareDir + "=" + WISP_SHARE_DIR);
+    }
     setenv(wisp::env::kShareDir, WISP_SHARE_DIR, 0);
+
+    wisp::log::info(
+        "environment ready: QML2_IMPORT_PATH=" + std::string(std::getenv("QML2_IMPORT_PATH")) +
+        " " + wisp::env::kShareDir + "=" + std::getenv(wisp::env::kShareDir));
 
     installSupervisorSignalHandlers();
     writePidFile(getpid());
