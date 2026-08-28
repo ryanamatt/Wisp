@@ -28,4 +28,6 @@ void error(const std::string &category, const std::string &message);
 // on first call if nothing has logged yet.
 std::string filePath();
 
+std::string colorizeLine(const std::string &line);
+
 } // namespace wisp::log
