@@ -109,6 +109,17 @@ const char *levelColor(Level level) {
     return "";
 }
 
+// Same palette as levelColor(), keyed by the text label that write()
+// puts in the file (e.g. "INFO ") instead of the Level enum, so it can
+// be used to recolor lines read back out of the log file.
+const char *colorForLabel(const std::string &label) {
+    if (label == "DEBUG") return levelColor(Level::Debug);
+    if (label == "INFO")  return levelColor(Level::Info);
+    if (label == "WARN")  return levelColor(Level::Warning);
+    if (label == "ERROR") return levelColor(Level::Error);
+    return "";
+}
+
 void write(Level level, const std::string &category, const std::string &message) {
     std::lock_guard<std::mutex> lock(g_mutex);
     ensureInitialized();
@@ -147,6 +158,30 @@ std::string filePath() {
     std::lock_guard<std::mutex> lock(g_mutex);
     ensureInitialized();
     return g_path.string();
+}
+
+std::string colorizeLine(const std::string &line) {
+    // Lines look like: "[2026-08-28 10:50:51.835] [INFO ] [wisp] message"
+    // The level tag is the second bracketed field. Find it without
+    // assuming exact spacing so tweaks to timestamp() don't break this.
+    const auto firstClose = line.find(']');
+    if (firstClose == std::string::npos) return line;
+
+    const auto secondOpen = line.find('[', firstClose);
+    if (secondOpen == std::string::npos) return line;
+
+    const auto secondClose = line.find(']', secondOpen);
+    if (secondClose == std::string::npos) return line;
+
+    std::string label = line.substr(secondOpen + 1, secondClose - secondOpen - 1);
+    // Trim padding spaces, e.g. "INFO " -> "INFO".
+    const auto lastNonSpace = label.find_last_not_of(' ');
+    if (lastNonSpace != std::string::npos) label.erase(lastNonSpace + 1);
+
+    const char *color = colorForLabel(label);
+    if (!*color) return line;
+
+    return std::string(color) + line + "\033[0m";
 }
 
 } // namespace wisp::log

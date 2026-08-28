@@ -1,6 +1,7 @@
 // src/main.cpp
 
 #include <cerrno>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <csignal>
@@ -406,7 +407,15 @@ int printLog() {
         return 1;
     }
 
-    std::cout << logFile.rdbuf();
+    // Only colorize when writing straight to a terminal, so piping
+    // `wisp log` into grep/less/a file doesn't get littered with
+    // escape codes.
+    const bool colorize = isatty(fileno(stdout));
+
+    std::string line;
+    while (std::getline(logFile, line)) {
+        std::cout << (colorize ? wisp::log::colorizeLine(line) : line) << "\n";
+    }
     return 0;
 }
 
