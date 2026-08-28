@@ -5,6 +5,7 @@ import "Bar"
 import "ThemeSwitcher"
 import "WorkspaceSwitcher"
 import "CommandCenter"
+import "Screenshot"
 
 Scope {
     Bar {}
@@ -14,4 +15,6 @@ Scope {
     WorkspaceSwitcher {}
 
     CommandCenter {}
+
+    Screenshot {}
 }
