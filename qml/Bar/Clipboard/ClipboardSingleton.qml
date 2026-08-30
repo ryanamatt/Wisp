@@ -9,16 +9,12 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    // ----- Shared state (was previously duplicated per-monitor in ClipboardPopup) -----
-
     property var clipboardList: []
     property bool cliphistEnabled: true
 
     // Maps a cliphist entry id -> decoded thumbnail file path on disk.
     // Populated lazily by decodeToFile() as image entries scroll into view.
     property var imageCache: ({})
-
-    // ----- Public API -----
 
     function refreshClipboard() {
         getClipboard.running = true
@@ -76,7 +72,7 @@ Singleton {
         proc.running = true
     }
 
-    // ----- Backing processes (single instance, shared across all screens) -----
+    // ----- Backing processes -----
 
     Process {
         id: getClipboard
