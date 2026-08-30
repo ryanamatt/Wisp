@@ -44,7 +44,6 @@ BarPopup {
     readonly property MprisPlayer activePlayer: {
         for (let i = 0; i < playerList.length; i++) {
             if (playerList[i].playbackState === MprisPlaybackState.Playing) {
-                cachedPlayer = playerList[i]
                 return playerList[i]
             }
         }
@@ -53,9 +52,15 @@ BarPopup {
             return cachedPlayer
         }
         
-        cachedPlayer = playerList.length > 0 ? playerList[0] : null
-        return cachedPlayer
+        return playerList.length > 0 ? playerList[0] : null;
     }
+
+    onActivePlayerChanged: {
+        if (activePlayer !== null) {
+            cachedPlayer = activePlayer;
+        }
+    }
+
     readonly property bool hasPlayer: activePlayer !== null
 
     function formatTime(seconds) {
