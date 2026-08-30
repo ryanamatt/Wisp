@@ -107,7 +107,7 @@ FloatingWindow {
                             readonly property bool isActive: commandCenter.currentIndex === index
 
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 20
+                            Layout.preferredHeight: 30
                             Layout.alignment: Qt.AlignTop
 
                             color: columnCard.isActive ? Colors.colors.accent : Colors.colors.surfaceAlt
