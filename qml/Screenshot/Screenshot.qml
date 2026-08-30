@@ -14,8 +14,8 @@ FloatingWindow {
     title: "Wisp Screenshot"
 
     implicitWidth: 300
-    implicitHeight: 100
-    minimumSize: Qt.size(400, 200)
+    implicitHeight: 150
+    minimumSize: Qt.size(300, 150)
 
     color: "transparent"
 
@@ -39,22 +39,17 @@ FloatingWindow {
             border.color: Colors.colors.border
             border.width: 2
 
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                onPressed: (mouse) => screenshot.startSystemMove()
+                onClicked: (mouse) => mouse.accepted = true
+            }
+
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 2
-
-                Text {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: screenshot.implicitHeight / 5
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-
-                    color: Colors.colors.accent
-                    text: "Wisp Screenshot"
-                    font.bold: true
-                    font.pixelSize: Layout.preferredHeight * 0.75
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
+                anchors.topMargin: 10
 
                 TabBar {
                     id: tabBar

@@ -37,7 +37,15 @@ elif [ "$WINDOW" = true ]; then
   GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
   grim -g "$GEOMETRY" - > "$TMP_FILE"
 else
-  grim -g "$(slurp)" - > "$TMP_FILE"
+  sleep 0.25
+  GEOMETRY=$(slurp)
+  if [ -n "$GEOMETRY" ]; then
+    grim -g "$GEOMETRY" - > "$TMP_FILE"
+  else
+    # User cancelled slurp (e.g., pressed ESC)
+    rm "$TMP_FILE"
+    exit 1
+  fi
 fi
 
 wl-copy < "$TMP_FILE"
