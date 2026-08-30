@@ -14,6 +14,10 @@ Singleton {
     property var clipboardList: []
     property bool cliphistEnabled: true
 
+    // Maps a cliphist entry id -> decoded thumbnail file path on disk.
+    // Populated lazily by decodeToFile() as image entries scroll into view.
+    property var imageCache: ({})
+
     // ----- Public API -----
 
     function refreshClipboard() {
@@ -26,12 +30,50 @@ Singleton {
     }
 
     function deleteEntry(line) {
+        const idMatch = line.match(/^(\d+)/)
+        if (idMatch && root.imageCache[idMatch[1]] !== undefined)
+            delete root.imageCache[idMatch[1]]
+
         deleteProcess.entryLine = line
         deleteProcess.running = true
     }
 
     function clearAll() {
+        root.imageCache = {}
         clearProcess.running = true
+    }
+
+    // Decodes a cliphist "<id>\t[[ binary data ... ]]" line to an image file
+    // on disk and hands the path to onDone(path); onDone("") on failure.
+    function decodeToFile(line, onDone) {
+        const idMatch = line.match(/^(\d+)/)
+        const id = idMatch ? idMatch[1] : line
+
+        if (root.imageCache[id]) {
+            onDone(root.imageCache[id])
+            return
+        }
+
+        const extMatch = line.match(/,\s*([a-zA-Z0-9]+)\s*\]\]\s*$/)
+        const ext = extMatch ? extMatch[1].toLowerCase() : "png"
+        const outPath = "/tmp/wisp-cliphist-thumb-" + id + "." + ext
+
+        const proc = Qt.createQmlObject(
+            'import Quickshell.Io; Process { }',
+            root,
+            "clipboardDecodeProcess"
+        )
+        proc.command = ["bash", "-c", "cliphist decode <<< \"$0\" > \"$1\"", line, outPath]
+        proc.exited.connect(function(exitCode) {
+            if (exitCode === 0) {
+                root.imageCache[id] = outPath
+                onDone(outPath)
+            } else {
+                onDone("")
+            }
+            proc.destroy()
+        })
+        proc.running = true
     }
 
     // ----- Backing processes (single instance, shared across all screens) -----
