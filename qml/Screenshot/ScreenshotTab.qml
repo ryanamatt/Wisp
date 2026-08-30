@@ -52,8 +52,6 @@ Item {
         id: runScreeenshotCommand
     }
 
-    Component.onCompleted: console.log("SCRIPT PATH RESOLVED TO: [" + screenshotTab.scriptPath + "]")
-
     Rectangle {
         anchors.fill: parent
         radius: 14
