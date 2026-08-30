@@ -34,6 +34,8 @@
 </td><td>
 
 * hyprsunset
+* grim
+* slurp
 
 </td></tr></table>
 
