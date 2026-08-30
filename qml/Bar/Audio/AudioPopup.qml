@@ -39,12 +39,22 @@ BarPopup {
 
     // ----- MPRIS: pick whichever player is actually playing -----
     readonly property var playerList: Mpris.players.values
+    property MprisPlayer cachedPlayer: null
+
     readonly property MprisPlayer activePlayer: {
         for (let i = 0; i < playerList.length; i++) {
-            if (playerList[i].playbackState === MprisPlaybackState.Playing)
+            if (playerList[i].playbackState === MprisPlaybackState.Playing) {
+                cachedPlayer = playerList[i]
                 return playerList[i]
+            }
         }
-        return playerList.length > 0 ? playerList[0] : null
+        
+        if (cachedPlayer !== null && playerList.includes(cachedPlayer)) {
+            return cachedPlayer
+        }
+        
+        cachedPlayer = playerList.length > 0 ? playerList[0] : null
+        return cachedPlayer
     }
     readonly property bool hasPlayer: activePlayer !== null
 
