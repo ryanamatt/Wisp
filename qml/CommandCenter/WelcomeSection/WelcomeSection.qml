@@ -1,17 +1,18 @@
-// qml/CommandCenter/WelcomeSection.qml
+// qml/CommandCenter/WelcomeSection/WelcomeSection.qml
 
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import "../../Colors"
+import "../../Effects"
 
 ColumnLayout {
     id: root
 
     anchors.fill: parent
     clip: true
-    spacing: 20
+    spacing: 120
 
     property var userName: ""
 
@@ -58,13 +59,21 @@ ColumnLayout {
         }
     }
 
-    Image {
-        id: mascot
+    Floating {
+        id: mascotFloat
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 10
-        source: Quickshell.env("WISP_SHARE_DIR") + "/assets/wisp.svg"
-        sourceSize.width: 256
-        fillMode: Image.PreserveAspectFit
+
+        amplitude: 12
+        duration: 2400
+        tiltAngle: 2
+
+        Image {
+            id: mascot
+            source: Quickshell.env("WISP_SHARE_DIR") + "/assets/wisp.svg"
+            sourceSize.width: 256
+            fillMode: Image.PreserveAspectFit
+        }
     }
 
     Item {
