@@ -18,13 +18,17 @@ ColumnLayout {
     Process {
         id: getUser
         command: ["bash", "-c", "whoami"]
-        running: true
+        running: false
         stdout: StdioCollector {
             onStreamFinished: {
                 const name = this.text.trim()
                 userName = name.charAt(0).toUpperCase() + name.slice(1)
             }
         }
+    }
+
+    Component.onCompleted: {
+        getUser.running = true
     }
 
     function greeting() {
