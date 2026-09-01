@@ -125,8 +125,7 @@ BarPopup {
                 readonly property bool selected: index === powerMenuPopup.currentIndex
                 readonly property bool confirming: index === powerMenuPopup.confirmingIndex
 
-                // color: selected ? Colors.colors.hover : Colors.colors.backgroundAlt
-                color: confirming ? Colors.colors.success : selected ? Colors.colors.hover : Colors.colors.backgroundAlt
+                color: selected ? Colors.colors.hover : Colors.colors.backgroundAlt
                 border.width: selected ? 3 : 1
                 border.color: powerMenuPopup.colorFor(modelData)
 
@@ -138,7 +137,7 @@ BarPopup {
                         text: confirming ? "C?" : modelData.glyph
                         font.family: "Iosevka Nerd Font Propo"
                         font.pixelSize: 32
-                        color: powerMenuPopup.colorFor(modelData)
+                        color: confirming ? Colors.colors.success : powerMenuPopup.colorFor(modelData)
                         Layout.alignment: Qt.AlignHCenter
                     }
                 }
