@@ -241,8 +241,20 @@ BarPopup {
                         required property string modelData
                         required property int index
 
+                        readonly property string previewText: entryDelegate.modelData.replace(/^\d+\t/, "")
+                        readonly property bool isImage: /^\[\[\s*binary data/i.test(entryDelegate.previewText)
+                        property string imagePath: ""
+
+                        // Friendly label for image entries, e.g. "1.2 MiB · 1920x1080 · png"
+                        readonly property string imageLabel: {
+                            const m = entryDelegate.previewText.match(/binary data\s*([^,\]]+)(?:,\s*(\d+x\d+))?(?:,\s*([a-zA-Z0-9]+))?/i)
+                            if (!m)
+                                return entryDelegate.previewText
+                            return [m[1] ? m[1].trim() : "", m[2], m[3]].filter(Boolean).join(" · ")
+                        }
+
                         width: listView.width
-                        height: 35
+                        height: entryDelegate.isImage ? 52 : 35
                         radius: 6
                         color: itemHover.hovered ? Colors.colors.hover : Colors.colors.surface
 
@@ -250,15 +262,42 @@ BarPopup {
 
                         HoverHandler { id: itemHover }
 
+                        Component.onCompleted: {
+                            if (entryDelegate.isImage) {
+                                ClipboardSingleton.decodeToFile(entryDelegate.modelData, function(path) {
+                                    entryDelegate.imagePath = path
+                                })
+                            }
+                        }
+
                         RowLayout {
                             anchors.fill: parent
                             anchors.leftMargin: 8
                             anchors.rightMargin: 4
-                            spacing: 4
+                            spacing: 8
+
+                            Rectangle {
+                                visible: entryDelegate.isImage
+                                Layout.preferredWidth: 40
+                                Layout.preferredHeight: 40
+                                Layout.alignment: Qt.AlignVCenter
+                                radius: 4
+                                color: Colors.colors.surfaceAlt
+                                clip: true
+
+                                Image {
+                                    anchors.fill: parent
+                                    visible: entryDelegate.imagePath.length > 0
+                                    source: entryDelegate.imagePath.length > 0 ? ("file://" + entryDelegate.imagePath) : ""
+                                    fillMode: Image.PreserveAspectCrop
+                                    asynchronous: true
+                                    smooth: true
+                                }
+                            }
 
                             Text {
                                 Layout.fillWidth: true
-                                text: entryDelegate.modelData.replace(/^\d+\t/, "")
+                                text: entryDelegate.isImage ? entryDelegate.imageLabel : entryDelegate.previewText
                                 color: Colors.colors.foreground
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignVCenter
@@ -268,6 +307,7 @@ BarPopup {
                                 id: deleteButton
                                 implicitWidth: 20
                                 implicitHeight: 20
+                                Layout.alignment: Qt.AlignVCenter
                                 radius: 10
                                 color: deleteHover.hovered ? Colors.colors.error : "transparent"
 
