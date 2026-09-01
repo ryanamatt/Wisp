@@ -10,6 +10,7 @@ import QtQuick.Controls
 import "WorkspaceUtils.js" as WorkspaceUtils
 import "../Colors"
 import "../GlobalState"
+import Wisp.Log
 
 PanelWindow {
     id: mainWindow
@@ -110,7 +111,7 @@ PanelWindow {
                     const idx = WorkspaceUtils.indexOfWorkspaceId(mainWindow.workspaceModel, active.id)
                     if (idx !== -1) rolodexView.currentIndex = idx
                 } catch (e) {
-                    console.log("workspace switcher: couldn't read active workspace")
+                    Logger.error("workspace switcher: couldn't read active workspace")
                 }
             }
         }

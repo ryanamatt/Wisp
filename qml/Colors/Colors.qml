@@ -45,9 +45,7 @@ Singleton {
             try {
                 const parsed = JSON.parse(text())
                 root.colors = Object.assign({}, root.colors, parsed)
-            } catch (e) {
-                console.log("Wisp QuickShell: fail to load colors.")
-            }
+            } catch (e) {}
         }
     }
 }

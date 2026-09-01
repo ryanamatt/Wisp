@@ -27,11 +27,6 @@ PanelWindow {
     Process {
         id: wallpaperProcess
         command: []
-        onExited: (exitCode) => {
-            if (exitCode === 0) {
-                console.log("Wallpaper changed successfully.")
-            }
-        }
     }
 
     Process {
