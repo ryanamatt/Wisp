@@ -36,6 +36,8 @@
 
 namespace {
 
+enum class LogCommand { None, Head, Tail, Clear };
+
 volatile sig_atomic_t g_gotTermSignal = 0;
 volatile sig_atomic_t g_gotReloadSignal = 0;
 
@@ -47,7 +49,7 @@ void printUsage(const char *argv0) {
         "  run                 Launch the bar\n"
         "  kill                Stop a running wisp instance\n"
         "  reload              Restart the quickshell process of a running wisp instance\n"
-        "  log                 Prints the contents of the log file to the terminal\n"
+        "  log [head|tail|clear] [n] Print or manage log contents (default: tail 15 lines)\n"
         "  open <target>       Open a widget/popup, e.g. `wisp open themeSwitcher`\n"
         "  close <target>      Close a widget/popup, e.g. `wisp close calendar`\n"
         "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
@@ -390,7 +392,7 @@ int reloadBar() {
     return 0;
 }
 
-int printLog() {
+int runLogCommand(LogCommand logCommand, int logNum) {
     std::filesystem::path logPath;
     if (const char *xdgState = std::getenv("XDG_STATE_HOME"); xdgState && *xdgState)
         logPath = std::filesystem::path(xdgState) / "wisp" / "wisp.log";
@@ -399,6 +401,16 @@ int printLog() {
     else {
         std::cerr << "wisp: unable to determine home or state directory for log path\n";
         return 1;
+    }
+
+    if (logCommand == LogCommand::Clear) {
+        std::ofstream logFile(logPath, std::ios::trunc);
+        if (!logFile) {
+            std::cerr << "wisp: could not clear log file at " << logPath << ": " << std::strerror(errno) << "\n";
+            return 1;
+        }
+        std::cout << "wisp: cleared log file\n";
+        return 0;
     }
 
     std::ifstream logFile(logPath);
@@ -412,10 +424,25 @@ int printLog() {
     // escape codes.
     const bool colorize = isatty(fileno(stdout));
 
+    std::vector<std::string> lines;
     std::string line;
     while (std::getline(logFile, line)) {
-        std::cout << (colorize ? wisp::log::colorizeLine(line) : line) << "\n";
+        lines.push_back(line);
     }
+
+    size_t start = 0;
+    size_t end = lines.size();
+
+    if (logCommand == LogCommand::Head) end = std::min(size_t(logNum), lines.size());
+    else if (logCommand == LogCommand::Tail) {
+        if (lines.size() > logNum) start = lines.size() - logNum;
+    }
+
+    for (size_t i = start; i < end; ++i) {
+        const std::string &l = lines[i];
+        std::cout << (colorize ? wisp::log::colorizeLine(l) : l) << "\n";
+    }
+
     return 0;
 }
 
@@ -429,9 +456,14 @@ int main(int argc, char *argv[]) {
 
     enum class Command { None, Run, Kill, Reload, Log, Ipc };
     Command command = Command::None;
+
     bool disown = false;
+    
     std::string ipcAction;
     std::string ipcTarget;
+
+    LogCommand logCommand = LogCommand::None;
+    int logNum = 15;
 
     for (size_t i = 0; i < args.size(); ++i) {
         const std::string &arg = args[i];
@@ -486,6 +518,25 @@ int main(int argc, char *argv[]) {
         }
         if (arg == "log") {
             command = Command::Log;
+            if (i + 1 < args.size()) {
+                std::string logArg = args[++i];
+                if (logArg == "head") logCommand = LogCommand::Head;
+                else if (logArg == "tail") logCommand = LogCommand::Tail; 
+                else if (logArg == "clear") logCommand = LogCommand::Clear;
+                else {
+                    std::cerr << "wisp: unknown log argument '" << logArg << "'\n";
+                    return 1;
+                }
+                
+                if (i + 1 < args.size()) {
+                    std::string logNumArg = args[++i];
+                    try { logNum = std::stoi(logNumArg);
+                    } catch (const std::exception & e) {
+                        std::cerr << "wisp: invalid number for log count '" << logNumArg << "'\n";
+                        return 1;
+                    }
+                } 
+            }
             continue;
         }
         if (arg == "open" || arg == "close" || arg == "toggle") {
@@ -516,7 +567,7 @@ int main(int argc, char *argv[]) {
         case Command::Reload:
             return reloadBar();
         case Command::Log:
-            return printLog();
+            return runLogCommand(logCommand, logNum);
         case Command::Ipc:
             return wisp::ipc::exec(qmlDir, ipcTarget, ipcAction);
         case Command::None:
