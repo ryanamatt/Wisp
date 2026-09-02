@@ -56,8 +56,8 @@ BarPopup {
     }
 
     onActivePlayerChanged: {
-        if (activePlayer !== null) {
-            cachedPlayer = activePlayer;
+        if (activePlayer !== null && cachedPlayer !== activePlayer) {
+            Qt.callLater(() => { cachedPlayer = activePlayer; })
         }
     }
 
