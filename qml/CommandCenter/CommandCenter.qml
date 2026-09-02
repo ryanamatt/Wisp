@@ -9,6 +9,7 @@ import "../Colors"
 import "../GlobalState"
 import "SystemSection"
 import "WelcomeSection"
+import "PackagesSection"
 import Wisp.Version
 
 FloatingWindow {
@@ -26,14 +27,9 @@ FloatingWindow {
     visible: GlobalState.commandCenter.isOpen
 
     property var sectionColumns: [
-        {
-            id: "welcome",
-            text: "Welcome"
-        },
-        {
-            id: "system",
-            text: "System"
-        },     
+        { id: "welcome", text: "Welcome" },
+        { id: "system", text: "System" },
+        { id: "packages", text: "Packages" }     
     ]
 
     // Which section card is currently selected
