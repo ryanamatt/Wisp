@@ -59,7 +59,7 @@ ColumnLayout {
         }
     }
 
-    Floating {
+    FloatingEffect {
         id: mascotFloat
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 10
