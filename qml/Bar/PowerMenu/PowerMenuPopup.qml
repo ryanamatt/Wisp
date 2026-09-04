@@ -129,16 +129,24 @@ BarPopup {
                 border.width: selected ? 3 : 1
                 border.color: powerMenuPopup.colorFor(modelData)
 
-                ColumnLayout {
+                RowLayout {
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 2
 
                     Text {
-                        text: confirming ? "C?" : modelData.glyph
+                        text: modelData.glyph
                         font.family: "Iosevka Nerd Font Propo"
-                        font.pixelSize: 32
+                        font.pixelSize: confirming ? 25 : 32
                         color: confirming ? Colors.colors.success : powerMenuPopup.colorFor(modelData)
                         Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Text {
+                        text: "?"
+                        visible: confirming
+                        font.pixelSize: 25
+                        font.bold: true
+                        color: Colors.colors.success  
                     }
                 }
 
