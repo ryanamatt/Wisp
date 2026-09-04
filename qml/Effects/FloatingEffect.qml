@@ -1,4 +1,4 @@
-// qml/Effects/Floating.qml
+// qml/Effects/FloatingEffect.qml
 
 import QtQuick
 
@@ -12,7 +12,7 @@ Item {
     // Horizontal drift, in px (0 disables)
     property real amplitudeX: 0
     // Time for one leg of the motion (up or down), in ms
-    property int duration: 2600
+    property int duration: 800
     // Slight tilt, in degrees (0 disables)
     property real tiltAngle: 0
     // Delay before starting, useful to desync multiple floating items
