@@ -214,6 +214,8 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
         return -1;
     }
 
+    setenv("QS_NO_RELOAD_POPUP", "1", 1);
+
     if (pid == 0) {
         // Child: become quickshell.
         std::vector<char *> args;
