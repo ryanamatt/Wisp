@@ -21,6 +21,10 @@ ColumnLayout {
     property int warnAt: -1
     property int critAt: -1
 
+    property int labelWidth: 100
+    property int beforeTextWidth: 46
+    property int afterTextWidth: 90
+
     // Small helper so every bar's fill color reacts to how "hot" the stat is
     function levelColor() {
         if (barValue >= rootLayout.critAt && rootLayout.critAt !== -1) return Colors.colors.error
@@ -30,9 +34,12 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: 12
+        spacing: 8
 
         RowLayout {
+            Layout.preferredWidth: rootLayout.labelWidth
+            Layout.minimumWidth: rootLayout.labelWidth
+            Layout.maximumWidth: rootLayout.labelWidth
 
             Text {
                 text: rootLayout.icon
@@ -46,13 +53,20 @@ ColumnLayout {
                 color: Colors.colors.foreground
                 font.bold: true
                 font.pixelSize: 14
+                elide: Text.ElideRight
+                Layout.fillWidth: true
             }
         }
 
         Text {
             text: rootLayout.beforeBarText
-            color: currentTempState.color
+            color: rootLayout.levelColor()
             font.pixelSize: 14
+            horizontalAlignment: Text.AlignRight
+            elide: Text.ElideRight
+            Layout.preferredWidth: rootLayout.beforeTextWidth
+            Layout.minimumWidth: rootLayout.beforeTextWidth
+            Layout.maximumWidth: rootLayout.beforeTextWidth
         }
 
         UsageBar {
@@ -66,6 +80,11 @@ ColumnLayout {
             text: rootLayout.afterBarText
             color: Colors.colors.foreground
             font.pixelSize: 12
+            horizontalAlignment: Text.AlignRight
+            elide: Text.ElideRight
+            Layout.preferredWidth: rootLayout.afterTextWidth
+            Layout.minimumWidth: rootLayout.afterTextWidth
+            Layout.maximumWidth: rootLayout.afterTextWidth
         }
     }
 }
