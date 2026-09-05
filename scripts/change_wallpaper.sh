@@ -66,3 +66,5 @@ else
 fi
 
 apply_razer_colors
+
+notify-send -a "Wisp" -i "$WISP_SHARE_DIR/assets/wisp.svg" "Changed Wallpaper!" "Changed Wallpaper to $input_arg"
