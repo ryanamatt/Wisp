@@ -3,6 +3,8 @@
 SAVE_DIR="$HOME/Pictures/Screenshots"
 mkdir -p "$SAVE_DIR"
 
+WISP_SHARE_DIR="${WISP_SHARE_DIR:-/usr/share/wisp}"
+
 SAVE_FILE=false
 FULL_MONITOR=false
 WINDOW=false
@@ -54,9 +56,9 @@ if [ "$SAVE_FILE" = true ]; then
   FILENAME="$(date +%Y-%m-%d_%H-%M-%S).png"
   mv "$TMP_FILE" "$SAVE_DIR/$FILENAME"
   echo "Saved to $SAVE_DIR/$FILENAME"
-  notify-send "Screenshot Saved" "File saved to $SAVE_DIR/$FILENAME"
+  notify-send -a Wisp -i "$WISP_SHARE_DIR/assets/wisp.svg" "Screenshot" "File saved to $SAVE_DIR/$FILENAME"
 else
   # Clean up if not saving
   rm "$TMP_FILE"
-  notify-send "Screenshot" "Screenshot copied to clipboard."
+  notify-send -a "Wisp" -i "$WISP_SHARE_DIR/assets/wisp.svg" "Screenshot" "Screenshot copied to clipboard."
 fi
