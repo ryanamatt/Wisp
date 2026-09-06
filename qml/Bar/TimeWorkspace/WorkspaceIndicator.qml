@@ -23,6 +23,7 @@ RowLayout {
     property int startWorkspace: {
         switch (root.screen.name) {
             case "DP-3": return 1
+            case "HDMI-A-1":
             case "DP-2": return 6
             default: return 1
         }
