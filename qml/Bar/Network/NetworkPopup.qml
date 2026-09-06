@@ -168,48 +168,15 @@ BarPopup {
 
         // ----- Wi-Fi toggle + rescan row -----
         RowLayout {
+            Layout.leftMargin: -15
             Layout.fillWidth: true
             Layout.preferredHeight: 22
             spacing: 8
 
-            RowLayout {
-                spacing: 6
-
-                Rectangle {
-                    id: toggleTrack
-                    implicitWidth: 34
-                    implicitHeight: 18
-                    radius: height / 2
-                    color: networkPopup.wifiRadioOn ? Colors.colors.accent : Colors.colors.surfaceAlt
-                    border.width: 1
-                    border.color: networkPopup.wifiRadioOn ? Colors.colors.accent : Colors.colors.borderSoft
-
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    Behavior on border.color { ColorAnimation { duration: 120 } }
-
-                    Rectangle {
-                        width: 14
-                        height: 14
-                        radius: 7
-                        color: Colors.colors.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: networkPopup.wifiRadioOn ? parent.width - width - 2 : 2
-
-                        Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: networkPopup.toggleWifiRadio()
-                    }
-                }
-
-                Text {
-                    text: "Wi-Fi"
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 11
-                }
+            ToggleButton {
+                condition: networkPopup.wifiRadioOn
+                label: "Wi-Fi"
+                onToggled: (newValue) => networkPopup.toggleWifiRadio()
             }
 
             Item { Layout.fillWidth: true }

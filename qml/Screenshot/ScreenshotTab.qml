@@ -7,6 +7,7 @@ import QtQuick.Window
 import QtQuick.Layouts
 import "../Colors"
 import "../GlobalState"
+import "../Components"
 
 Item {
     id: screenshotTab
@@ -64,46 +65,10 @@ Item {
             anchors.margins: 10        
             spacing: 6
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 6
-                Layout.alignment: Qt.AlignHCenter
-
-                Rectangle {
-                    id: toggleSaveToDisk
-                    implicitWidth: 34
-                    implicitHeight: 18
-                    radius: height / 2
-                    color: screenshotTab.isSaveToDisk ? Colors.colors.accent : Colors.colors.surfaceAlt
-                    border.width: 1
-                    border.color: screenshotTab.isSaveToDisk ? Colors.colors.accent : Colors.colors.borderSoft
-
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    Behavior on border.color { ColorAnimation { duration: 120 } }
-
-                    Rectangle {
-                        width: 14
-                        height: 14
-                        radius: 7
-                        color: Colors.colors.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: screenshotTab.isSaveToDisk ? parent.width - width - 2 : 2
-
-                        Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: screenshotTab.isSaveToDisk = !screenshotTab.isSaveToDisk
-                    }
-                }
-
-                Text {
-                    text: "Save to Disk?"
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 11
-                }
+            ToggleButton {
+                condition: screenshotTab.isSaveToDisk
+                label: "Save to Disk?"
+                onToggled: (newValue) => screenshotTab.isSaveToDisk = newValue
             }
 
             RowLayout {
