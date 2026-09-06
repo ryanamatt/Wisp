@@ -109,7 +109,7 @@ BarPopup {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 12
-        spacing: 14
+        spacing: 10
 
         // ----- Microphone -----
         RowLayout {
