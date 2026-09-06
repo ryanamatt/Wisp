@@ -168,6 +168,7 @@ BarPopup {
 
         // ----- Wi-Fi toggle + rescan row -----
         RowLayout {
+            Layout.leftMargin: -15
             Layout.fillWidth: true
             Layout.preferredHeight: 22
             spacing: 8
