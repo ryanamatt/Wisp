@@ -127,48 +127,15 @@ BarPopup {
 
         // ----- Toggle + Clear row -----
         RowLayout {
+            Layout.leftMargin: 15
             Layout.fillWidth: true
             Layout.preferredHeight: 22
             spacing: 8
 
-            RowLayout {
-                spacing: 6
-
-                Rectangle {
-                    id: toggleTrack
-                    implicitWidth: 34
-                    implicitHeight: 18
-                    radius: height / 2
-                    color: clipboardPopup.cliphistEnabled ? Colors.colors.accent : Colors.colors.surfaceAlt
-                    border.width: 1
-                    border.color: clipboardPopup.cliphistEnabled ? Colors.colors.accent : Colors.colors.borderSoft
-
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    Behavior on border.color { ColorAnimation { duration: 120 } }
-
-                    Rectangle {
-                        width: 14
-                        height: 14
-                        radius: 7
-                        color: Colors.colors.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: clipboardPopup.cliphistEnabled ? parent.width - width - 2 : 2
-
-                        Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: ClipboardSingleton.cliphistEnabled = !ClipboardSingleton.cliphistEnabled
-                    }
-                }
-
-                Text {
-                    text: "Save history"
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 11
-                }
+            ToggleButton {
+                condition: clipboardPopup.cliphistEnabled
+                label: "Save History?"
+                onToggled: (newValue) => ClipboardSingleton.cliphistEnabled = newValue
             }
 
             Item { Layout.fillWidth: true }
