@@ -99,7 +99,7 @@ BarWidgetContainer {
         color: "transparent"
 
         implicitWidth: 320
-        implicitHeight: 275
+        implicitHeight: 245
 
         visible: audioWidget.openProgress > 0.001 || audioWidget.isOpenHere
 
