@@ -272,6 +272,7 @@ BarPopup {
 
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 20
 
                 Text {
                     text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.position) : "0:00"
@@ -279,21 +280,6 @@ BarPopup {
                     font.family: "Noto Sans Mono"
                     font.pixelSize: 10
                 }
-
-                Item { Layout.fillWidth: true }
-
-                Text {
-                    text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.length) : "0:00"
-                    color: Colors.colors.foregroundMuted
-                    font.family: "Noto Sans Mono"
-                    font.pixelSize: 10
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.topMargin: 2
-                spacing: 20
 
                 Item { Layout.fillWidth: true }
 
@@ -345,6 +331,13 @@ BarPopup {
                 }
 
                 Item { Layout.fillWidth: true }
+
+                Text {
+                    text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.length) : "0:00"
+                    color: Colors.colors.foregroundMuted
+                    font.family: "Noto Sans Mono"
+                    font.pixelSize: 10
+                }
             }
         }
 
