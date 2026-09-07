@@ -37,6 +37,28 @@ BarPopup {
         }
     }
 
+    // ----- Pipewire: default source (microphone) volume / mute -----
+    readonly property PwNode source: Pipewire.defaultAudioSource
+    readonly property bool micMuted: (source && source.audio) ? source.audio.muted : false
+    readonly property real micVolume: (source && source.audio) ? source.audio.volume : 0
+
+    // Binding the source here is what actually keeps its audio properties live.
+    PwObjectTracker {
+        objects: audioPopup.source ? [audioPopup.source] : []
+    }
+
+    function setMicVolume(v) {
+        if (source && source.ready && source.audio) {
+            source.audio.volume = Math.max(0, Math.min(1, v))
+        }
+    }
+
+    function toggleMicMute() {
+        if (source && source.ready && source.audio) {
+            source.audio.muted = !source.audio.muted
+        }
+    }
+
     // ----- MPRIS: pick whichever player is actually playing -----
     readonly property var playerList: Mpris.players.values
     property MprisPlayer cachedPlayer: null
@@ -87,7 +109,48 @@ BarPopup {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 12
-        spacing: 14
+        spacing: 10
+
+        // ----- Microphone -----
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+
+            Text {
+                text: audioPopup.micMuted ? "\uf131" : "\uf130"
+                font.family: "Iosevka Nerd Font Propo"
+                font.pixelSize: 18
+                color: audioPopup.micMuted ? Colors.colors.foregroundMuted : Colors.colors.foreground
+
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: -4
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: audioPopup.toggleMicMute()
+                }
+            }
+
+            DragBar {
+                Layout.fillWidth: true
+                enabled: audioPopup.source !== null
+                value: audioPopup.micMuted ? 0 : audioPopup.micVolume
+                onMoved: v => audioPopup.setMicVolume(v)
+            }
+
+            Text {
+                Layout.preferredWidth: 34
+                text: Math.round(audioPopup.micVolume * 100) + "%"
+                color: Colors.colors.foregroundMuted
+                font.family: "Noto Sans Mono"
+                font.pixelSize: 12
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 1
+            color: Colors.colors.border
+        }
 
         // ----- Volume -----
         RowLayout {
