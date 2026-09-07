@@ -119,6 +119,19 @@ See [config/config.json](config/config.json) for an example.
 
 Log file is located at `~/.local/state/wisp/wisp.log`.
 
+View Log Command
+
+```Bash
+# Full Files
+wisp log
+
+# Or Part of Log (Default 15 lines)
+wisp log head
+wisp log tail
+wisp log head 10
+wisp log tail 5
+```
+
 ## License
 
 MIT
