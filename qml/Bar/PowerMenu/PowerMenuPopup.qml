@@ -48,7 +48,7 @@ BarPopup {
             label: "Log Out",
             glyph: "\uf2f5",
             colorKey: "accentAlt",
-            command: ["hyprctl", "dispatch", "exit"]
+            command: ["hyprctl", "dispatch", "hl.dsp.exit()"]
         },
         {
             id: "reboot",
