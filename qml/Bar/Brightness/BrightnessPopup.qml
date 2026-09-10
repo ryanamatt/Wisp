@@ -119,5 +119,34 @@ BarPopup {
                 }
             }
         }
+
+        // --- Backlight ----
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+            visible: BrightnessSingleton.hasKeyboardBacklight
+
+            Text {
+                text: "Kbd Light"
+                color: Colors.colors.foregroundMuted
+                font.family: "Noto Sans Mono"
+                font.pixelSize: 11
+            }
+
+            DragBar {
+                Layout.fillWidth: true
+                enabled: BrightnessSingleton.hasKeyboardBacklight
+                fillColor: Colors.colors.accentAlt
+                value: BrightnessSingleton.keyboardBacklightValue
+                onMoved: v => BrightnessSingleton.updateKeyboardBacklightValue(v)
+            }
+
+            Text {
+                text: BrightnessSingleton.keyboardBacklightValue
+                color: Colors.colors.foregroundMuted
+                font.family: "Noto Sans Mono"
+                font.pixelSize: 11
+            }
+        }
     }
 }

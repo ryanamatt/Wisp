@@ -122,5 +122,56 @@ Singleton {
         command: ["hyprctl", "hyprsunset", "identity"]
     }
 
-    Component.onCompleted: refreshBrightness()
+    // --- Keyboard Backlight ---
+    readonly property int minKeyboardBacklight: 2
+    readonly property int maxKeyboardBacklight: 0
+    property real keyboardValue: 0.5
+    property bool hasKeyboardBacklight: false
+    readonly property int keyboardBacklightValue: Math.round(maxKeyboardBacklight - keyboardValue * (maxKeyboardBacklight - minKeyboardBacklight))
+
+    Process {
+        id: checkKeyboardBacklight
+        command: ["bash", "-c", "[ -d /sys/class/leds/*kbd* ] && echo true || echo false"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const line = this.text.trim()
+                if (line == "true") { 
+                    hasKeyboardBacklight = true
+                    getKeyboardBacklightValue.running = true
+                }
+            }
+        }
+    }
+
+    Process {
+        id: getKeyboardBacklightValue
+        command: ["cat", "/sys/class/leds/platform::kbd_backlight/brightness"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const value = this.text.trim()
+                keyboardValue = Math.round((maxKeyboardBacklight - value / (maxKeyboardBacklight - minKeyboardBacklight)))
+            }
+        }
+    }
+
+    Process {
+        id: updateKeyboardBacklight
+        command: ["brightnessctl", "-d", "platform::kbd_backlight", "set", root.keyboardBacklightValue]
+    }
+
+    function updateKeyboardBacklightValue(v) {
+        root.keyboardValue = Math.max(0, Math.min(1, v))
+        updateKeyboardBacklight.running = true
+    }
+
+    function refreshKeyboardBacklight() {
+        checkKeyboardBacklight.running = true
+    }
+
+    // --- Other ---
+
+    Component.onCompleted: {
+        refreshBrightness()
+        refreshKeyboardBacklight()
+    }
 }
