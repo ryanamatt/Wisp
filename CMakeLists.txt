@@ -155,6 +155,7 @@ target_link_libraries(wispversion PRIVATE
 add_executable(wisp
     src/main.cpp
     src/ipc/ipc.cpp
+    src/process/pidfile.cpp
 )
 
 add_dependencies(wisp wisp_version_header)
