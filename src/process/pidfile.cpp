@@ -14,6 +14,8 @@
 
 namespace wisp::process {
 
+namespace {
+
 // Reads /proc/<pid>/comm and checks whether it's "wisp". This guards
 // against a stale pidfile whose pid has since been recycled by an
 // unrelated process.
@@ -49,6 +51,8 @@ std::optional<pid_t> scanProcForWisp() {
     closedir(proc);
     return found;
 }
+
+} // namespace
 
 std::filesystem::path runtimeDir() {
     if (const char *xdgRuntime = std::getenv("XDG_RUNTIME_DIR"); xdgRuntime && *xdgRuntime) {
