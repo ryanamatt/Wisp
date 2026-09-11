@@ -23,6 +23,7 @@
 #include "logging/log.hpp"
 #include "process/pidfile.hpp"
 #include "process/supervisor.hpp"
+#include "process/control.hpp"
 
 #ifndef WISP_DEFAULT_QML_DIR
 #define WISP_DEFAULT_QML_DIR ""
@@ -230,38 +231,6 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
     return exitCode;
 }
 
-int killBar() {
-    auto pid = wisp::process::findRunningWispPid();
-    if (!pid) {
-        std::cerr << "wisp: no running instance found\n";
-        return 1;
-    }
-
-    if (kill(*pid, SIGTERM) != 0) {
-        std::cerr << "wisp: failed to signal pid " << *pid << ": " << std::strerror(errno) << "\n";
-        return 1;
-    }
-
-    std::cout << "wisp: sent stop signal to running instance (pid " << *pid << ")\n";
-    return 0;
-}
-
-int reloadBar() {
-    auto pid = wisp::process::findRunningWispPid();
-    if (!pid) {
-        std::cerr << "wisp: no running instance found\n";
-        return 1;
-    }
-
-    if (kill(*pid, SIGUSR1) != 0) {
-        std::cerr << "wisp: failed to signal pid " << *pid << ": " << std::strerror(errno) << "\n";
-        return 1;
-    }
-
-    std::cout << "wisp: reloading running instance (pid " << *pid << ")\n";
-    return 0;
-}
-
 int runLogCommand(LogCommand logCommand, int logNum) {
     std::filesystem::path logPath;
     if (const char *xdgState = std::getenv("XDG_STATE_HOME"); xdgState && *xdgState)
@@ -433,9 +402,9 @@ int main(int argc, char *argv[]) {
         case Command::Run:
             return runBar(qmlDir, configPath, modulePath);
         case Command::Kill:
-            return killBar();
+            return wisp::process::killInstance();
         case Command::Reload:
-            return reloadBar();
+            return wisp::process::reloadInstance();
         case Command::Log:
             return runLogCommand(logCommand, logNum);
         case Command::Ipc:

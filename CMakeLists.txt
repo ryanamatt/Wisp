@@ -157,6 +157,7 @@ add_executable(wisp
     src/ipc/ipc.cpp
     src/process/pidfile.cpp
     src/process/supervisor.cpp
+    src/process/control.cpp
 )
 
 add_dependencies(wisp wisp_version_header)
