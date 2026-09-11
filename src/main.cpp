@@ -22,6 +22,7 @@
 #include "ipc/ipc.hpp"
 #include "logging/log.hpp"
 #include "process/pidfile.hpp"
+#include "process/supervisor.hpp"
 #include "process/control.hpp"
 
 #ifndef WISP_DEFAULT_QML_DIR
@@ -39,9 +40,6 @@
 namespace {
 
 enum class LogCommand { None, Head, Tail, Clear };
-
-volatile sig_atomic_t g_gotTermSignal = 0;
-volatile sig_atomic_t g_gotReloadSignal = 0;
 
 void printUsage(const char *argv0) {
     std::cout <<
@@ -73,45 +71,6 @@ void printUsage(const char *argv0) {
 
 void printVersion() {
     std::cout << "wisp " << WISP_VERSION << "\n";
-}
-
-void handleSupervisorSignal(int sig) {
-    if (sig == SIGTERM || sig == SIGINT) {
-        g_gotTermSignal = 1;
-    } else if (sig == SIGUSR1) {
-        g_gotReloadSignal = 1;
-    }
-}
-
-void installSupervisorSignalHandlers() {
-    struct sigaction sa {};
-    sa.sa_handler = handleSupervisorSignal;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0; // deliberately no SA_RESTART, so waitpid() wakes up
-    sigaction(SIGTERM, &sa, nullptr);
-    sigaction(SIGINT, &sa, nullptr);
-    sigaction(SIGUSR1, &sa, nullptr);
-}
-
-// Detaches from the invoking shell
-void daemonize() {
-    pid_t pid = fork();
-    if (pid < 0) {
-        wisp::log::error(std::string("failed to disown: fork failed: ") + std::strerror(errno));
-        return; // fall back to running in the foreground
-    }
-    if (pid > 0) {
-        // Parent: nothing left to do, hand control back to the shell.
-        wisp::log::debug("disowned, parent exiting (child pid " + std::to_string(pid) + ")");
-        _exit(0);
-    }
-    // Child: start a new session so we're detached from the controlling
-    // terminal entirely, not just backgrounded within the old one.
-    if (setsid() < 0) {
-        wisp::log::warning(std::string("setsid failed: ") + std::strerror(errno));
-    } else {
-        wisp::log::debug("disowned, running detached (pid " + std::to_string(getpid()) + ")");
-    }
 }
 
 // Forks and execs quickshell for the given qmlDir. Returns the child's
@@ -205,7 +164,7 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         "environment ready: QML2_IMPORT_PATH=" + std::string(std::getenv("QML2_IMPORT_PATH")) +
         " " + wisp::env::kShareDir + "=" + std::getenv(wisp::env::kShareDir));
 
-    installSupervisorSignalHandlers();
+    wisp::process::installSupervisorSignalHandlers();
     wisp::process::writePidFile(getpid());
 
     pid_t child = spawnQuickshell(qmlDir);
@@ -225,14 +184,14 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         if (waited == -1) {
             if (errno != EINTR) break;
 
-            if (g_gotTermSignal) {
+            if (wisp::process::gotTermSignal()) {
                 wisp::log::info("stop signal received, shutting down");
                 kill(child, SIGTERM);
                 waitpid(child, &status, 0);
                 break;
             }
-            if (g_gotReloadSignal) {
-                g_gotReloadSignal = 0;
+            if (wisp::process::gotReloadSignal()) {
+                wisp::process::clearReloadSignal();
                 wisp::log::info("reload requested, restarting quickshell");
 
                 wisp::config::load(configPath);
@@ -436,7 +395,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (disown && command != Command::None) {
-        daemonize();
+        wisp::process::daemonize();
     }
 
     switch (command) {

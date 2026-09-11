@@ -156,6 +156,7 @@ add_executable(wisp
     src/main.cpp
     src/ipc/ipc.cpp
     src/process/pidfile.cpp
+    src/process/supervisor.cpp
     src/process/control.cpp
 )
 
