@@ -21,6 +21,7 @@
 #include "env.hpp"
 #include "ipc/ipc.hpp"
 #include "logging/log.hpp"
+#include "process/pidfile.hpp"
 
 #ifndef WISP_DEFAULT_QML_DIR
 #define WISP_DEFAULT_QML_DIR ""
@@ -71,98 +72,6 @@ void printUsage(const char *argv0) {
 
 void printVersion() {
     std::cout << "wisp " << WISP_VERSION << "\n";
-}
-
-std::filesystem::path runtimeDir() {
-    if (const char *xdgRuntime = std::getenv("XDG_RUNTIME_DIR"); xdgRuntime && *xdgRuntime) {
-        return std::filesystem::path(xdgRuntime) / "wisp";
-    }
-    return std::filesystem::temp_directory_path() / "wisp";
-}
-
-std::filesystem::path pidFilePath() {
-    return runtimeDir() / "wisp.pid";
-}
-
-void writePidFile(pid_t pid) {
-    std::error_code ec;
-    std::filesystem::create_directories(runtimeDir(), ec);
-    std::ofstream out(pidFilePath(), std::ios::trunc);
-    if (out) {
-        out << pid << "\n";
-        wisp::log::debug("wrote pid file " + pidFilePath().string() + " (pid " + std::to_string(pid) + ")");
-    } else {
-        wisp::log::warning("could not write pid file at " + pidFilePath().string());
-    }
-}
-
-void removePidFileIfOwnedBySelf() {
-    std::ifstream in(pidFilePath());
-    pid_t recorded = -1;
-    if (in && (in >> recorded) && recorded == getpid()) {
-        std::error_code ec;
-        std::filesystem::remove(pidFilePath(), ec);
-        if (ec) {
-            wisp::log::warning("could not remove pid file " + pidFilePath().string() + ": " + ec.message());
-        } else {
-            wisp::log::debug("removed pid file " + pidFilePath().string());
-        }
-    }
-}
-
-// Reads /proc/<pid>/comm and checks whether it's "wisp". This guards
-// against a stale pidfile whose pid has since been recycled by an
-// unrelated process.
-bool isProcessNamedWisp(pid_t pid) {
-    std::ifstream comm("/proc/" + std::to_string(pid) + "/comm");
-    if (!comm) return false;
-    std::string name;
-    std::getline(comm, name);
-    return name == "wisp";
-}
-
-// Falls back to scanning /proc for any process named "wisp", 
-// in case the pidfile is missing or stale.
-std::optional<pid_t> scanProcForWisp() {
-    DIR *proc = opendir("/proc");
-    if (!proc) return std::nullopt;
-
-    const pid_t self = getpid();
-    std::optional<pid_t> found;
-
-    while (dirent *entry = readdir(proc)) {
-        const std::string name = entry->d_name;
-        if (name.empty() || !std::isdigit(static_cast<unsigned char>(name[0]))) continue;
-
-        pid_t candidate = std::atoi(name.c_str());
-        if (candidate == self) continue;
-        if (isProcessNamedWisp(candidate)) {
-            found = candidate;
-            break;
-        }
-    }
-
-    closedir(proc);
-    return found;
-}
-
-std::optional<pid_t> findRunningWispPid() {
-    std::ifstream in(pidFilePath());
-    pid_t recorded = -1;
-    if (in && (in >> recorded)) {
-        // kill(pid, 0) just checks whether the pid exists/is signalable.
-        if (kill(recorded, 0) == 0 && isProcessNamedWisp(recorded)) {
-            return recorded;
-        }
-        wisp::log::debug(
-            "pid file " + pidFilePath().string() + " has stale pid " + std::to_string(recorded) +
-            ", falling back to /proc scan");
-    }
-    auto found = scanProcForWisp();
-    if (found) {
-        wisp::log::debug("found running wisp instance via /proc scan (pid " + std::to_string(*found) + ")");
-    }
-    return found;
 }
 
 void handleSupervisorSignal(int sig) {
@@ -253,7 +162,7 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         return 1;
     }
 
-    if (auto existing = findRunningWispPid()) {
+    if (auto existing = wisp::process::findRunningWispPid()) {
         wisp::log::warning("an instance is already running (pid " + std::to_string(*existing) + ")");
         return 1;
     }
@@ -296,12 +205,12 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         " " + wisp::env::kShareDir + "=" + std::getenv(wisp::env::kShareDir));
 
     installSupervisorSignalHandlers();
-    writePidFile(getpid());
+    wisp::process::writePidFile(getpid());
 
     pid_t child = spawnQuickshell(qmlDir);
     if (child < 0) {
         wisp::log::error("failed to start the bar");
-        removePidFileIfOwnedBySelf();
+        wisp::process::removePidFileIfOwnedBySelf();
         return 1;
     }
 
@@ -357,13 +266,13 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         break;
     }
 
-    removePidFileIfOwnedBySelf();
+    wisp::process::removePidFileIfOwnedBySelf();
     wisp::log::info("bar stopped");
     return exitCode;
 }
 
 int killBar() {
-    auto pid = findRunningWispPid();
+    auto pid = wisp::process::findRunningWispPid();
     if (!pid) {
         std::cerr << "wisp: no running instance found\n";
         return 1;
@@ -379,7 +288,7 @@ int killBar() {
 }
 
 int reloadBar() {
-    auto pid = findRunningWispPid();
+    auto pid = wisp::process::findRunningWispPid();
     if (!pid) {
         std::cerr << "wisp: no running instance found\n";
         return 1;
