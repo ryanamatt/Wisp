@@ -9,6 +9,7 @@ BUILD_DIR="${SCRIPT_DIR}/build"
 INSTALL_BIN_DIR="${HOME}/.local/bin"
 CONFIG_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/wisp"
 WISP_SHARE_DIR="/usr/share/wisp"
+ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
 
 info()  { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 warn()  { printf '\033[1;33m==> warning:\033[0m %s\n' "$1"; }
@@ -52,6 +53,18 @@ sudo cmake --install "${BUILD_DIR}"
 info "Installing wisp binary to ${INSTALL_BIN_DIR}"
 mkdir -p "${INSTALL_BIN_DIR}"
 install -m 755 "${BUILT_BIN}" "${INSTALL_BIN_DIR}/wisp"
+
+if [[ -f "${SCRIPT_DIR}/assets/wisp.svg" ]]; then
+    info "Installing icon to ${ICON_DIR} (sudo)"
+    sudo mkdir -p "${ICON_DIR}"
+    sudo install -m 644 "${SCRIPT_DIR}/assets/wisp.svg" "${ICON_DIR}/wisp.svg"
+
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        sudo gtk-update-icon-cache -f -t /usr/share/icons/hicolor >/dev/null 2>&1 || true
+    fi
+else
+    warn "assets/wisp.svg not found, skipping icon install."
+fi
 
 if [[ ! -f "${CONFIG_DIR}/config.json" ]]; then
     if [[ -f "${SCRIPT_DIR}/config/config.json" ]]; then
