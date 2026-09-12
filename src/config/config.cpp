@@ -40,8 +40,8 @@ std::optional<std::vector<AppEntry>> parseApps(const nlohmann::json &j) {
 
     std::vector<AppEntry> apps;
     for (const auto &entry : launcher["apps"]) {
-        if (!entry.is_object() || !entry.contains("name") || !entry["name"].is_string() ||
-            !entry.contains("command") || !entry["command"].is_array()) {
+        if (!entry.is_object() || !entry.contains("name") || !entry["name"].is_string() || !entry.contains("command") ||
+            !entry["command"].is_array()) {
             std::cerr << "wisp: skipping invalid appLauncher.apps entry (needs name + command)\n";
             continue;
         }
@@ -50,9 +50,7 @@ std::optional<std::vector<AppEntry>> parseApps(const nlohmann::json &j) {
         app.name = entry["name"].get<std::string>();
 
         for (const auto &part : entry["command"]) {
-            if (part.is_string()) {
-                app.command.push_back(part.get<std::string>());
-            }
+            if (part.is_string()) { app.command.push_back(part.get<std::string>()); }
         }
         if (app.command.empty()) {
             std::cerr << "wisp: skipping appLauncher.apps entry \"" << app.name << "\": empty command\n";
@@ -82,10 +80,8 @@ void exportEnv(const Config &cfg) {
 
 std::vector<AppEntry> defaultApps() {
     return {
-        {"Chrome", {"google-chrome-stable"}, "google-chrome"},
-        {"Discord", {"discord"}, "discord"},
-        {"Spotify", {"spotify-launcher"}, "spotify-launcher"},
-        {"VS Code", {"code"}, "vscode"},
+        {"Chrome", {"google-chrome-stable"}, "google-chrome"}, {"Discord", {"discord"}, "discord"},
+        {"Spotify", {"spotify-launcher"}, "spotify-launcher"}, {"VS Code", {"code"}, "vscode"},
         {"Dolphin", {"dolphin"}, "org.kde.dolphin"},
     };
 }
@@ -125,14 +121,13 @@ Config load(const std::string &path) {
         if (bar.contains("time-format")) {
             if (bar["time-format"].is_string())
                 cfg.timeFormat = bar["time-format"].get<std::string>();
-            
-            else std::cerr << "wisp: bar.time-format must be a string, ignoring\n";
+
+            else
+                std::cerr << "wisp: bar.time-format must be a string, ignoring\n";
         }
     }
 
-    if (auto apps = parseApps(j)) {
-        cfg.apps = std::move(*apps);
-    }
+    if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
 
     exportEnv(cfg);
     return cfg;

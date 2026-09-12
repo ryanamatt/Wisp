@@ -29,10 +29,10 @@ Q_DECLARE_METATYPE(SystemStats)
 
 // One real, physical partition discovered from /proc/mounts.
 typedef struct {
-    QString device;      // e.g. /dev/nvme0n1p2
-    QString mountpoint;  // e.g. / or /home
-    double total;        // GB
-    double used;         // GB
+    QString device;     // e.g. /dev/nvme0n1p2
+    QString mountpoint; // e.g. / or /home
+    double total;       // GB
+    double used;        // GB
 } PartitionStats;
 
 // Does the actual (blocking) work of polling /proc, /sys, and spawning

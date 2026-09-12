@@ -47,9 +47,7 @@ Calendar::Calendar(QObject *parent) : QObject(parent) {
         emit loadingChanged();
     });
     connect(&m_monthProcess, &QProcess::errorOccurred, this, [this](QProcess::ProcessError err) {
-        if (err == QProcess::FailedToStart) {
-            setError("gcalcli not found on PATH. Is it installed?");
-        }
+        if (err == QProcess::FailedToStart) { setError("gcalcli not found on PATH. Is it installed?"); }
         m_monthLoading = false;
         emit loadingChanged();
     });
@@ -78,9 +76,7 @@ Calendar::Calendar(QObject *parent) : QObject(parent) {
         emit loadingChanged();
     });
     connect(&m_upcomingProcess, &QProcess::errorOccurred, this, [this](QProcess::ProcessError err) {
-        if (err == QProcess::FailedToStart) {
-            setError("gcalcli not found on PATH. Is it installed?");
-        }
+        if (err == QProcess::FailedToStart) { setError("gcalcli not found on PATH. Is it installed?"); }
         m_upcomingLoading = false;
         emit loadingChanged();
     });
@@ -172,10 +168,7 @@ void Calendar::fetchMonthEvents() {
     emit loadingChanged();
 
     const QStringList args{
-        "--nocolor", "agenda",
-        gridStart.toString(Qt::ISODate),
-        gridEnd.toString(Qt::ISODate),
-        "--tsv",
+        "--nocolor", "agenda", gridStart.toString(Qt::ISODate), gridEnd.toString(Qt::ISODate), "--tsv",
     };
     m_monthProcess.start("gcalcli", args);
 }
@@ -190,10 +183,7 @@ void Calendar::fetchUpcomingEvents() {
     emit loadingChanged();
 
     const QStringList args{
-        "--nocolor", "agenda",
-        today.toString(Qt::ISODate),
-        rangeEnd.toString(Qt::ISODate),
-        "--tsv",
+        "--nocolor", "agenda", today.toString(Qt::ISODate), rangeEnd.toString(Qt::ISODate), "--tsv",
     };
     m_upcomingProcess.start("gcalcli", args);
 }
@@ -250,9 +240,7 @@ QList<Calendar::CalendarEvent> Calendar::parseTsv(const QByteArray &data) {
         event.endTime = parts[3];
         event.title = parts.mid(4).join('\t');
 
-        if (event.isAllDay() && event.endDate > event.startDate) {
-            event.endDate = event.endDate.addDays(-1);
-        }
+        if (event.isAllDay() && event.endDate > event.startDate) { event.endDate = event.endDate.addDays(-1); }
 
         events.append(event);
     }

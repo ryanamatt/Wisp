@@ -27,7 +27,7 @@ bool isProcessNamedWisp(pid_t pid) {
     return name == "wisp";
 }
 
-// Falls back to scanning /proc for any process named "wisp", 
+// Falls back to scanning /proc for any process named "wisp",
 // in case the pidfile is missing or stale.
 std::optional<pid_t> scanProcForWisp() {
     DIR *proc = opendir("/proc");
@@ -96,18 +96,13 @@ std::optional<pid_t> findRunningWispPid() {
     pid_t recorded = -1;
     if (in && (in >> recorded)) {
         // kill(pid, 0) just checks whether the pid exists/is signalable.
-        if (kill(recorded, 0) == 0 && isProcessNamedWisp(recorded)) {
-            return recorded;
-        }
-        wisp::log::debug(
-            "pid file " + pidFilePath().string() + " has stale pid " + std::to_string(recorded) +
-            ", falling back to /proc scan");
+        if (kill(recorded, 0) == 0 && isProcessNamedWisp(recorded)) { return recorded; }
+        wisp::log::debug("pid file " + pidFilePath().string() + " has stale pid " + std::to_string(recorded) +
+                         ", falling back to /proc scan");
     }
     auto found = scanProcForWisp();
-    if (found) {
-        wisp::log::debug("found running wisp instance via /proc scan (pid " + std::to_string(*found) + ")");
-    }
+    if (found) { wisp::log::debug("found running wisp instance via /proc scan (pid " + std::to_string(*found) + ")"); }
     return found;
 }
 
-}
+} // namespace wisp::process

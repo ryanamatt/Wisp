@@ -9,13 +9,9 @@
 
 int main(int argc, char *argv[]) {
     wisp::cli::ParsedArgs parsed = wisp::cli::parse(argc, argv);
-    if (parsed.earlyExit) {
-        return *parsed.earlyExit;
-    }
+    if (parsed.earlyExit) { return *parsed.earlyExit; }
 
-    if (parsed.disown && parsed.command != wisp::cli::Command::None) {
-        wisp::process::daemonize();
-    }
+    if (parsed.disown && parsed.command != wisp::cli::Command::None) { wisp::process::daemonize(); }
 
     switch (parsed.command) {
         case wisp::cli::Command::Run:

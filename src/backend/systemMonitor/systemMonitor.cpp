@@ -2,106 +2,102 @@
 
 #include "systemMonitor.hpp"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <filesystem>
-#include <cmath>
 #include <algorithm>
-#include <chrono>
-#include <unordered_set>
-#include <cstdio>
 #include <array>
+#include <chrono>
+#include <cmath>
+#include <cstdio>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdio.h>
+#include <string>
+#include <unordered_set>
 
 namespace {
 
-    struct PcloseDeleter {
-        void operator()(FILE* fp) const {
-            if (fp) {
-                pclose(fp);
-            }
-        }
-    };
-
-    void populate_defaults(SystemStats* systemStats) {
-        systemStats->cpuTemp = -1.0;
-        systemStats->cpuUsage = -1.0;
-        systemStats->memTotal = -1.0;
-        systemStats->memUsed = -1.0;
-        systemStats->gpuTemp = -1.0;
-        systemStats->gpuUsage = -1.0;
-        systemStats->uptimeSeconds = -1.0;
-        systemStats->loadAvg1 = -1.0;
-        systemStats->loadAvg5 = -1.0;
-        systemStats->loadAvg15 = -1.0;
+struct PcloseDeleter {
+    void operator()(FILE *fp) const {
+        if (fp) { pclose(fp); }
     }
+};
 
-    // Runs a shell command and returns its stdout, or empty string on failure.
-    std::string runCommand(const std::string& cmd) {
-        std::array<char, 256> buffer;
-        std::string result;
-        // Redirect stderr to /dev/null so a missing binary doesn't spam the console.
-        std::string fullCmd = cmd + " 2>/dev/null";
+void populate_defaults(SystemStats *systemStats) {
+    systemStats->cpuTemp = -1.0;
+    systemStats->cpuUsage = -1.0;
+    systemStats->memTotal = -1.0;
+    systemStats->memUsed = -1.0;
+    systemStats->gpuTemp = -1.0;
+    systemStats->gpuUsage = -1.0;
+    systemStats->uptimeSeconds = -1.0;
+    systemStats->loadAvg1 = -1.0;
+    systemStats->loadAvg5 = -1.0;
+    systemStats->loadAvg15 = -1.0;
+}
 
-        std::unique_ptr<FILE, PcloseDeleter> pipe(popen(fullCmd.c_str(), "r"));
-        if (!pipe) return result;
+// Runs a shell command and returns its stdout, or empty string on failure.
+std::string runCommand(const std::string &cmd) {
+    std::array<char, 256> buffer;
+    std::string result;
+    // Redirect stderr to /dev/null so a missing binary doesn't spam the console.
+    std::string fullCmd = cmd + " 2>/dev/null";
 
-        while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
-            result += buffer.data();
-        }
-        return result;
+    std::unique_ptr<FILE, PcloseDeleter> pipe(popen(fullCmd.c_str(), "r"));
+    if (!pipe) return result;
+
+    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
+        result += buffer.data();
     }
+    return result;
+}
 
-    double roundToTenth(double value) {
-        return std::round(value * 10.0) / 10.0;
+double roundToTenth(double value) {
+    return std::round(value * 10.0) / 10.0;
+}
+
+// Only these fstypes count as "real" partitions worth showing. Everything else
+// (tmpfs, proc, sysfs, overlay, squashfs snap mounts, cgroup, etc.) not counted.
+bool isRealFilesystem(const std::string &fstype) {
+    static const std::unordered_set<std::string> realFsTypes = {"ext2", "ext3",  "ext4",     "xfs",     "btrfs",
+                                                                "f2fs", "jfs",   "reiserfs", "vfat",    "exfat",
+                                                                "ntfs", "ntfs3", "zfs",      "hfsplus", "apfs"};
+    return realFsTypes.count(fstype) > 0;
+}
+
+// Some mountpoints (e.g. Docker/snap bind mounts, or duplicate entries
+// for the same subvolume) share a device+mountpoint pair. Skip repeats.
+struct MountKey {
+    std::string device;
+    std::string mountpoint;
+    bool operator==(const MountKey &o) const {
+        return device == o.device && mountpoint == o.mountpoint;
     }
-
-    // Only these fstypes count as "real" partitions worth showing. Everything else
-    // (tmpfs, proc, sysfs, overlay, squashfs snap mounts, cgroup, etc.) not counted.
-    bool isRealFilesystem(const std::string& fstype) {
-        static const std::unordered_set<std::string> realFsTypes = {
-            "ext2", "ext3", "ext4", "xfs", "btrfs", "f2fs", "jfs",
-            "reiserfs", "vfat", "exfat", "ntfs", "ntfs3", "zfs",
-            "hfsplus", "apfs"
-        };
-        return realFsTypes.count(fstype) > 0;
+};
+struct MountKeyHash {
+    size_t operator()(const MountKey &k) const {
+        return std::hash<std::string>()(k.device) ^ (std::hash<std::string>()(k.mountpoint) << 1);
     }
+};
 
-    // Some mountpoints (e.g. Docker/snap bind mounts, or duplicate entries
-    // for the same subvolume) share a device+mountpoint pair. Skip repeats.
-    struct MountKey {
-        std::string device;
-        std::string mountpoint;
-        bool operator==(const MountKey& o) const {
-            return device == o.device && mountpoint == o.mountpoint;
+// /proc/mounts escapes spaces etc. as octal (e.g. \040). Undo that.
+std::string unescapeMountField(const std::string &field) {
+    std::string result;
+    result.reserve(field.size());
+    for (size_t i = 0; i < field.size(); ++i) {
+        if (field[i] == '\\' && i + 3 < field.size() && isdigit(field[i + 1]) && isdigit(field[i + 2]) &&
+            isdigit(field[i + 3])) {
+            int code = (field[i + 1] - '0') * 64 + (field[i + 2] - '0') * 8 + (field[i + 3] - '0');
+            result += static_cast<char>(code);
+            i += 3;
+        } else {
+            result += field[i];
         }
-    };
-    struct MountKeyHash {
-        size_t operator()(const MountKey& k) const {
-            return std::hash<std::string>()(k.device) ^ (std::hash<std::string>()(k.mountpoint) << 1);
-        }
-    };
-
-    // /proc/mounts escapes spaces etc. as octal (e.g. \040). Undo that.
-    std::string unescapeMountField(const std::string& field) {
-        std::string result;
-        result.reserve(field.size());
-        for (size_t i = 0; i < field.size(); ++i) {
-            if (field[i] == '\\' && i + 3 < field.size() &&
-                isdigit(field[i+1]) && isdigit(field[i+2]) && isdigit(field[i+3])) {
-                int code = (field[i+1] - '0') * 64 + (field[i+2] - '0') * 8 + (field[i+3] - '0');
-                result += static_cast<char>(code);
-                i += 3;
-            } else {
-                result += field[i];
-            }
-        }
-        return result;
     }
-    
+    return result;
+}
+
 } // namespace
 
 // SystemMonitorWorker: runs on its own QThread, does all the blocking
@@ -124,7 +120,7 @@ void SystemMonitorWorker::start() {
 }
 
 void SystemMonitorWorker::getCpuTemp() {
-    for (const auto & entry : std::filesystem::directory_iterator("/sys/class/thermal/")) {
+    for (const auto &entry : std::filesystem::directory_iterator("/sys/class/thermal/")) {
         std::string zone_path = entry.path().string();
         std::string type_path = zone_path + "/type";
         std::string temp_path = zone_path + "/temp";
@@ -228,9 +224,7 @@ void SystemMonitorWorker::getUptime() {
     if (!uptime_file.is_open()) return;
 
     double uptime = 0.0;
-    if (uptime_file >> uptime) {
-        systemStats.uptimeSeconds = uptime;
-    }
+    if (uptime_file >> uptime) { systemStats.uptimeSeconds = uptime; }
 }
 
 void SystemMonitorWorker::getLoadAverage() {
@@ -261,9 +255,7 @@ void SystemMonitorWorker::getPartitions() {
         std::istringstream ss(line);
         std::string device, mountpointRaw, fstype, options;
         int dump, pass;
-        if (!(ss >> device >> mountpointRaw >> fstype >> options >> dump >> pass)) {
-            continue;
-        }
+        if (!(ss >> device >> mountpointRaw >> fstype >> options >> dump >> pass)) { continue; }
 
         if (!isRealFilesystem(fstype)) continue;
 
@@ -287,7 +279,7 @@ void SystemMonitorWorker::getPartitions() {
             p.total = roundToTenth(totalGb);
             p.used = roundToTenth(usedGb);
             found.push_back(p);
-        } catch (const std::filesystem::filesystem_error& e) {
+        } catch (const std::filesystem::filesystem_error &e) {
             std::cerr << "Error reading disk space for " << mountpoint << ": " << e.what() << '\n';
         }
     }
@@ -298,7 +290,7 @@ void SystemMonitorWorker::getPartitions() {
 QVariantList SystemMonitorWorker::partitionsAsVariantList() const {
     QVariantList list;
     list.reserve(static_cast<int>(m_partitions.size()));
-    for (const auto& p : m_partitions) {
+    for (const auto &p : m_partitions) {
         QVariantMap entry;
         entry["device"] = p.device;
         entry["mountpoint"] = p.mountpoint;
@@ -328,7 +320,7 @@ void SystemMonitorWorker::detectGpuBackend() {
     const std::string drmRoot = "/sys/class/drm";
     if (!std::filesystem::exists(drmRoot)) return;
 
-    for (const auto& entry : std::filesystem::directory_iterator(drmRoot)) {
+    for (const auto &entry : std::filesystem::directory_iterator(drmRoot)) {
         std::string name = entry.path().filename().string();
         // Only look at bare "cardN" entries, not render nodes etc.
         if (name.rfind("card", 0) != 0 || name.find('-') != std::string::npos) continue;
@@ -347,7 +339,7 @@ void SystemMonitorWorker::detectGpuBackend() {
             std::filesystem::path hwmonRoot = devicePath / "hwmon";
             if (!std::filesystem::exists(hwmonRoot)) continue;
 
-            for (const auto& hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
+            for (const auto &hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
                 std::filesystem::path tempPath = hwmonEntry.path() / "temp1_input";
                 if (std::filesystem::exists(tempPath)) {
                     m_gpuHwmonTempPath = QString::fromStdString(tempPath.string());
@@ -365,7 +357,7 @@ void SystemMonitorWorker::detectGpuBackend() {
             bool foundSysfsShape = false;
 
             if (std::filesystem::exists(busyPath) && std::filesystem::exists(hwmonRoot)) {
-                for (const auto& hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
+                for (const auto &hwmonEntry : std::filesystem::directory_iterator(hwmonRoot)) {
                     std::filesystem::path tempPath = hwmonEntry.path() / "temp1_input";
                     if (std::filesystem::exists(tempPath)) {
                         m_gpuHwmonTempPath = QString::fromStdString(tempPath.string());
@@ -389,7 +381,7 @@ void SystemMonitorWorker::detectGpuBackend() {
             std::filesystem::path rc6Path;
             std::filesystem::path gtRoot = entry.path() / "gt";
             if (std::filesystem::exists(gtRoot)) {
-                for (const auto& gtEntry : std::filesystem::directory_iterator(gtRoot)) {
+                for (const auto &gtEntry : std::filesystem::directory_iterator(gtRoot)) {
                     std::filesystem::path candidate = gtEntry.path() / "rc6_residency_ms";
                     if (std::filesystem::exists(candidate)) {
                         rc6Path = candidate;
@@ -424,9 +416,7 @@ bool SystemMonitorWorker::readNvidiaGpuStats() {
     try {
         systemStats.gpuTemp = std::stod(tempStr);
         systemStats.gpuUsage = std::stod(usageStr);
-    } catch (const std::exception&) {
-        return false;
-    }
+    } catch (const std::exception &) { return false; }
     return true;
 }
 
@@ -505,9 +495,7 @@ bool SystemMonitorWorker::readIntelGpuStats() {
 }
 
 void SystemMonitorWorker::getGpuStats() {
-    if (m_gpuBackend == GpuBackend::Unknown) {
-        detectGpuBackend();
-    }
+    if (m_gpuBackend == GpuBackend::Unknown) { detectGpuBackend(); }
 
     bool ok = false;
     switch (m_gpuBackend) {
@@ -560,8 +548,7 @@ SystemMonitor::SystemMonitor(QObject *parent) : QObject(parent) {
 
     // Queued connection: statsReady is emitted on the worker thread,
     // onStatsReady runs on this (main) thread.
-    connect(worker, &SystemMonitorWorker::statsReady,
-            this, &SystemMonitor::onStatsReady, Qt::QueuedConnection);
+    connect(worker, &SystemMonitorWorker::statsReady, this, &SystemMonitor::onStatsReady, Qt::QueuedConnection);
 
     // Clean up the worker once the thread is done.
     connect(&m_workerThread, &QThread::finished, worker, &QObject::deleteLater);
@@ -574,22 +561,44 @@ SystemMonitor::~SystemMonitor() {
     m_workerThread.wait();
 }
 
-double SystemMonitor::cpuTemp() const { return systemStats.cpuTemp; }
-double SystemMonitor::cpuUsage() const { return systemStats.cpuUsage; }
+double SystemMonitor::cpuTemp() const {
+    return systemStats.cpuTemp;
+}
+double SystemMonitor::cpuUsage() const {
+    return systemStats.cpuUsage;
+}
 
-double SystemMonitor::memTotal() const { return systemStats.memTotal; }
-double SystemMonitor::memUsed() const { return systemStats.memUsed; }
+double SystemMonitor::memTotal() const {
+    return systemStats.memTotal;
+}
+double SystemMonitor::memUsed() const {
+    return systemStats.memUsed;
+}
 
-double SystemMonitor::gpuTemp() const { return systemStats.gpuTemp; }
-double SystemMonitor::gpuUsage() const { return systemStats.gpuUsage; }
+double SystemMonitor::gpuTemp() const {
+    return systemStats.gpuTemp;
+}
+double SystemMonitor::gpuUsage() const {
+    return systemStats.gpuUsage;
+}
 
-double SystemMonitor::uptimeSeconds() const { return systemStats.uptimeSeconds; }
+double SystemMonitor::uptimeSeconds() const {
+    return systemStats.uptimeSeconds;
+}
 
-double SystemMonitor::loadAvg1() const { return systemStats.loadAvg1; }
-double SystemMonitor::loadAvg5() const { return systemStats.loadAvg5; }
-double SystemMonitor::loadAvg15() const { return systemStats.loadAvg15; }
+double SystemMonitor::loadAvg1() const {
+    return systemStats.loadAvg1;
+}
+double SystemMonitor::loadAvg5() const {
+    return systemStats.loadAvg5;
+}
+double SystemMonitor::loadAvg15() const {
+    return systemStats.loadAvg15;
+}
 
-QVariantList SystemMonitor::partitions() const { return m_partitions; }
+QVariantList SystemMonitor::partitions() const {
+    return m_partitions;
+}
 
 void SystemMonitor::onStatsReady(SystemStats stats, QVariantList partitions) {
     systemStats = stats;
