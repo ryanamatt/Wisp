@@ -25,22 +25,13 @@
 #include "process/supervisor.hpp"
 #include "process/control.hpp"
 #include "bar/bar.hpp"
+#include "cli/logCommand.hpp"
 
 #ifndef WISP_DEFAULT_QML_DIR
 #define WISP_DEFAULT_QML_DIR ""
 #endif
 
-// #ifndef WISP_QML_IMPORT_PATH
-// #define WISP_QML_IMPORT_PATH ""
-// #endif
-
-// #ifndef WISP_SHARE_DIR
-// #define WISP_SHARE_DIR ""
-// #endif
-
 namespace {
-
-enum class LogCommand { None, Head, Tail, Clear };
 
 void printUsage(const char *argv0) {
     std::cout <<
@@ -74,60 +65,6 @@ void printVersion() {
     std::cout << "wisp " << WISP_VERSION << "\n";
 }
 
-int runLogCommand(LogCommand logCommand, int logNum) {
-    std::filesystem::path logPath;
-    if (const char *xdgState = std::getenv("XDG_STATE_HOME"); xdgState && *xdgState)
-        logPath = std::filesystem::path(xdgState) / "wisp" / "wisp.log";
-    else if (const char *home = std::getenv("HOME"); home && *home)
-        logPath = std::filesystem::path(home) / ".local" / "state" / "wisp" / "wisp.log";
-    else {
-        std::cerr << "wisp: unable to determine home or state directory for log path\n";
-        return 1;
-    }
-
-    if (logCommand == LogCommand::Clear) {
-        std::ofstream logFile(logPath, std::ios::trunc);
-        if (!logFile) {
-            std::cerr << "wisp: could not clear log file at " << logPath << ": " << std::strerror(errno) << "\n";
-            return 1;
-        }
-        std::cout << "wisp: cleared log file\n";
-        return 0;
-    }
-
-    std::ifstream logFile(logPath);
-    if (!logFile) {
-        std::cerr << "wisp: could not open log file at " << logPath << ": " << std::strerror(errno) << "\n";
-        return 1;
-    }
-
-    // Only colorize when writing straight to a terminal, so piping
-    // `wisp log` into grep/less/a file doesn't get littered with
-    // escape codes.
-    const bool colorize = isatty(fileno(stdout));
-
-    std::vector<std::string> lines;
-    std::string line;
-    while (std::getline(logFile, line)) {
-        lines.push_back(line);
-    }
-
-    size_t start = 0;
-    size_t end = lines.size();
-
-    if (logCommand == LogCommand::Head) end = std::min(size_t(logNum), lines.size());
-    else if (logCommand == LogCommand::Tail) {
-        if (lines.size() > logNum) start = lines.size() - logNum;
-    }
-
-    for (size_t i = start; i < end; ++i) {
-        const std::string &l = lines[i];
-        std::cout << (colorize ? wisp::log::colorizeLine(l) : l) << "\n";
-    }
-
-    return 0;
-}
-
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -144,7 +81,7 @@ int main(int argc, char *argv[]) {
     std::string ipcAction;
     std::string ipcTarget;
 
-    LogCommand logCommand = LogCommand::None;
+    wisp::cli::LogCommand logCommand = wisp::cli::LogCommand::None;
     int logNum = 15;
 
     for (size_t i = 0; i < args.size(); ++i) {
@@ -202,9 +139,9 @@ int main(int argc, char *argv[]) {
             command = Command::Log;
             if (i + 1 < args.size()) {
                 std::string logArg = args[++i];
-                if (logArg == "head") logCommand = LogCommand::Head;
-                else if (logArg == "tail") logCommand = LogCommand::Tail; 
-                else if (logArg == "clear") logCommand = LogCommand::Clear;
+                if (logArg == "head") logCommand = wisp::cli::LogCommand::Head;
+                else if (logArg == "tail") logCommand = wisp::cli::LogCommand::Tail; 
+                else if (logArg == "clear") logCommand = wisp::cli::LogCommand::Clear;
                 else {
                     std::cerr << "wisp: unknown log argument '" << logArg << "'\n";
                     return 1;
