@@ -1,18 +1,5 @@
-* text=auto
+* text=auto eol=lf
 
-# C++ Source and Headers
-*.cpp     linguist-language=C++
-*.hpp     linguist-language=C++
-
-*.qml     linguist-language=QML
-
-*.md text
-*.json text
-
-# Exclude third-party library and build artifacts from linguist stats
-third_party/n/json.hpp linguist-vendored
-third_party/**           linguist-vendored
-
-config/** linguist-vendored
-
-scripts/*.sh text eol=lf
+# Exclude
+third_party/**      linguist-vendored
+config/**           linguist-vendored
