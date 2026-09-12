@@ -160,6 +160,7 @@ add_executable(wisp
     src/process/control.cpp
     src/bar/bar.cpp
     src/cli/logCommand.cpp
+    src/cli/args.cpp
 )
 
 add_dependencies(wisp wisp_version_header)
