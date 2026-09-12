@@ -1,7 +1,7 @@
 // src/bar/bar.cpp
- 
+
 #include "bar/bar.hpp"
- 
+
 #include <cerrno>
 #include <csignal>
 #include <cstdlib>
@@ -10,17 +10,17 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
- 
+
 #include "config/config.hpp"
 #include "env.hpp"
 #include "logging/log.hpp"
 #include "process/pidfile.hpp"
 #include "process/supervisor.hpp"
- 
+
 #ifndef WISP_QML_IMPORT_PATH
 #define WISP_QML_IMPORT_PATH ""
 #endif
- 
+
 #ifndef WISP_SHARE_DIR
 #define WISP_SHARE_DIR ""
 #endif
@@ -69,9 +69,8 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
 // lifetime of the bar, which is what lets `pgrep wisp`, `wisp kill`,
 // and `wisp reload` find and control it.
 int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath) {
-    wisp::log::debug(
-        "runBar: qmlDir=" + qmlDir + " configPath=" + configPath +
-        " modulePath=" + (modulePath.empty() ? "<none>" : modulePath));
+    wisp::log::debug("runBar: qmlDir=" + qmlDir + " configPath=" + configPath +
+                     " modulePath=" + (modulePath.empty() ? "<none>" : modulePath));
 
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";
 
@@ -100,27 +99,24 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
     importPath += WISP_QML_IMPORT_PATH;
 
     if (const char *existing = std::getenv("QML2_IMPORT_PATH"); existing && *existing) {
-        wisp::log::warning(
-            "QML2_IMPORT_PATH is set in the environment (" + std::string(existing) +
-            "); ignoring it for the installed module path to avoid shadowing " +
-            std::string(WISP_QML_IMPORT_PATH));
+        wisp::log::warning("QML2_IMPORT_PATH is set in the environment (" + std::string(existing) +
+                           "); ignoring it for the installed module path to avoid shadowing " +
+                           std::string(WISP_QML_IMPORT_PATH));
     }
 
     wisp::log::debug("setting QML2_IMPORT_PATH=" + importPath);
     setenv("QML2_IMPORT_PATH", importPath.c_str(), 1);
 
     if (const char *existingShareDir = std::getenv(wisp::env::kShareDir); existingShareDir && *existingShareDir) {
-        wisp::log::debug(
-            std::string(wisp::env::kShareDir) + " already set in the environment (" +
-            existingShareDir + "); leaving it as-is");
+        wisp::log::debug(std::string(wisp::env::kShareDir) + " already set in the environment (" + existingShareDir +
+                         "); leaving it as-is");
     } else {
         wisp::log::debug(std::string("setting ") + wisp::env::kShareDir + "=" + WISP_SHARE_DIR);
     }
     setenv(wisp::env::kShareDir, WISP_SHARE_DIR, 0);
 
-    wisp::log::info(
-        "environment ready: QML2_IMPORT_PATH=" + std::string(std::getenv("QML2_IMPORT_PATH")) +
-        " " + wisp::env::kShareDir + "=" + std::getenv(wisp::env::kShareDir));
+    wisp::log::info("environment ready: QML2_IMPORT_PATH=" + std::string(std::getenv("QML2_IMPORT_PATH")) + " " +
+                    wisp::env::kShareDir + "=" + std::getenv(wisp::env::kShareDir));
 
     wisp::process::installSupervisorSignalHandlers();
     wisp::process::writePidFile(getpid());
