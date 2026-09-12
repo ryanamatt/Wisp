@@ -59,8 +59,7 @@ void ensureInitialized() {
     std::error_code ec;
     std::filesystem::create_directories(g_path.parent_path(), ec);
     if (ec) {
-        std::cerr << "wisp: could not create log directory "
-                   << g_path.parent_path() << ": " << ec.message() << "\n";
+        std::cerr << "wisp: could not create log directory " << g_path.parent_path() << ": " << ec.message() << "\n";
     }
 
     rotateIfOversized(g_path);
@@ -68,10 +67,7 @@ void ensureInitialized() {
     g_file.open(g_path, std::ios::app);
     g_writable = g_file.is_open();
 
-    if (!g_writable) {
-        std::cerr << "wisp: could not open log file " << g_path
-                   << ", logging to terminal only\n";
-    }
+    if (!g_writable) { std::cerr << "wisp: could not open log file " << g_path << ", logging to terminal only\n"; }
 }
 
 std::string timestamp() {
@@ -91,20 +87,20 @@ std::string timestamp() {
 
 std::string levelLabel(Level level) {
     switch (level) {
-        case Level::Debug:   return "DEBUG";
-        case Level::Info:    return "INFO ";
+        case Level::Debug: return "DEBUG";
+        case Level::Info: return "INFO ";
         case Level::Warning: return "WARN ";
-        case Level::Error:   return "ERROR";
+        case Level::Error: return "ERROR";
     }
     return "?????";
 }
 
 const char *levelColor(Level level) {
     switch (level) {
-        case Level::Debug:   return "\033[2m";     // dim
-        case Level::Info:    return "\033[36m";    // cyan
-        case Level::Warning: return "\033[33m";     // yellow
-        case Level::Error:   return "\033[1;31m";   // bold red
+        case Level::Debug: return "\033[2m";    // dim
+        case Level::Info: return "\033[36m";    // cyan
+        case Level::Warning: return "\033[33m"; // yellow
+        case Level::Error: return "\033[1;31m"; // bold red
     }
     return "";
 }
@@ -114,8 +110,8 @@ const char *levelColor(Level level) {
 // be used to recolor lines read back out of the log file.
 const char *colorForLabel(const std::string &label) {
     if (label == "DEBUG") return levelColor(Level::Debug);
-    if (label == "INFO")  return levelColor(Level::Info);
-    if (label == "WARN")  return levelColor(Level::Warning);
+    if (label == "INFO") return levelColor(Level::Info);
+    if (label == "WARN") return levelColor(Level::Warning);
     if (label == "ERROR") return levelColor(Level::Error);
     return "";
 }
@@ -125,8 +121,7 @@ void write(Level level, const std::string &category, const std::string &message)
     ensureInitialized();
 
     const std::string tag = category.empty() ? "wisp" : category;
-    const std::string plainLine =
-        "[" + timestamp() + "] [" + levelLabel(level) + "] [" + tag + "] " + message;
+    const std::string plainLine = "[" + timestamp() + "] [" + levelLabel(level) + "] [" + tag + "] " + message;
 
     if (g_writable) {
         g_file << plainLine << "\n";
@@ -142,17 +137,33 @@ void write(Level level, const std::string &category, const std::string &message)
 
 } // namespace
 
-void debug(const std::string &message) { write(Level::Debug, "", message); }
-void debug(const std::string &category, const std::string &message) { write(Level::Debug, category, message); }
+void debug(const std::string &message) {
+    write(Level::Debug, "", message);
+}
+void debug(const std::string &category, const std::string &message) {
+    write(Level::Debug, category, message);
+}
 
-void info(const std::string &message) { write(Level::Info, "", message); }
-void info(const std::string &category, const std::string &message) { write(Level::Info, category, message); }
+void info(const std::string &message) {
+    write(Level::Info, "", message);
+}
+void info(const std::string &category, const std::string &message) {
+    write(Level::Info, category, message);
+}
 
-void warning(const std::string &message) { write(Level::Warning, "", message); }
-void warning(const std::string &category, const std::string &message) { write(Level::Warning, category, message); }
+void warning(const std::string &message) {
+    write(Level::Warning, "", message);
+}
+void warning(const std::string &category, const std::string &message) {
+    write(Level::Warning, category, message);
+}
 
-void error(const std::string &message) { write(Level::Error, "", message); }
-void error(const std::string &category, const std::string &message) { write(Level::Error, category, message); }
+void error(const std::string &message) {
+    write(Level::Error, "", message);
+}
+void error(const std::string &category, const std::string &message) {
+    write(Level::Error, category, message);
+}
 
 std::string filePath() {
     std::lock_guard<std::mutex> lock(g_mutex);

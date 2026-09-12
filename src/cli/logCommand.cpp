@@ -1,7 +1,7 @@
 // src/cli/logCommand.cpp
- 
+
 #include "cli/logCommand.hpp"
- 
+
 #include <algorithm>
 #include <cerrno>
 #include <cstdlib>
@@ -12,9 +12,9 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
- 
+
 #include "logging/log.hpp"
- 
+
 namespace wisp::cli {
 
 int runLogCommand(LogCommand logCommand, int logNum) {
@@ -51,14 +51,13 @@ int runLogCommand(LogCommand logCommand, int logNum) {
 
     std::vector<std::string> lines;
     std::string line;
-    while (std::getline(logFile, line)) {
-        lines.push_back(line);
-    }
+    while (std::getline(logFile, line)) { lines.push_back(line); }
 
     size_t start = 0;
     size_t end = lines.size();
 
-    if (logCommand == LogCommand::Head) end = std::min(size_t(logNum), lines.size());
+    if (logCommand == LogCommand::Head)
+        end = std::min(size_t(logNum), lines.size());
     else if (logCommand == LogCommand::Tail) {
         if (lines.size() > logNum) start = lines.size() - logNum;
     }

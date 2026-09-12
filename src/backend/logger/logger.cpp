@@ -3,14 +3,23 @@
 #include "logger.hpp"
 #include "logging/log.hpp"
 
-Logger::Logger(QObject *parent) : QObject(parent) {}
+Logger::Logger(QObject *parent) : QObject(parent) {
+}
 
 Logger::~Logger() = default;
 
-void Logger::debug(const QString &message) { debug(QString(), message); }
-void Logger::info(const QString &message) { info(QString(), message); }
-void Logger::warning(const QString &message) { warning(QString(), message); }
-void Logger::error(const QString &message) { error(QString(), message); }
+void Logger::debug(const QString &message) {
+    debug(QString(), message);
+}
+void Logger::info(const QString &message) {
+    info(QString(), message);
+}
+void Logger::warning(const QString &message) {
+    warning(QString(), message);
+}
+void Logger::error(const QString &message) {
+    error(QString(), message);
+}
 
 void Logger::debug(const QString &category, const QString &message) {
     wisp::log::debug(category.toStdString(), message.toStdString());

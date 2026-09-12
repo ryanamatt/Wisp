@@ -65,7 +65,9 @@ private:
         QString endTime;
         QString title;
 
-        bool isAllDay() const { return startTime.isEmpty(); }
+        bool isAllDay() const {
+            return startTime.isEmpty();
+        }
     };
 
     void fetchMonthEvents();

@@ -14,27 +14,33 @@ namespace wisp::process {
 
 namespace {
 
-    volatile sig_atomic_t g_gotTermSignal = 0;
-    volatile sig_atomic_t g_gotReloadSignal = 0;
+volatile sig_atomic_t g_gotTermSignal = 0;
+volatile sig_atomic_t g_gotReloadSignal = 0;
 
-    void handleSupervisorSignal(int sig) {
-        if (sig == SIGTERM || sig == SIGINT) {
-            g_gotTermSignal = 1;
-        } else if (sig == SIGUSR1) {
-            g_gotReloadSignal = 1;
-        }
+void handleSupervisorSignal(int sig) {
+    if (sig == SIGTERM || sig == SIGINT) {
+        g_gotTermSignal = 1;
+    } else if (sig == SIGUSR1) {
+        g_gotReloadSignal = 1;
     }
+}
 
 } // namespace
 
-bool gotTermSignal() { return g_gotTermSignal != 0; }
- 
-bool gotReloadSignal() { return g_gotReloadSignal != 0; }
- 
-void clearReloadSignal() { g_gotReloadSignal = 0; }
+bool gotTermSignal() {
+    return g_gotTermSignal != 0;
+}
+
+bool gotReloadSignal() {
+    return g_gotReloadSignal != 0;
+}
+
+void clearReloadSignal() {
+    g_gotReloadSignal = 0;
+}
 
 void installSupervisorSignalHandlers() {
-    struct sigaction sa {};
+    struct sigaction sa{};
     sa.sa_handler = handleSupervisorSignal;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0; // deliberately no SA_RESTART, so waitpid() wakes up

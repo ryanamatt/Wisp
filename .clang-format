@@ -26,12 +26,12 @@ ReferenceAlignment: Pointer
 DerivePointerAlignment: false
 
 # Short statements
-AllowShortBlocksOnASameLine: Empty
+AllowShortBlocksOnASingleLine: true
 AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASameLine: WithoutElse
-AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
-AllowShortCaseLabelsOnASameLine: false
+AllowShortCaseLabelsOnASingleLine: true
 AllowShortLambdasOnASingleLine: All
 
 # Wrapping / spacing

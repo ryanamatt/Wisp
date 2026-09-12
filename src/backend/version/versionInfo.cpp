@@ -8,5 +8,5 @@ WispVersion::WispVersion(QObject *parent) : QObject(parent) {
 }
 
 QString WispVersion::version() const {
-    return m_version;        
+    return m_version;
 }
