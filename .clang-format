@@ -1,0 +1,56 @@
+---
+Language: Cpp
+Standard: c++17
+
+# Indentation
+UseTab: Never
+TabWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 4
+NamespaceIndentation: None
+IndentCaseLabels: true
+IndentPPDirectives: None
+AccessModifierOffset: -4
+
+ColumnLimit: 120
+
+# Braces attached to the same line everywhere (functions, namespaces,
+# control statements), matching the existing files.
+BreakBeforeBraces: Attach
+Cpp11BracedListStyle: true
+
+# `char *argv[]`, `const std::string &qmlDir`: stars/refs bind to the
+# name, not the type.
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+DerivePointerAlignment: false
+
+# Short statements
+AllowShortBlocksOnASameLine: Empty
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASameLine: WithoutElse
+AllowShortLoopsOnASingleLine: false
+AllowShortEnumsOnASingleLine: true
+AllowShortCaseLabelsOnASameLine: false
+AllowShortLambdasOnASingleLine: All
+
+# Wrapping / spacing
+BinPackArguments: true
+BinPackParameters: true
+AlignAfterOpenBracket: Align
+BreakBeforeBinaryOperators: None
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpaceAfterCStyleCast: false
+SpacesInSquareBrackets: false
+FixNamespaceComments: true
+
+# Blank lines
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+SortIncludes: true
+IncludeBlocks: Preserve
+
+PenaltyReturnTypeOnItsOwnLine: 1000
+PenaltyBreakAssignment: 100
