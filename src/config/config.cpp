@@ -119,11 +119,11 @@ Config load(const std::string &path) {
 
     if (j.contains("bar") && j["bar"].is_object()) {
         const auto &bar = j["bar"];
-        if (bar.contains("time-format")) {
-            if (bar["time-format"].is_string())
-                cfg.timeFormat = bar["time-format"].get<std::string>();
+        if (bar.contains("timeFormat")) {
+            if (bar["timeFormat"].is_string())
+                cfg.timeFormat = bar["timeFormat"].get<std::string>();
             else
-                wisp::log::warning("config", "bar.time-format must be a string, ignoring");
+                wisp::log::warning("config", "bar.timeFormat must be a string, ignoring");
         }
     }
 
