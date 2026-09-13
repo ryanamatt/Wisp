@@ -20,7 +20,9 @@ if(GIT_EXECUTABLE)
     endif()
 endif()
 
-set(_new_content "#pragma once\n#define WISP_VERSION \"${_version}\"\n")
+string(TIMESTAMP _build_date "%Y-%m-%d %H:%M:%S" UTC)
+
+set(_new_content "#pragma once\n#define WISP_VERSION \"${_version}\"\n#define WISP_BUILD_DATE \"${_build_date}\"\n")
 
 if(EXISTS ${OUTPUT_FILE})
     file(READ ${OUTPUT_FILE} _old_content)
