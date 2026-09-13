@@ -5,7 +5,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Colors"
 import Wisp.Time
 
@@ -36,12 +36,12 @@ BarWidgetContainer {
         }
     }
 
-    isOpenHere: GlobalState.timeWorkspace.isOpenOn(timeWorkspace.screen)
+    isOpenHere: IpcState.timeWorkspace.isOpenOn(timeWorkspace.screen)
 
     popupWindows: [calendarPopup]
 
-    onRequestOpen: GlobalState.timeWorkspace.open(timeWorkspace.screen)
-    onRequestClose: GlobalState.timeWorkspace.close()
+    onRequestOpen: IpcState.timeWorkspace.open(timeWorkspace.screen)
+    onRequestClose: IpcState.timeWorkspace.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

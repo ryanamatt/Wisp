@@ -6,7 +6,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
-import "../GlobalState"
+import "../IpcState"
 
 FloatingWindow {
     id: screenshot
@@ -20,7 +20,7 @@ FloatingWindow {
     color: "transparent"
 
     // Starts closed by default, opens only when IPC command triggers it
-    visible: GlobalState.screenshot.isOpen
+    visible: IpcState.screenshot.isOpen
 
     FocusScope {
         id: focusScope
@@ -28,7 +28,7 @@ FloatingWindow {
         anchors.fill: parent
         focus: true
 
-        Keys.onEscapePressed: GlobalState.screenshot.close()
+        Keys.onEscapePressed: IpcState.screenshot.close()
 
         Rectangle {
             id: winRect

@@ -9,7 +9,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "WorkspaceUtils.js" as WorkspaceUtils
 import "../Colors"
-import "../GlobalState"
+import "../IpcState"
 import Wisp.Log
 
 PanelWindow {
@@ -121,14 +121,14 @@ PanelWindow {
         id: switchWorkspace
         command: ["bash", "-c", "hyprctl dispatch 'hl.dsp.focus({ workspace = \"" + mainWindow.selectedWorkspace + "\" })'"]
         onExited: {
-            GlobalState.workspaceSwitcher.close()
+            IpcState.workspaceSwitcher.close()
         }
     }
 
     anchors { top: true; bottom: true; left: true; right: true; }
     color: "transparent"
 
-    visible: GlobalState.workspaceSwitcher.isOpen
+    visible: IpcState.workspaceSwitcher.isOpen
 
     onVisibleChanged: {
         if (mainWindow.visible) {
@@ -145,7 +145,7 @@ PanelWindow {
 
         // ----- Key Presses -----
 
-        Keys.onEscapePressed: GlobalState.workspaceSwitcher.close()
+        Keys.onEscapePressed: IpcState.workspaceSwitcher.close()
 
         Keys.onUpPressed: { mainWindow.moveFocus(-1); rolodexView.currentIndex = mainWindow.focusedIndex }
         Keys.onDownPressed: { mainWindow.moveFocus(1); rolodexView.currentIndex = mainWindow.focusedIndex }
@@ -185,7 +185,7 @@ PanelWindow {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    GlobalState.workspaceSwitcher.close()
+                    IpcState.workspaceSwitcher.close()
                 }
             }
         }

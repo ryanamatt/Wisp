@@ -1,4 +1,4 @@
-// qml/GlobalState/WindowState.qml
+// qml/IpcState/WindowState.qml
 
 import Quickshell.Io
 import QtQuick

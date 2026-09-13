@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Colors"
 
 BarWidgetContainer {
@@ -15,12 +15,12 @@ BarWidgetContainer {
     icon.text: "\udb82\ude38"
     icon.font.pixelSize: implicitWidth * 0.6
 
-    isOpenHere: GlobalState.clipboardWidget.isOpenOn(clipboardWidget.screen)
+    isOpenHere: IpcState.clipboardWidget.isOpenOn(clipboardWidget.screen)
 
     popupWindows: [clipboardPopup]
 
-    onRequestOpen: GlobalState.clipboardWidget.open(clipboardWidget.screen)
-    onRequestClose: GlobalState.clipboardWidget.close()
+    onRequestOpen: IpcState.clipboardWidget.open(clipboardWidget.screen)
+    onRequestClose: IpcState.clipboardWidget.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

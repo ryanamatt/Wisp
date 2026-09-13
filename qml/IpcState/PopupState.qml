@@ -1,4 +1,4 @@
-// qml/GlobalState/PopupState.qml
+// qml/IpcState/PopupState.qml
 
 import Quickshell
 import Quickshell.Io

@@ -3,7 +3,7 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Components"
 import "../../Colors"
 import Wisp.System
@@ -42,12 +42,12 @@ BarWidgetContainer {
     icon.text: currentTempState.glyph + SystemMonitor.cpuTemp + "°C|"+ SystemMonitor.cpuUsage.toFixed(1) + "%"
     icon.color: currentTempState.color
 
-    isOpenHere: GlobalState.systemMonitorWidget.isOpenOn(systemMonitorWidget.screen)
+    isOpenHere: IpcState.systemMonitorWidget.isOpenOn(systemMonitorWidget.screen)
 
     popupWindows: [monitorPopup]
 
-    onRequestOpen: GlobalState.systemMonitorWidget.open(systemMonitorWidget.screen)
-    onRequestClose: GlobalState.systemMonitorWidget.close()
+    onRequestOpen: IpcState.systemMonitorWidget.open(systemMonitorWidget.screen)
+    onRequestClose: IpcState.systemMonitorWidget.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

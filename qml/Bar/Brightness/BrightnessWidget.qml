@@ -3,7 +3,7 @@
 import QtQuick
 import Quickshell
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Colors"
 
 BarWidgetContainer {
@@ -24,12 +24,12 @@ BarWidgetContainer {
         return BrightnessSingleton.nightlightEnabled ? "\udb86\udc29" : "\uf186"
     }
 
-    isOpenHere: GlobalState.brightnessWidget.isOpenOn(brightnessWidget.screen)
+    isOpenHere: IpcState.brightnessWidget.isOpenOn(brightnessWidget.screen)
 
     popupWindows: [brightnessPopupWindow]
 
-    onRequestOpen: GlobalState.brightnessWidget.open(brightnessWidget.screen)
-    onRequestClose: GlobalState.brightnessWidget.close()
+    onRequestOpen: IpcState.brightnessWidget.open(brightnessWidget.screen)
+    onRequestClose: IpcState.brightnessWidget.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
