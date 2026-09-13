@@ -1,6 +1,6 @@
 {
     "bar": {
-        "time-format": "ddd MMM d hh:mm:ss AP"
+        "timeFormat": "ddd MMM d hh:mm:ss AP"
     },
     "font": "Noto Sans Mono",
     "appLauncher": {
@@ -10,7 +10,7 @@
             { "name": "Spotify", "command": ["spotify-launcher"], "icon": "spotify-launcher" },
             { "name": "Obsidian", "command": ["flatpak", "run", "md.obsidian.Obsidian"], "icon": "md.obsidian.Obsidian" },
             { "name": "VS Code", "command": ["code"], "icon": "vscode" },
-            { "name": "OBS Studio", "command": ["flatpak run com.obsproject.Studio"], "icon": "com.obsproject.Studio" },
+            { "name": "OBS Studio", "command": ["flatpak", "run", "com.obsproject.Studio"], "icon": "com.obsproject.Studio" },
             { "name": "Steam", "command": ["steam"], "icon": "steam" },
             { "name": "Dolphin", "command": ["dolphin"], "icon": "org.kde.dolphin" },
             { "name": "Polychromatic", "command": ["polychromatic-controller"], "icon": "polychromatic" }
