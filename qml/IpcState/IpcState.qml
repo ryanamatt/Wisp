@@ -1,4 +1,4 @@
-// qml/GlobalState/GlobalState.qml
+// qml/IpcState/IpcState.qml
 
 pragma Singleton
 
@@ -7,7 +7,6 @@ import Quickshell.Io
 import QtQuick
 
 Singleton {
-    id: globalState
 
     property PopupState timeWorkspace: PopupState { ipcName: "calendar" }
     property PopupState appLauncher: PopupState { ipcName: "appLauncher" }

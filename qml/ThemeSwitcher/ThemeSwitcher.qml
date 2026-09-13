@@ -6,7 +6,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
-import "../GlobalState"
+import "../IpcState"
 
 PanelWindow {
     id: window
@@ -21,7 +21,7 @@ PanelWindow {
     focusable: true
 
     // Starts closed by default, opens only when IPC command triggers it
-    visible: GlobalState.themeSwitcher.isOpen
+    visible: IpcState.themeSwitcher.isOpen
 
     // Process to run the wallpaper change script
     Process {
@@ -66,7 +66,7 @@ PanelWindow {
         anchors.fill: parent
         focus: true
 
-        Keys.onEscapePressed: GlobalState.themeSwitcher.close()
+        Keys.onEscapePressed: IpcState.themeSwitcher.close()
 
         Keys.onReturnPressed: {
             confirmSelection()
@@ -91,7 +91,7 @@ PanelWindow {
                 let scriptPath = Quickshell.env("WISP_SHARE_DIR") + "/scripts/change_wallpaper.sh"
                 wallpaperProcess.command = ["bash", scriptPath, path]
                 wallpaperProcess.running = true
-                GlobalState.themeSwitcher.close()
+                IpcState.themeSwitcher.close()
             }
         }
 
@@ -102,7 +102,7 @@ PanelWindow {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: GlobalState.themeSwitcher.close()
+                onClicked: IpcState.themeSwitcher.close()
             }    
         }
 

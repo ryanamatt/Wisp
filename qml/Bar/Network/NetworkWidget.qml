@@ -5,7 +5,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Colors"
 
 BarWidgetContainer {
@@ -22,12 +22,12 @@ BarWidgetContainer {
     icon.color: connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.foreground
     icon.font.pixelSize: implicitWidth * 0.6
 
-    isOpenHere: GlobalState.networkWidget.isOpenOn(networkWidget.screen)
+    isOpenHere: IpcState.networkWidget.isOpenOn(networkWidget.screen)
 
     popupWindows: [networkPopupWindow]
 
-    onRequestOpen: GlobalState.networkWidget.open(networkWidget.screen)
-    onRequestClose: GlobalState.networkWidget.close()
+    onRequestOpen: IpcState.networkWidget.open(networkWidget.screen)
+    onRequestClose: IpcState.networkWidget.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

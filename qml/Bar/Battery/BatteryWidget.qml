@@ -3,7 +3,7 @@
 import QtQuick
 import Quickshell
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Colors"
 
 BarWidgetContainer {
@@ -72,12 +72,12 @@ BarWidgetContainer {
     }
 
     // ----- Open/close plumbing, same shape as the other widgets -----
-    isOpenHere: GlobalState.batteryWidget.isOpenOn(batteryWidget.screen)
+    isOpenHere: IpcState.batteryWidget.isOpenOn(batteryWidget.screen)
 
     popupWindows: [batteryPopupWindow]
 
-    onRequestOpen: GlobalState.batteryWidget.open(batteryWidget.screen)
-    onRequestClose: GlobalState.batteryWidget.close()
+    onRequestOpen: IpcState.batteryWidget.open(batteryWidget.screen)
+    onRequestClose: IpcState.batteryWidget.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

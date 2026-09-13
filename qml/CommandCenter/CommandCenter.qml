@@ -6,7 +6,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
-import "../GlobalState"
+import "../IpcState"
 import "SystemSection"
 import "WelcomeSection"
 import "PackagesSection"
@@ -24,7 +24,7 @@ FloatingWindow {
     color: "transparent"
 
     // Starts closed by default, opens only when IPC command triggers it
-    visible: GlobalState.commandCenter.isOpen
+    visible: IpcState.commandCenter.isOpen
 
     property var sectionColumns: [
         { id: "welcome", text: "Welcome" },
@@ -45,7 +45,7 @@ FloatingWindow {
         anchors.fill: parent
         focus: true
 
-        Keys.onEscapePressed: GlobalState.commandCenter.close()
+        Keys.onEscapePressed: IpcState.commandCenter.close()
 
         Rectangle {
             id: winRect

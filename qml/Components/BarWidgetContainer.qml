@@ -20,7 +20,7 @@ Rectangle {
     // ----- Open/close progress -----
     // Bind isOpenHere to whatever condition means "my popup is the one
     // currently open" (this differs per widget, e.g. comparing against
-    // GlobalState screen/open flags).
+    // IpcState screen/open flags).
     property bool isOpenHere: false
 
     property real openProgress: isOpenHere ? 1 : 0

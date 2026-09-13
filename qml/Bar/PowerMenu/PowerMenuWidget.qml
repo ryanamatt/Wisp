@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 import "../../Colors"
 
 BarWidgetContainer {
@@ -15,12 +15,12 @@ BarWidgetContainer {
     icon.text: "\udb81\udc25"
     icon.font.pixelSize: implicitWidth * 0.6
 
-    isOpenHere: GlobalState.powerMenu.isOpenOn(powerMenu.screen)
+    isOpenHere: IpcState.powerMenu.isOpenOn(powerMenu.screen)
 
     popupWindows: [powerMenuPopup]
 
-    onRequestOpen: GlobalState.powerMenu.open(powerMenu.screen)
-    onRequestClose: GlobalState.powerMenu.close()
+    onRequestOpen: IpcState.powerMenu.open(powerMenu.screen)
+    onRequestClose: IpcState.powerMenu.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

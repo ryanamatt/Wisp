@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Hyprland
 import "../../Colors"
 import "../../Components"
-import "../../GlobalState"
+import "../../IpcState"
 
 BarWidgetContainer {
     id: appsWidget
@@ -15,12 +15,12 @@ BarWidgetContainer {
 
     icon.text: "\uf40e"
 
-    isOpenHere: GlobalState.appLauncher.isOpenOn(appsWidget.screen)
+    isOpenHere: IpcState.appLauncher.isOpenOn(appsWidget.screen)
 
     popupWindows: [launcherPopup]
 
-    onRequestOpen: GlobalState.appLauncher.open(appsWidget.screen)
-    onRequestClose: GlobalState.appLauncher.close()
+    onRequestOpen: IpcState.appLauncher.open(appsWidget.screen)
+    onRequestClose: IpcState.appLauncher.close()
 
     onIsOpenHereChanged: {
         if (isOpenHere) {

@@ -6,7 +6,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import "../Colors"
-import "../GlobalState"
+import "../IpcState"
 import "../Components"
 
 Item {
@@ -32,7 +32,7 @@ Item {
         runScreeenshotCommand.command = ["bash", screenshotTab.scriptPath].concat(commandFlags)
 
         // Close the UI popup first
-        GlobalState.screenshot.close()
+        IpcState.screenshot.close()
 
         // Wait a brief moment, then launch detached
         delayTimer.restart()
