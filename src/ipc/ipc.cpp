@@ -21,6 +21,7 @@ int exec(const std::string &qmlDir, const std::string &target, const std::string
     args.push_back(const_cast<char *>("call"));
     args.push_back(const_cast<char *>(target.c_str()));
     args.push_back(const_cast<char *>(action.c_str()));
+    args.push_back(nullptr);
 
     execvp("qs", args.data());
 
