@@ -4,12 +4,12 @@
 
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 #include <optional>
 
 #include <nlohmann/json.hpp>
 
 #include <env.hpp>
+#include <logging/log.hpp>
 
 namespace wisp::config {
 
@@ -42,7 +42,7 @@ std::optional<std::vector<AppEntry>> parseApps(const nlohmann::json &j) {
     for (const auto &entry : launcher["apps"]) {
         if (!entry.is_object() || !entry.contains("name") || !entry["name"].is_string() || !entry.contains("command") ||
             !entry["command"].is_array()) {
-            std::cerr << "wisp: skipping invalid appLauncher.apps entry (needs name + command)\n";
+            wisp::log::warning("config", "skipping invalid appLauncher.apps entry (needs name + command)");
             continue;
         }
 
@@ -53,7 +53,7 @@ std::optional<std::vector<AppEntry>> parseApps(const nlohmann::json &j) {
             if (part.is_string()) { app.command.push_back(part.get<std::string>()); }
         }
         if (app.command.empty()) {
-            std::cerr << "wisp: skipping appLauncher.apps entry \"" << app.name << "\": empty command\n";
+            wisp::log::warning("config", "skipping appLauncher.apps entry \"" + app.name + "\": empty command");
             continue;
         }
 
@@ -111,8 +111,8 @@ Config load(const std::string &path) {
     try {
         in >> j;
     } catch (const nlohmann::json::parse_error &e) {
-        std::cerr << "wisp: failed to parse config at " << path << ": " << e.what() << "\n";
-        std::cerr << "wisp: falling back to defaults\n";
+        wisp::log::error("config", "failed to parse config at " + path + ": " + e.what());
+        wisp::log::info("config", "falling back to defaults");
         exportEnv(cfg);
         return cfg;
     }
@@ -123,7 +123,7 @@ Config load(const std::string &path) {
             if (bar["time-format"].is_string())
                 cfg.timeFormat = bar["time-format"].get<std::string>();
             else
-                std::cerr << "wisp: bar.time-format must be a string, ignoring\n";
+                wisp::log::warning("config", "bar.time-format must be a string, ignoring");
         }
     }
 
@@ -131,7 +131,7 @@ Config load(const std::string &path) {
         if (j["font"].is_string())
             cfg.font = j["font"].get<std::string>();
         else
-            std::cerr << "wisp: font must be a string, ignoring\n";
+            wisp::log::warning("config", "font must be a string, ignoring");
     }
 
     if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
