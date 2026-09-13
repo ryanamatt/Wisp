@@ -47,7 +47,9 @@ void printUsage(const char *argv0) {
 }
 
 void printVersion() {
-    std::cout << "wisp " << WISP_VERSION << "\n";
+    std::cout << "Wisp\n"
+              << "Version: " << WISP_VERSION << "\n"
+              << "Built: " << WISP_BUILD_DATE << "\n";
 }
 
 ParsedArgs parse(int argc, char *argv[]) {
