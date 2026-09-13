@@ -5,11 +5,12 @@ import QtQuick
 import QtQuick.Layouts
 import "../../Components"
 import "../../Colors"
+import "../../Config"
 
 ColumnLayout {
     id: rootLayout
     Layout.fillWidth: true
-    spacing: 8
+    spacing: 3
 
     property string icon: ""
     property string name: ""
@@ -23,7 +24,7 @@ ColumnLayout {
 
     property int labelWidth: 100
     property int beforeTextWidth: 46
-    property int afterTextWidth: 90
+    property int afterTextWidth: 110
 
     // Small helper so every bar's fill color reacts to how "hot" the stat is
     function levelColor() {
@@ -34,7 +35,7 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: 8
+        spacing: 4
 
         RowLayout {
             Layout.preferredWidth: rootLayout.labelWidth
@@ -43,8 +44,8 @@ ColumnLayout {
 
             Text {
                 text: rootLayout.icon
-                font.family: "Symbols Nerd Font"
                 font.pixelSize: 22
+                font.family: Config.font
                 color: Colors.colors.foreground
             }
 
@@ -53,6 +54,7 @@ ColumnLayout {
                 color: Colors.colors.foreground
                 font.bold: true
                 font.pixelSize: 14
+                font.family: Config.font
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
@@ -62,6 +64,7 @@ ColumnLayout {
             text: rootLayout.beforeBarText
             color: rootLayout.levelColor()
             font.pixelSize: 14
+            font.family: Config.font
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
             Layout.preferredWidth: rootLayout.beforeTextWidth
@@ -80,6 +83,7 @@ ColumnLayout {
             text: rootLayout.afterBarText
             color: Colors.colors.foreground
             font.pixelSize: 12
+            font.family: Config.font
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
             Layout.preferredWidth: rootLayout.afterTextWidth

@@ -3,6 +3,7 @@
 import QtQuick
 import Quickshell.Hyprland
 import "../Colors"
+import "../Config"
 
 Rectangle {
     id: container
@@ -94,7 +95,7 @@ Rectangle {
         anchors.centerIn: parent
         color: Colors.colors.foreground
         font.pixelSize: container.implicitWidth * 0.4
-        font.family: "Noto Sans Mono"
+        font.family: Config.font
     }
 
 }

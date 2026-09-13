@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import "../../Colors"
+import "../../Config"
 
 ColumnLayout {
     id: root
@@ -109,8 +110,8 @@ ColumnLayout {
 
         Text {
             text: "Packages"
-            font.family: "Iosevka Nerd Font Propo"
             font.pixelSize: 20
+            font.family: Config.font
             font.bold: true
             color: Colors.colors.accent
         }
@@ -119,8 +120,8 @@ ColumnLayout {
 
         Text {
             text: root.refreshing ? "Checking..." : (root.lastChecked.length ? "Checked " + root.lastChecked : "")
-            font.family: "Iosevka Nerd Font Propo"
             font.pixelSize: 11
+            font.family: Config.font
             color: Colors.colors.foregroundMuted
         }
 
@@ -138,8 +139,8 @@ ColumnLayout {
                 id: refreshText
                 anchors.centerIn: parent
                 text: "Refresh"
-                font.family: "Iosevka Nerd Font Propo"
                 font.pixelSize: 12
+                font.family: Config.font
                 color: Colors.colors.accentAlt
             }
 
@@ -172,23 +173,23 @@ ColumnLayout {
 
                 Text {
                     text: "Arch / AUR"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 13
+                    font.family: Config.font
                     font.bold: true
                     color: Colors.colors.foreground
                 }
 
                 Text {
                     text: root.yayInstalledCount + " installed"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 11
+                    font.family: Config.font
                     color: Colors.colors.foregroundMuted
                 }
 
                 Text {
                     text: root.yayUpdates.length + (root.yayUpdates.length === 1 ? " update" : " updates")
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 12
+                    font.family: Config.font
                     font.bold: true
                     color: root.yayUpdates.length > 0 ? Colors.colors.warning : Colors.colors.success
                 }
@@ -210,23 +211,23 @@ ColumnLayout {
 
                 Text {
                     text: "Flatpak"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 13
+                    font.family: Config.font
                     font.bold: true
                     color: Colors.colors.foreground
                 }
 
                 Text {
                     text: root.flatpakInstalledCount + " installed"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 11
+                    font.family: Config.font
                     color: Colors.colors.foregroundMuted
                 }
 
                 Text {
                     text: root.flatpakUpdates.length + (root.flatpakUpdates.length === 1 ? " update" : " updates")
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 12
+                    font.family: Config.font
                     font.bold: true
                     color: root.flatpakUpdates.length > 0 ? Colors.colors.warning : Colors.colors.success
                 }
@@ -256,8 +257,8 @@ ColumnLayout {
 
                 Text {
                     text: "Pending AUR / pacman"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 12
+                    font.family: Config.font
                     color: Colors.colors.foregroundMuted
                 }
 
@@ -271,8 +272,8 @@ ColumnLayout {
                     delegate: Text {
                         width: ListView.view.width
                         text: modelData
-                        font.family: "Iosevka Nerd Font Propo"
                         font.pixelSize: 11
+                        font.family: Config.font
                         color: Colors.colors.foreground
                         elide: Text.ElideRight
                     }
@@ -281,8 +282,8 @@ ColumnLayout {
                 Text {
                     visible: !root.refreshing && root.yayUpdates.length === 0
                     text: "Up to date"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 11
+                    font.family: Config.font
                     color: Colors.colors.foregroundMuted
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 10
@@ -306,8 +307,8 @@ ColumnLayout {
 
                 Text {
                     text: "Pending Flatpak"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 12
+                    font.family: Config.font
                     color: Colors.colors.foregroundMuted
                 }
 
@@ -321,8 +322,8 @@ ColumnLayout {
                     delegate: Text {
                         width: ListView.view.width
                         text: modelData
-                        font.family: "Iosevka Nerd Font Propo"
                         font.pixelSize: 11
+                        font.family: Config.font
                         color: Colors.colors.foreground
                         elide: Text.ElideRight
                     }
@@ -331,8 +332,8 @@ ColumnLayout {
                 Text {
                     visible: !root.refreshing && root.flatpakUpdates.length === 0
                     text: "Up to date"
-                    font.family: "Iosevka Nerd Font Propo"
                     font.pixelSize: 11
+                    font.family: Config.font
                     color: Colors.colors.foregroundMuted
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 10

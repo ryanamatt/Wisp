@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../Colors"
 import "../../Components"
+import "../../Config"
 
 BarPopup {
     id: powerMenuPopup
@@ -135,7 +136,7 @@ BarPopup {
 
                     Text {
                         text: modelData.glyph
-                        font.family: "Iosevka Nerd Font Propo"
+                        font.family: Config.font
                         font.pixelSize: confirming ? 25 : 32
                         color: confirming ? Colors.colors.success : powerMenuPopup.colorFor(modelData)
                         Layout.alignment: Qt.AlignHCenter
@@ -146,6 +147,7 @@ BarPopup {
                         visible: confirming
                         font.pixelSize: 25
                         font.bold: true
+                        font.family: Config.font
                         color: Colors.colors.success  
                     }
                 }

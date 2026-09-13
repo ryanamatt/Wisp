@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
+import "../../Config"
 
 RowLayout {
     id: root
@@ -75,6 +76,7 @@ RowLayout {
                         text: root.getSpecialLabel(root.activeWorkspace)
                         font.pixelSize: 10
                         font.bold: true
+                        font.family: Config.font
                         color: Colors.colors.background
                     }
 

@@ -2,6 +2,7 @@
     "bar": {
         "time-format": "ddd MMM d hh:mm:ss AP"
     },
+    "font": "Noto Sans Mono",
     "appLauncher": {
         "apps": [
             { "name": "Chrome", "command": ["google-chrome-stable"], "icon": "google-chrome" },

@@ -6,6 +6,7 @@ import Quickshell.Io
 import Quickshell
 import "../../Components"
 import "../../Colors"
+import "../../Config"
 
 BarPopup {
     id: brightnessPopup
@@ -35,7 +36,7 @@ BarPopup {
 
             Text {
                 text: "\uf185"
-                font.family: "Iosevka Nerd Font Propo"
+                font.family: Config.font
                 font.pixelSize: 18
                 color: Colors.colors.foreground
 
@@ -58,7 +59,7 @@ BarPopup {
                 Layout.preferredWidth: 34
                 text: BrightnessSingleton.brightnessPercent + "%"
                 color: Colors.colors.foregroundMuted
-                font.family: "Noto Sans Mono"
+                font.family: Config.font
                 font.pixelSize: 12
             }
         }
@@ -69,7 +70,7 @@ BarPopup {
             text: "No backlight on this display"
             horizontalAlignment: Text.AlignHCenter
             color: Colors.colors.foregroundMuted
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
             font.pixelSize: 12
         }
 
@@ -98,7 +99,7 @@ BarPopup {
                 Text {
                     text: "Warmth"
                     color: Colors.colors.foregroundMuted
-                    font.family: "Noto Sans Mono"
+                    font.family: Config.font
                     font.pixelSize: 11
                 }
 
@@ -114,7 +115,7 @@ BarPopup {
                     Layout.preferredWidth: 48
                     text: BrightnessSingleton.currentKelvin + "K"
                     color: Colors.colors.foregroundMuted
-                    font.family: "Noto Sans Mono"
+                    font.family: Config.font
                     font.pixelSize: 12
                 }
             }
@@ -129,7 +130,7 @@ BarPopup {
             Text {
                 text: "Kbd Light"
                 color: Colors.colors.foregroundMuted
-                font.family: "Noto Sans Mono"
+                font.family: Config.font
                 font.pixelSize: 11
             }
 
@@ -144,7 +145,7 @@ BarPopup {
             Text {
                 text: BrightnessSingleton.keyboardBacklightValue
                 color: Colors.colors.foregroundMuted
-                font.family: "Noto Sans Mono"
+                font.family: Config.font
                 font.pixelSize: 11
             }
         }

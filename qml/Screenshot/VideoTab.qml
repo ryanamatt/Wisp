@@ -6,6 +6,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
+import "../Config"
 
 Item {
     id: videoTab
@@ -30,6 +31,7 @@ Item {
             color: Colors.colors.accent
             text: "Coming Soon"
             font.bold: true
+            font.family: Config.font
         }
     }
 }

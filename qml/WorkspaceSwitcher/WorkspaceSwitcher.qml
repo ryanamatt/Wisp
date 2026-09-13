@@ -10,6 +10,7 @@ import QtQuick.Controls
 import "WorkspaceUtils.js" as WorkspaceUtils
 import "../Colors"
 import "../IpcState"
+import "../Config"
 import Wisp.Log
 
 PanelWindow {
@@ -225,6 +226,7 @@ PanelWindow {
                 text: "No active workspaces"
                 color: Colors.colors.foregroundMuted
                 font.pixelSize: 20
+                font.family: Config.font
             }
 
 
@@ -311,6 +313,7 @@ PanelWindow {
                                 }
                                 color: Colors.colors.info
                                 font.pixelSize: 16
+                                font.family: Config.font
                                 font.bold: true
                             }
 
@@ -333,6 +336,7 @@ PanelWindow {
                                 text: "(empty)"
                                 color: Colors.colors.foregroundMuted
                                 font.pixelSize: 14
+                                font.family: Config.font
                                 font.italic: true
                             }
 

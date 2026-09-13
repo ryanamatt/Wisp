@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
+import "../../Config"
 import Wisp.Calendar
 
 ColumnLayout {
@@ -39,7 +40,7 @@ ColumnLayout {
         text: "Upcoming"
         color: Colors.colors.foregroundMuted
         font.pixelSize: 10
-        font.family: "Noto Sans Mono"
+        font.family: Config.font
     }
 
     Text {
@@ -49,7 +50,7 @@ ColumnLayout {
         color: Colors.colors.error
         wrapMode: Text.WordWrap
         font.pixelSize: 11
-        font.family: "Noto Sans Mono"
+        font.family: Config.font
     }
 
     Text {
@@ -57,7 +58,7 @@ ColumnLayout {
         text: "No upcoming events"
         color: Colors.colors.foregroundMuted
         font.pixelSize: 11
-        font.family: "Noto Sans Mono"
+        font.family: Config.font
     }
 
     Flickable {
@@ -85,7 +86,7 @@ ColumnLayout {
                         text: upcomingEvents.dateLabel(modelData.startDate) + " · " + upcomingEvents.timeLabel(modelData.startTime)
                         color: Colors.colors.accentAlt
                         font.pixelSize: 10
-                        font.family: "Noto Sans Mono"
+                        font.family: Config.font
                     }
 
                     Text {
@@ -93,7 +94,7 @@ ColumnLayout {
                         text: modelData.title
                         color: Colors.colors.foreground
                         font.pixelSize: 12
-                        font.family: "Noto Sans Mono"
+                        font.family: Config.font
                         elide: Text.ElideRight
                     }
                 }

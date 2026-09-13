@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
+import "../../Config"
 import Wisp.Calendar
 
 ColumnLayout {
@@ -21,7 +22,7 @@ ColumnLayout {
             text: "‹"
             color: Colors.colors.foreground
             font.pixelSize: 16
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
 
             MouseArea {
                 anchors.fill: parent
@@ -38,14 +39,14 @@ ColumnLayout {
             color: Colors.colors.foreground
             font.pixelSize: 13
             font.bold: true
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
         }
 
         Text {
             text: "›"
             color: Colors.colors.foreground
             font.pixelSize: 16
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
 
             MouseArea {
                 anchors.fill: parent
@@ -72,7 +73,7 @@ ColumnLayout {
                 text: modelData
                 color: Colors.colors.foregroundMuted
                 font.pixelSize: 10
-                font.family: "Noto Sans Mono"
+                font.family: Config.font
             }
         }
     }
@@ -111,7 +112,7 @@ ColumnLayout {
                         : (modelData.inMonth ? Colors.colors.foreground : Colors.colors.foregroundMuted)
                     opacity: modelData.inMonth ? 1 : 0.4
                     font.pixelSize: 11
-                    font.family: "Noto Sans Mono"
+                    font.family: Config.font
                 }
 
                 Rectangle {
