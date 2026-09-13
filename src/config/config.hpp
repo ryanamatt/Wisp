@@ -11,6 +11,7 @@ namespace wisp::config {
 // Defaults live here and only here.
 // ---------------------------------------------------------------------
 inline constexpr const char *kDefaultTimeFormat = "ddd MMM d hh:mm:ss AP";
+inline constexpr const char *kDefaultBarOrientation = "top";
 inline constexpr const char * kDefaultFont = "Noto Sans";
 
 // One entry in the app launcher's grid.
@@ -26,6 +27,7 @@ std::vector<AppEntry> defaultApps();
 
 struct Config {
     std::string timeFormat = kDefaultTimeFormat;
+    std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;
     std::vector<AppEntry> apps = defaultApps();
 };

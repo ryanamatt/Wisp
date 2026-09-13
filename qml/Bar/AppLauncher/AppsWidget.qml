@@ -7,6 +7,7 @@ import Quickshell.Hyprland
 import "../../Colors"
 import "../../Components"
 import "../../IpcState"
+import "../../Config"
 
 BarWidgetContainer {
     id: appsWidget
@@ -36,7 +37,8 @@ BarWidgetContainer {
         id: launcherPopup
 
         anchor.item: appsWidget
-        anchor.edges: Edges.Bottom | Edges.Left
+        anchor.edges: appsWidget.barAtBottom ? Edges.Top : Edges.Bottom | Edges.Left
+        anchor.gravity: (appsWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
         anchor.margins.top: 0
 
         color: "transparent"
@@ -58,21 +60,20 @@ BarWidgetContainer {
                 id: panel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.top: appsWidget.barAtBottom ? undefined : parent.top
+                anchors.bottom: appsWidget.barAtBottom ? parent.bottom : undefined
                 height: parent.height
 
-                transformOrigin: Item.Top
+                transformOrigin: appsWidget.barAtBottom ? Item.Bottom : Item.Top
                 scale: 0.85 + 0.15 * appsWidget.openProgress
                 opacity: appsWidget.openProgress
-                y: (1 - appsWidget.openProgress) * -14
+                y: appsWidget.barAtBottom
+                    ? (1 - appsWidget.openProgress) * 14
+                    : (1 - appsWidget.openProgress) * -14
 
-                // Only the top-left corner actually touches the pill above
-                // it, so only that one squares off; every other corner
-                // (including top-right) stays rounded like the rest of the
-                // panel.
-                topLeftRadius: 0
+                topLeftRadius: appsWidget.barAtBottom ? 40 : 0
                 topRightRadius: 40
-                bottomLeftRadius: 40
+                bottomLeftRadius: appsWidget.barAtBottom ? 0 : 40
                 bottomRightRadius: 40
 
                 color: Colors.colors.backgroundAlt

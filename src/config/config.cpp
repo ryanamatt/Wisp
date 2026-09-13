@@ -73,6 +73,7 @@ std::optional<std::vector<AppEntry>> parseApps(const nlohmann::json &j) {
 
 void exportEnv(const Config &cfg) {
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
+    setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
     setenv(wisp::env::kFont, cfg.font.c_str(), 1);
     setenv(wisp::env::kAppsJson, appsToJson(cfg.apps).c_str(), 1);
 }
@@ -124,6 +125,13 @@ Config load(const std::string &path) {
                 cfg.timeFormat = bar["timeFormat"].get<std::string>();
             else
                 wisp::log::warning("config", "bar.timeFormat must be a string, ignoring");
+        }
+
+        if (bar.contains("orientation")) {
+            if (bar["orientation"].is_string())
+                cfg.barOrientation = bar["orientation"].get<std::string>();
+            else
+                wisp::log::warning("config", "bar.orientation must be a string, ignoring");
         }
     }
 

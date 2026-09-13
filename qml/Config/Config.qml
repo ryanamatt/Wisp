@@ -8,6 +8,8 @@ import Quickshell
 Singleton {
     id: config
 
-    property string font: Quickshell.env("WISP_FONT") || "Noto Sans";
+    property string barOrientation: Quickshell.env("WISP_BAR_ORIENTATION") || "top"
+
+    property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
 
 }

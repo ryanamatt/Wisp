@@ -6,6 +6,7 @@ import Quickshell
 import "../../Components"
 import "../../IpcState"
 import "../../Colors"
+import "../../Config"
 
 BarWidgetContainer {
     id: clipboardWidget
@@ -38,8 +39,8 @@ BarWidgetContainer {
         id: clipboardPopup
 
         anchor.item: clipboardWidget
-        anchor.edges: Edges.Bottom
-        anchor.gravity: Edges.Bottom | Edges.HCenter
+        anchor.edges: clipboardWidget.barAtBottom ? Edges.Top : Edges.Bottom
+        anchor.gravity: (clipboardWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
         anchor.margins.top: 0
 
         color: "transparent"
@@ -56,13 +57,16 @@ BarWidgetContainer {
                 id: panel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.top: clipboardWidget.barAtBottom ? undefined : parent.top
+                anchors.bottom: clipboardWidget.barAtBottom ? parent.bottom : undefined
                 height: parent.height
 
-                transformOrigin: Item.Top
+                transformOrigin: clipboardWidget.barAtBottom ? Item.Bottom : Item.Top
                 scale: 0.85 + 0.15 * clipboardWidget.openProgress
                 opacity: clipboardWidget.openProgress
-                y: (1 - clipboardWidget.openProgress) * -14
+                y: clipboardWidget.barAtBottom
+                    ? (1 - clipboardWidget.openProgress) * 14
+                    : (1 - clipboardWidget.openProgress) * -14
                 radius: 20
 
                 color: Colors.colors.backgroundAlt
