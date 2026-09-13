@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
+import "../../Config"
 
 Rectangle {
     id: root
@@ -26,8 +27,8 @@ Rectangle {
 
         Text {
             text: root.title
-            font.family: "Iosevka Nerd Font Propo"
             font.pixelSize: 20
+            font.family: Config.font
             font.bold: true
             color: Colors.colors.accentAlt
             Layout.alignment: Qt.AlignHCenter

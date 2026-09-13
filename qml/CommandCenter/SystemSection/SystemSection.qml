@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../Colors"
 import "../../Components"
+import "../../Config"
 import "../../Utils/Utils.js" as Utils
 import Wisp.System
 
@@ -43,8 +44,8 @@ ColumnLayout {
         Layout.topMargin: 10
 
         text: "System Monitor"
-        font.family: "Iosevka Nerd Font Propo"
         font.pixelSize: 25
+        font.family: Config.font
         color: Colors.colors.foregroundMuted
     }
 
@@ -56,8 +57,8 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
 
             text: "Uptime: " + Utils.formatUptime(SystemMonitor.uptimeSeconds)
-            font.family: "Iosevka Nerd Font Propo"
             font.pixelSize: 20
+            font.family: Config.font
             color: Colors.colors.foregroundMuted
             opacity: 0.7
         }
@@ -68,8 +69,8 @@ ColumnLayout {
             text: "Load: " + Utils.formatLoad(SystemMonitor.loadAvg1)
                 + "  " + Utils.formatLoad(SystemMonitor.loadAvg5)
                 + "  " + Utils.formatLoad(SystemMonitor.loadAvg15)
-            font.family: "Iosevka Nerd Font Propo"
             font.pixelSize: 20
+            font.family: Config.font
             color: Colors.colors.foregroundMuted
             opacity: 0.7
         }

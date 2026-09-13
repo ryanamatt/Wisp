@@ -6,6 +6,7 @@ import Quickshell.Io
 import Quickshell
 import "../../Components"
 import "../../Colors"
+import "../../Config"
 
 BarPopup {
     id: batteryPopup
@@ -231,7 +232,7 @@ BarPopup {
             Layout.fillWidth: true
             text: "Battery & Accessories"
             color: Colors.colors.foreground
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
             font.pixelSize: 13
             font.bold: true
         }
@@ -259,7 +260,7 @@ BarPopup {
 
                     Text {
                         text: row.modelData.icon
-                        font.family: "Iosevka Nerd Font Propo"
+                        font.family: Config.font
                         font.pixelSize: 16
                         color: row.modelData.charging ? Colors.colors.accentAlt : Colors.colors.foreground
                         Layout.preferredWidth: 20
@@ -269,7 +270,7 @@ BarPopup {
                         Layout.fillWidth: true
                         text: row.modelData.name
                         color: Colors.colors.foreground
-                        font.family: "Noto Sans Mono"
+                        font.family: Config.font
                         font.pixelSize: 12
                         elide: Text.ElideRight
                     }
@@ -297,7 +298,7 @@ BarPopup {
                         horizontalAlignment: Text.AlignRight
                         text: row.modelData.percent + "%"
                         color: row.modelData.percent <= 20 ? Colors.colors.error : Colors.colors.foregroundMuted
-                        font.family: "Noto Sans Mono"
+                        font.family: Config.font
                         font.pixelSize: 12
                     }
                 }
@@ -311,7 +312,7 @@ BarPopup {
             text: "No battery-reporting devices found"
             horizontalAlignment: Text.AlignHCenter
             color: Colors.colors.foregroundMuted
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
             font.pixelSize: 12
         }
     }

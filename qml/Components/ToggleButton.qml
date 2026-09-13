@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../Colors"
+import "../Config"
 
 Item {
     id: rootLayout
@@ -54,7 +55,7 @@ Item {
             text: rootLayout.label
             color: Colors.colors.foregroundMuted
             font.pixelSize: 11
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
             anchors.verticalCenter: parent.verticalCenter
         }
     }

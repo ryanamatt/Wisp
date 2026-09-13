@@ -7,6 +7,7 @@ import Quickshell
 import "../../Components"
 import "../../IpcState"
 import "../../Colors"
+import "../../Config"
 import Wisp.Time
 
 BarWidgetContainer {
@@ -27,7 +28,7 @@ BarWidgetContainer {
             text: Time.time
             color: Colors.colors.foreground
             font.pixelSize: 14
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
         }
 
         WorkspaceIndicator { 

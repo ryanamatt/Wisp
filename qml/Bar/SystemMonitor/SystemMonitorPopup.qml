@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../Colors"
 import "../../Components"
+import "../../Config"
 import "../../Utils/Utils.js" as Utils
 import Wisp.System
 

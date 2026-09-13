@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
 import "../IpcState"
+import "../Config"
 
 PanelWindow {
     id: window
@@ -131,6 +132,7 @@ PanelWindow {
                     text: "Select Wallpaper"
                     color: Colors.colors.foreground
                     font.pixelSize: 18
+                    font.family: Config.font
                     font.bold: true
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -196,12 +198,14 @@ PanelWindow {
                                 Text {
                                     text: "🎲"
                                     font.pixelSize: 32
+                                    font.family: Config.font
                                     Layout.alignment: Qt.AlignHCenter
                                 }
                                 Text {
                                     text: "Random"
                                     color: Colors.colors.foreground
                                     font.pixelSize: 13
+                                    font.family: Config.font
                                     font.bold: true
                                     Layout.alignment: Qt.AlignHCenter
                                 }
@@ -222,6 +226,7 @@ PanelWindow {
                     text: "Use ← / → arrows to navigate (wraps around), Enter to confirm, Esc to close"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 12
+                    font.family: Config.font
                     Layout.alignment: Qt.AlignHCenter
                 }
             }

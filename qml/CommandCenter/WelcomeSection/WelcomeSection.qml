@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 import "../../Colors"
 import "../../Effects"
+import "../../Config"
 
 ColumnLayout {
     id: root
@@ -47,8 +48,8 @@ ColumnLayout {
         Layout.topMargin: 10
 
         text: userName ? root.greeting() + ", " + userName + "!" : root.greeting()
-        font.family: "Iosevka Nerd Font Propo"
         font.pixelSize: 25
+        font.family: Config.font
         color: Colors.colors.foregroundMuted
 
         Timer {

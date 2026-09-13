@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell
 import "../../Components"
 import "../../Colors"
+import "../../Config"
 
 BarPopup {
     id: clipboardPopup
@@ -79,6 +80,7 @@ BarPopup {
                     text: "⌕"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 15
+                    font.family: Config.font
                     Layout.alignment: Qt.AlignVCenter
                 }
 
@@ -104,6 +106,7 @@ BarPopup {
                         text: "Search clipboard..."
                         color: Colors.colors.foregroundMuted
                         font.pixelSize: 13
+                        font.family: Config.font
                         visible: searchInput.text.length === 0
                     }
                 }
@@ -112,6 +115,7 @@ BarPopup {
                     text: "✕"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 11
+                    font.family: Config.font
                     visible: searchInput.text.length > 0
                     Layout.alignment: Qt.AlignVCenter
 
@@ -166,6 +170,7 @@ BarPopup {
                     text: clearButton.confirmingClear ? "Confirm clear?" : "Clear all"
                     color: clearButton.confirmingClear ? Colors.colors.error : Colors.colors.foregroundMuted
                     font.pixelSize: 11
+                    font.family: Config.font
                 }
 
                 HoverHandler { id: clearHover }
@@ -266,6 +271,7 @@ BarPopup {
                                 Layout.fillWidth: true
                                 text: entryDelegate.isImage ? entryDelegate.imageLabel : entryDelegate.previewText
                                 color: Colors.colors.foreground
+                                font.family: Config.font
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignVCenter
                             }
@@ -284,6 +290,7 @@ BarPopup {
                                     anchors.centerIn: parent
                                     text: "✕"
                                     font.pixelSize: 11
+                                    font.family: Config.font
                                     color: deleteHover.hovered ? Colors.colors.background : Colors.colors.foregroundMuted
                                 }
 
@@ -316,6 +323,7 @@ BarPopup {
                 visible: clipboardPopup.filteredList.length === 0
                 color: Colors.colors.foregroundMuted
                 font.pixelSize: 12
+                font.family: Config.font
                 text: clipboardPopup.searchText.length > 0 ? "No matches" : "Clipboard history is empty"
             }
         }

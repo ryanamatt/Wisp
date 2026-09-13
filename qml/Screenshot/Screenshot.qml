@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
 import "../IpcState"
+import "../Config"
 
 FloatingWindow {
     id: screenshot
@@ -64,6 +65,7 @@ FloatingWindow {
                         contentItem: Text {
                             text: parent.text
                             color: parent.checked ? Colors.colors.background : Colors.colors.accentAlt
+                            font.family: Config.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
@@ -81,6 +83,7 @@ FloatingWindow {
                         contentItem: Text {
                             text: parent.text
                             color: parent.checked ? Colors.colors.background : Colors.colors.accentAlt
+                            font.family: Config.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight

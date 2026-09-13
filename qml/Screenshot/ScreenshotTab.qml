@@ -8,6 +8,7 @@ import QtQuick.Layouts
 import "../Colors"
 import "../IpcState"
 import "../Components"
+import "../Config"
 
 Item {
     id: screenshotTab
@@ -90,6 +91,7 @@ Item {
                             text: modelData.icon
                             color: Colors.colors.accent
                             font.pixelSize: 40
+                            font.family: Config.font
                             anchors.centerIn: parent
                         }
 

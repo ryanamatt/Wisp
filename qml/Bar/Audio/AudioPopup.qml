@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
 import "../../Components"
+import "../../Config"
 
 BarPopup {
     id: audioPopup
@@ -118,7 +119,7 @@ BarPopup {
 
             Text {
                 text: audioPopup.micMuted ? "\uf131" : "\uf130"
-                font.family: "Iosevka Nerd Font Propo"
+                font.family: Config.font
                 font.pixelSize: 18
                 color: audioPopup.micMuted ? Colors.colors.foregroundMuted : Colors.colors.foreground
 
@@ -141,7 +142,7 @@ BarPopup {
                 Layout.preferredWidth: 34
                 text: Math.round(audioPopup.micVolume * 100) + "%"
                 color: Colors.colors.foregroundMuted
-                font.family: "Noto Sans Mono"
+                font.family: Config.font
                 font.pixelSize: 12
             }
         }
@@ -161,7 +162,7 @@ BarPopup {
                 text: audioPopup.muted ? "\ueee8"
                       : audioPopup.volume > 0.5 ? "\uf028"
                       : audioPopup.volume > 0 ? "\uf027" : "\uf026"
-                font.family: "Iosevka Nerd Font Propo"
+                font.family: Config.font
                 font.pixelSize: 18
                 color: audioPopup.muted ? Colors.colors.foregroundMuted : Colors.colors.foreground
 
@@ -184,7 +185,7 @@ BarPopup {
                 Layout.preferredWidth: 34
                 text: Math.round(audioPopup.volume * 100) + "%"
                 color: Colors.colors.foregroundMuted
-                font.family: "Noto Sans Mono"
+                font.family: Config.font
                 font.pixelSize: 12
             }
         }
@@ -224,7 +225,7 @@ BarPopup {
                         anchors.centerIn: parent
                         visible: !audioPopup.hasPlayer || audioPopup.activePlayer.trackArtUrl === ""
                         text: "\uf001"
-                        font.family: "Iosevka Nerd Font Propo"
+                        font.family: Config.font
                         font.pixelSize: 20
                         color: Colors.colors.foregroundMuted
                     }
@@ -238,7 +239,7 @@ BarPopup {
                         Layout.fillWidth: true
                         text: audioPopup.hasPlayer ? (audioPopup.activePlayer.trackTitle || "Unknown Title") : ""
                         color: Colors.colors.foreground
-                        font.family: "Noto Sans Mono"
+                        font.family: Config.font
                         font.pixelSize: 13
                         font.bold: true
                         elide: Text.ElideRight
@@ -248,7 +249,7 @@ BarPopup {
                         Layout.fillWidth: true
                         text: audioPopup.hasPlayer ? (audioPopup.activePlayer.trackArtist || "Unknown Artist") : ""
                         color: Colors.colors.foregroundMuted
-                        font.family: "Noto Sans Mono"
+                        font.family: Config.font
                         font.pixelSize: 11
                         elide: Text.ElideRight
                     }
@@ -277,7 +278,7 @@ BarPopup {
                 Text {
                     text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.position) : "0:00"
                     color: Colors.colors.foregroundMuted
-                    font.family: "Noto Sans Mono"
+                    font.family: Config.font
                     font.pixelSize: 10
                 }
 
@@ -285,7 +286,7 @@ BarPopup {
 
                 Text {
                     text: "\uf048"
-                    font.family: "Iosevka Nerd Font Propo"
+                    font.family: Config.font
                     font.pixelSize: 16
                     color: (audioPopup.hasPlayer && audioPopup.activePlayer.canGoPrevious)
                            ? Colors.colors.foreground : Colors.colors.foregroundMuted
@@ -301,7 +302,7 @@ BarPopup {
 
                 Text {
                     text: (audioPopup.hasPlayer && audioPopup.activePlayer.isPlaying) ? "\uf04c" : "\uf04b"
-                    font.family: "Iosevka Nerd Font Propo"
+                    font.family: Config.font
                     font.pixelSize: 20
                     color: Colors.colors.accent
 
@@ -316,7 +317,7 @@ BarPopup {
 
                 Text {
                     text: "\uf051"
-                    font.family: "Iosevka Nerd Font Propo"
+                    font.family: Config.font
                     font.pixelSize: 16
                     color: (audioPopup.hasPlayer && audioPopup.activePlayer.canGoNext)
                            ? Colors.colors.foreground : Colors.colors.foregroundMuted
@@ -335,7 +336,7 @@ BarPopup {
                 Text {
                     text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.length) : "0:00"
                     color: Colors.colors.foregroundMuted
-                    font.family: "Noto Sans Mono"
+                    font.family: Config.font
                     font.pixelSize: 10
                 }
             }
@@ -349,7 +350,7 @@ BarPopup {
             text: "Nothing playing"
             horizontalAlignment: Text.AlignHCenter
             color: Colors.colors.foregroundMuted
-            font.family: "Noto Sans Mono"
+            font.family: Config.font
             font.pixelSize: 12
         }
     }

@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
+import "../../Config"
 
 ColumnLayout {
     id: root
@@ -102,8 +103,8 @@ ColumnLayout {
         Text {
             anchors.centerIn: parent
             text: root.value >= 0 ? root.value.toFixed(root.decimals) + root.unit : "--"
-            font.family: "Iosevka Nerd Font Propo"
             font.pixelSize: root.size * 0.16
+            font.family: Config.font
             font.bold: true
             color: Colors.colors.foreground
         }
@@ -112,8 +113,8 @@ ColumnLayout {
     Text {
         Layout.alignment: Qt.AlignHCenter
         text: root.label
-        font.family: "Iosevka Nerd Font Propo"
         font.pixelSize: 12
+        font.family: Config.font
         color: Colors.colors.foregroundMuted
     }
 }

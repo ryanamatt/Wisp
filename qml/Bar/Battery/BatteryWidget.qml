@@ -5,6 +5,7 @@ import Quickshell
 import "../../Components"
 import "../../IpcState"
 import "../../Colors"
+import "../../Config"
 
 BarWidgetContainer {
     id: batteryWidget
@@ -30,7 +31,6 @@ BarWidgetContainer {
     icon.anchors.horizontalCenter: batteryWidget.horizontalCenter
     icon.anchors.verticalCenter: batteryWidget.verticalCenter
     icon.font.pixelSize: batteryWidget.currentAccessory ? batteryWidget.currentAccessory.charging ? implicitWidth * 0.15 : implicitWidth * 0.2 : implicitWidth * 0.2
-    icon.font.family: "Noto Sans Mono"
 
     icon.text: batteryWidget.currentAccessory
         ? (batteryWidget.currentAccessory.charging ? "\uf0e7 " : "")

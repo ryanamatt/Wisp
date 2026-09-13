@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell
 import "../../Components"
 import "../../Colors"
+import "../../Config"
 
 BarPopup {
     id: networkPopup
@@ -122,6 +123,7 @@ BarPopup {
                         : "\uf1eb"
                     color: networkPopup.connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.success
                     font.pixelSize: 18
+                    font.family: Config.font
                     Layout.alignment: Qt.AlignVCenter
                 }
 
@@ -135,6 +137,7 @@ BarPopup {
                             : "Not connected"
                         color: Colors.colors.foreground
                         font.pixelSize: 13
+                        font.family: Config.font
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
@@ -145,6 +148,7 @@ BarPopup {
                             : "No active connection"
                         color: Colors.colors.foregroundMuted
                         font.pixelSize: 11
+                        font.family: Config.font
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
@@ -154,6 +158,7 @@ BarPopup {
                     text: "\uf021"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 13
+                    font.family: Config.font
                     Layout.alignment: Qt.AlignVCenter
 
                     MouseArea {
@@ -199,6 +204,7 @@ BarPopup {
                     text: networkPopup.busy ? "Scanning..." : "Rescan"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 11
+                    font.family: Config.font
                 }
 
                 HoverHandler { id: rescanHover }
@@ -230,6 +236,7 @@ BarPopup {
                     text: "Connect to " + networkPopup.connectingSsid
                     color: Colors.colors.foreground
                     font.pixelSize: 12
+                    font.family: Config.font
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
@@ -283,6 +290,7 @@ BarPopup {
                             text: "Cancel"
                             color: Colors.colors.foregroundMuted
                             font.pixelSize: 11
+                            font.family: Config.font
                         }
 
                         MouseArea {
@@ -303,6 +311,7 @@ BarPopup {
                             text: "Connect"
                             color: Colors.colors.foreground
                             font.pixelSize: 11
+                            font.family: Config.font
                         }
 
                         MouseArea {
@@ -358,6 +367,7 @@ BarPopup {
                                     : "\uf1eb"
                                 color: entryDelegate.modelData.inUse ? Colors.colors.success : Colors.colors.foregroundMuted
                                 font.pixelSize: 14
+                                font.family: Config.font
                                 opacity: Math.max(0.35, entryDelegate.modelData.signal / 100)
                             }
 
@@ -365,6 +375,7 @@ BarPopup {
                                 Layout.fillWidth: true
                                 text: entryDelegate.modelData.ssid
                                 color: Colors.colors.foreground
+                                font.family: Config.font
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignVCenter
                             }
@@ -374,6 +385,7 @@ BarPopup {
                                 text: "\uf023"
                                 color: Colors.colors.foregroundMuted
                                 font.pixelSize: 11
+                                font.family: Config.font
                             }
 
                             Rectangle {
@@ -389,6 +401,7 @@ BarPopup {
                                     anchors.centerIn: parent
                                     text: "✕"
                                     font.pixelSize: 11
+                                    font.family: Config.font
                                     color: disconnectHover.hovered ? Colors.colors.background : Colors.colors.foregroundMuted
                                 }
 
@@ -423,6 +436,7 @@ BarPopup {
                 visible: networkPopup.wifiRadioOn && networkPopup.networks.length === 0
                 color: Colors.colors.foregroundMuted
                 font.pixelSize: 12
+                font.family: Config.font
                 text: "No networks found"
             }
 
@@ -431,6 +445,7 @@ BarPopup {
                 visible: !networkPopup.wifiRadioOn
                 color: Colors.colors.foregroundMuted
                 font.pixelSize: 12
+                font.family: Config.font
                 text: "Wi-Fi is off"
             }
         }
@@ -442,6 +457,7 @@ BarPopup {
             text: networkPopup.statusMessage
             color: Colors.colors.error
             font.pixelSize: 11
+            font.family: Config.font
             wrapMode: Text.WordWrap
         }
     }
