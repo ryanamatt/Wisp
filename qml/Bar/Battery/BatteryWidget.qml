@@ -1,11 +1,13 @@
 // qml/Bar/Battery/BatteryWidget.qml
 
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import "../../Components"
 import "../../IpcState"
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 BarWidgetContainer {
     id: batteryWidget
@@ -25,18 +27,32 @@ BarWidgetContainer {
         cycleAnim.start()
     }
 
-    // Un-anchor from the container's default centerIn so the slide
-    // animation below has somewhere to move to/from.
-    iconText.anchors.centerIn: undefined
-    iconText.anchors.horizontalCenter: batteryWidget.horizontalCenter
-    iconText.anchors.verticalCenter: batteryWidget.verticalCenter
-    iconText.font.pixelSize: batteryWidget.currentAccessory ? batteryWidget.currentAccessory.charging ? implicitWidth * 0.15 : implicitWidth * 0.2 : implicitWidth * 0.2
+    iconText.visible: false
+    iconImage.visible: false
 
-    iconText.text: batteryWidget.currentAccessory
-        ? (batteryWidget.currentAccessory.charging ? "\uf0e7 " : "")
-          + batteryWidget.currentAccessory.icon + "  "
-          + batteryWidget.currentAccessory.percent + "%"
-        : "\uf109 --"
+    RowLayout {
+        id: contentLayout
+        anchors.centerIn: parent
+        spacing: 6
+
+        Image {
+            Layout.preferredWidth: 30
+            Layout.preferredHeight: 30
+            fillMode: Image.PreserveAspectFit
+            source: batteryWidget.currentAccessory
+                ? Icons.getIcon(batteryWidget.currentAccessory.icon)
+                : Icons.getIcon("laptop")
+        }
+
+        Text {
+            color: Colors.colors.foreground
+            font.family: Config.font
+            font.pixelSize: 20
+            text: batteryWidget.currentAccessory
+                ? (batteryWidget.currentAccessory.charging ? "+ " : "") + batteryWidget.currentAccessory.percent + "%"
+                : "--%"
+        }
+    }
 
     // Rotate to the next accessory every 3-5s with a little slide + fade,
     // like a flip display rolling over to the next card.
@@ -55,8 +71,8 @@ BarWidgetContainer {
         id: cycleAnim
 
         ParallelAnimation {
-            NumberAnimation { target: iconText; property: "opacity"; to: 0; duration: 160; easing.type: Easing.InQuad }
-            NumberAnimation { target: iconText; property: "anchors.verticalCenterOffset"; to: -8; duration: 160; easing.type: Easing.InQuad }
+            NumberAnimation { target: iconImage; property: "opacity"; to: 0; duration: 160; easing.type: Easing.InQuad }
+            NumberAnimation { target: iconImage; property: "anchors.verticalCenterOffset"; to: -8; duration: 160; easing.type: Easing.InQuad }
         }
         ScriptAction {
             script: {
@@ -64,10 +80,10 @@ BarWidgetContainer {
                 batteryWidget.cycleIndex = (batteryWidget.cycleIndex + 1) % count
             }
         }
-        PropertyAction { target: iconText; property: "anchors.verticalCenterOffset"; value: 8 }
+        PropertyAction { target: iconImage; property: "anchors.verticalCenterOffset"; value: 8 }
         ParallelAnimation {
-            NumberAnimation { target: iconText; property: "opacity"; to: 1; duration: 180; easing.type: Easing.OutQuad }
-            NumberAnimation { target: iconText; property: "anchors.verticalCenterOffset"; to: 0; duration: 180; easing.type: Easing.OutQuad }
+            NumberAnimation { target: iconImage; property: "opacity"; to: 1; duration: 180; easing.type: Easing.OutQuad }
+            NumberAnimation { target: iconImage; property: "anchors.verticalCenterOffset"; to: 0; duration: 180; easing.type: Easing.OutQuad }
         }
     }
 
