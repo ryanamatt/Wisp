@@ -5,6 +5,7 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import "../Colors"
+import "../Config"
 import "TimeWorkspace"
 import "AppLauncher"
 import "PowerMenu"
@@ -27,7 +28,12 @@ Variants {
 
         color: Qt.rgba(Colors.colors.surfaceAlt.r, Colors.colors.surfaceAlt.g, Colors.colors.surfaceAlt.b, 0.2)
 
-        anchors { top: true; left: true; right: true; }
+        anchors { 
+            top: Config.barOrientation === "top"
+            bottom: Config.barOrientation === "bottom"
+            left: true
+            right: true
+        }
         implicitHeight: 40
 
         RowLayout {

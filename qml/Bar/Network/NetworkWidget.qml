@@ -45,8 +45,8 @@ BarWidgetContainer {
         id: networkPopupWindow
 
         anchor.item: networkWidget
-        anchor.edges: Edges.Bottom
-        anchor.gravity: Edges.Bottom | Edges.HCenter
+        anchor.edges: networkWidget.barAtBottom ? Edges.Top : Edges.Bottom
+        anchor.gravity: (networkWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
         anchor.margins.top: 0
 
         color: "transparent"
@@ -63,13 +63,16 @@ BarWidgetContainer {
                 id: panel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.top: networkWidget.barAtBottom ? undefined : parent.top
+                anchors.bottom: networkWidget.barAtBottom ? parent.bottom : undefined
                 height: parent.height
 
-                transformOrigin: Item.Top
+                transformOrigin: networkWidget.barAtBottom ? Item.Bottom : Item.Top
                 scale: 0.85 + 0.15 * networkWidget.openProgress
                 opacity: networkWidget.openProgress
-                y: (1 - networkWidget.openProgress) * -14
+                y: networkWidget.barAtBottom
+                    ? (1 - networkWidget.openProgress) * 14
+                    : (1 - networkWidget.openProgress) * -14
                 radius: 20
 
                 color: Colors.colors.backgroundAlt

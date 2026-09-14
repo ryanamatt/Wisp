@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "../../Colors"
 import "../../Components"
+import "../../Config"
 
 BarWidgetContainer {
     id: audioWidget
@@ -92,8 +93,8 @@ BarWidgetContainer {
         id: audioPopupWindow
 
         anchor.item: audioWidget
-        anchor.edges: Edges.Bottom
-        anchor.gravity: Edges.Bottom | Edges.HCenter
+        anchor.edges: audioWidget.barAtBottom ? Edges.Top : Edges.Bottom
+        anchor.gravity: (audioWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
         anchor.margins.top: 0
 
         color: "transparent"
@@ -110,13 +111,16 @@ BarWidgetContainer {
                 id: panel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.top: audioWidget.barAtBottom ? undefined : parent.top
+                anchors.bottom: audioWidget.barAtBottom ? parent.bottom : undefined
                 height: parent.height
 
-                transformOrigin: Item.Top
+                transformOrigin: audioWidget.barAtBottom ? Item.Bottom : Item.Top
                 scale: 0.85 + 0.15 * audioWidget.openProgress
                 opacity: audioWidget.openProgress
-                y: (1 - audioWidget.openProgress) * -14
+                y: audioWidget.barAtBottom
+                    ? (1 - audioWidget.openProgress) * 14
+                    : (1 - audioWidget.openProgress) * -14
                 radius: 20
 
                 color: Colors.colors.backgroundAlt

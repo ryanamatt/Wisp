@@ -8,6 +8,8 @@ import "../Config"
 Rectangle {
     id: container
 
+    readonly property bool barAtBottom: Config.barOrientation === "bottom"
+
     color: Colors.colors.backgroundAlt
     border.color: Colors.colors.background
     border.width: 2
@@ -32,10 +34,10 @@ Rectangle {
     // Pill is fully round while closed. the bottom corners flatten as the
     // popup opens so the pill and popup beneath it read as one shape.
     readonly property real fullRadius: implicitHeight / 2
-    topLeftRadius: fullRadius
-    topRightRadius: fullRadius
-    bottomLeftRadius: fullRadius * (1 - openProgress)
-    bottomRightRadius: fullRadius * (1 - openProgress)
+    topLeftRadius: container.barAtBottom ? fullRadius * (1 - openProgress) : fullRadius
+    topRightRadius: container.barAtBottom ? fullRadius * (1 - openProgress) : fullRadius
+    bottomLeftRadius: container.barAtBottom ? fullRadius : fullRadius * (1 - openProgress)
+    bottomRightRadius: container.barAtBottom ? fullRadius : fullRadius * (1 - openProgress)
 
     // ----- Hover-to-open / delayed-close -----
     signal requestOpen()

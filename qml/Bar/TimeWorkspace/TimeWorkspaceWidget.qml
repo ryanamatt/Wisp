@@ -59,8 +59,8 @@ BarWidgetContainer {
         id: calendarPopup
 
         anchor.item: timeWorkspace
-        anchor.edges: Edges.Bottom
-        anchor.gravity: Edges.Bottom | Edges.HCenter
+        anchor.edges: timeWorkspace.barAtBottom ? Edges.Top : Edges.Bottom
+        anchor.gravity: (timeWorkspace.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
         anchor.margins.top: 0
 
         color: "transparent"
@@ -77,13 +77,16 @@ BarWidgetContainer {
                 id: panel
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.top: timeWorkspace.barAtBottom ? undefined : parent.top
+                anchors.bottom: timeWorkspace.barAtBottom ? parent.bottom : undefined
                 height: parent.height
 
-                transformOrigin: Item.Top
+                transformOrigin: timeWorkspace.barAtBottom ? Item.Bottom : Item.Top
                 scale: 0.85 + 0.15 * timeWorkspace.openProgress
                 opacity: timeWorkspace.openProgress
-                y: (1 - timeWorkspace.openProgress) * -14
+                y: timeWorkspace.barAtBottom
+                    ? (1 - timeWorkspace.openProgress) * 14
+                    : (1 - timeWorkspace.openProgress) * -14
                 radius: 20
 
                 color: Colors.colors.backgroundAlt
