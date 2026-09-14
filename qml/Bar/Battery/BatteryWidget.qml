@@ -34,10 +34,21 @@ BarWidgetContainer {
         id: contentLayout
         anchors.centerIn: parent
         spacing: 6
+        Layout.alignment: Qt.AlignCenter
 
         Image {
-            Layout.preferredWidth: batteryWidget.width * 0.25
-            Layout.preferredHeight: batteryWidget.width * 0.25
+            visible: batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging
+            Layout.preferredWidth: batteryWidget.width * 0.2
+            Layout.preferredHeight: batteryWidget.width * 0.2
+            fillMode: Image.PreserveAspectFit
+            source: Icons.getIcon("electricBolt")
+        }
+
+        Image {
+            Layout.preferredWidth: (batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging) 
+                ? batteryWidget.width * 0.2
+                : batteryWidget.width * 0.25
+            Layout.preferredHeight: batteryWidget.implicitWidth
             fillMode: Image.PreserveAspectFit
             source: batteryWidget.currentAccessory
                 ? Icons.getIcon(batteryWidget.currentAccessory.icon)
@@ -47,9 +58,11 @@ BarWidgetContainer {
         Text {
             color: Colors.colors.foreground
             font.family: Config.font
-            font.pixelSize: batteryWidget.width * 0.2
+            font.pixelSize: (batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging) 
+                ? batteryWidget.width * 0.15
+                : batteryWidget.width * 0.2
             text: batteryWidget.currentAccessory
-                ? (batteryWidget.currentAccessory.charging ? "+ " : "") + batteryWidget.currentAccessory.percent + "%"
+                ? batteryWidget.currentAccessory.percent + "%"
                 : "--%"
         }
     }

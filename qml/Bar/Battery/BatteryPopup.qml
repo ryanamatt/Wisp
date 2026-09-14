@@ -263,8 +263,8 @@ BarPopup {
                     Image {
                         source: Icons.getIcon(row.modelData.icon)
                         fillMode: Image.PreserveAspectFit
-                        Layout.preferredWidth: col.implicitWidth * 0.1
-                        Layout.preferredHeight: col.implicitWidth * 0.1
+                        Layout.preferredWidth: col.implicitWidth * 0.05
+                        Layout.preferredHeight: col.implicitWidth * 0.05
                     }
 
                     Text {
