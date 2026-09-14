@@ -85,10 +85,21 @@ BarPopup {
             Layout.fillWidth: true
             spacing: 10
 
-            ToggleButton {
-                condition: BrightnessSingleton.nightlightEnabled
-                label: "Night Light"
-                onToggled: (newValue) => BrightnessSingleton.toggleNightlight()
+            // Center Toggle Button
+            RowLayout {
+                Layout.fillWidth: true
+
+                Item { Layout.fillWidth: true }
+
+                ToggleButton {
+                    Layout.fillWidth: false
+                    Layout.preferredWidth: 110 // Adjust this if the text gets cut off
+                    condition: BrightnessSingleton.nightlightEnabled
+                    label: "Night Light"
+                    onToggled: (newValue) => BrightnessSingleton.toggleNightlight()
+                }
+
+                Item { Layout.fillWidth: true }
             }
 
             RowLayout {
