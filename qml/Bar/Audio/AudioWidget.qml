@@ -3,9 +3,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../../Colors"
 import "../../Components"
-import "../../Config"
 
 BarWidgetContainer {
     id: audioWidget
@@ -89,65 +87,17 @@ BarWidgetContainer {
         }
     }
 
-    PopupWindow {
+    WidgetPopup {
         id: audioPopupWindow
-
-        anchor.item: audioWidget
-        anchor.edges: audioWidget.barAtBottom ? Edges.Top : Edges.Bottom
-        anchor.gravity: (audioWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
-        anchor.margins.top: 0
-
-        color: "transparent"
-
+        widget: audioWidget
         implicitWidth: 320
         implicitHeight: 245
 
-        visible: audioWidget.openProgress > 0.001 || audioWidget.isOpenHere
-
-        Item {
+        AudioPopup {
+            id: popup
             anchors.fill: parent
 
-            Rectangle {
-                id: panel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: audioWidget.barAtBottom ? undefined : parent.top
-                anchors.bottom: audioWidget.barAtBottom ? parent.bottom : undefined
-                height: parent.height
-
-                transformOrigin: audioWidget.barAtBottom ? Item.Bottom : Item.Top
-                scale: 0.85 + 0.15 * audioWidget.openProgress
-                opacity: audioWidget.openProgress
-                y: audioWidget.barAtBottom
-                    ? (1 - audioWidget.openProgress) * 14
-                    : (1 - audioWidget.openProgress) * -14
-                radius: 20
-
-                color: Colors.colors.backgroundAlt
-                border.color: Colors.colors.background
-                border.width: 2
-
-                HoverHandler {
-                    id: popupHover
-                    onHoveredChanged: {
-                        if (popupHover.hovered) {
-                            audioWidget.open()
-                        } else {
-                            audioWidget.close()
-                        }
-                    }
-                }
-
-                AudioPopup {
-                    id: popup
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    opacity: Math.max(0, (audioWidget.openProgress - 0.25) / 0.75)
-
-                    onRequestClose: audioWidget.forceClose()
-                }
-            }
+            onRequestClose: audioWidget.forceClose()
         }
     }
 }
