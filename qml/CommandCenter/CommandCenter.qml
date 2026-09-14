@@ -47,6 +47,19 @@ FloatingWindow {
 
         Keys.onEscapePressed: IpcState.commandCenter.close()
 
+        Keys.onPressed: (event) => {
+            if (event.modifiers & Qt.ShiftModifier) {
+                let count = commandCenter.sectionColumns.length
+                if (event.key === Qt.Key_Up) {
+                    commandCenter.currentIndex = (commandCenter.currentIndex - 1 + count) % count
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Down) {
+                    commandCenter.currentIndex = (commandCenter.currentIndex + 1) % count
+                    event.accepted = true
+                }
+            }
+        }
+
         Rectangle {
             id: winRect
 
