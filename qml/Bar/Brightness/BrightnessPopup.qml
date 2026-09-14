@@ -7,6 +7,7 @@ import Quickshell
 import "../../Components"
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 BarPopup {
     id: brightnessPopup
@@ -30,15 +31,16 @@ BarPopup {
 
         // ----- Brightness -----
         RowLayout {
+            id: row
             Layout.fillWidth: true
             spacing: 10
             visible: BrightnessSingleton.hasBacklight
 
-            Text {
-                text: "\uf185"
-                font.family: Config.font
-                font.pixelSize: 18
-                color: Colors.colors.foreground
+            Image {
+                source: Icons.getIcon("brightness")
+                fillMode: Image.PreserveAspectFit
+                Layout.preferredWidth: row.width * 0.1
+                Layout.preferredHeight: Layout.preferredWidth
 
                 MouseArea {
                     anchors.fill: parent

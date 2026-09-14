@@ -1,26 +1,54 @@
 // qml/Bar/Brightness/BrightnessWidget.qml
 
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import "../../Components"
 import "../../IpcState"
 import "../../Colors"
+import "../../Config"
+import "../../Icons"
 
 BarWidgetContainer {
     id: brightnessWidget
 
     required property var screen
 
-    iconText.font.pixelSize: BrightnessSingleton.hasBacklight ? BrightnessSingleton.nightlightEnabled ? 12 : 15 : 30
-    iconText.text: {
-        const nightGlyph = BrightnessSingleton.nightlightEnabled ? "\uf186 " : ""
+    RowLayout {
+        id: contentLayout
+        anchors.centerIn: parent
+        spacing: 2
+        Layout.alignment: Qt.AlignCenter
 
-        if (BrightnessSingleton.hasBacklight)
-            return nightGlyph + "\uf185 " + BrightnessSingleton.brightnessPercent + "%"
+        Image {
+            visible: BrightnessSingleton.nightlightEnabled
+            Layout.preferredWidth: brightnessWidget.width * 0.2
+            Layout.preferredHeight: Layout.preferredWidth
+            fillMode: Image.PreserveAspectFit
+            source: Icons.getIcon("moon")
+        }
 
-        // Desktop monitors with no controllable backlight: only the
-        // night-light state is meaningful here.
-        return BrightnessSingleton.nightlightEnabled ? "\udb86\udc29" : "\uf186"
+        Image {
+            visible: BrightnessSingleton.hasBacklight
+            Layout.preferredWidth: BrightnessSingleton.nightlightEnabled 
+                ? brightnessWidget.width * 0.2
+                : brightnessWidget.width * 0.25
+            Layout.preferredHeight: Layout.preferredWidth
+            fillMode: Image.PreserveAspectFit
+            source: Icons.getIcon("brightness")
+        }
+
+        Text {
+            color: Colors.colors.foreground
+            font.family: Config.font
+            font.pixelSize: Math.round(BrightnessSingleton.nightlightEnabled
+                ? brightnessWidget.width * 0.15
+                : brightnessWidget.width * 0.2)
+            text: BrightnessSingleton.brightnessPercent
+            ? BrightnessSingleton.brightnessPercent + "%"
+            : "--%"
+        }
+
     }
 
     isOpenHere: IpcState.brightnessWidget.isOpenOn(brightnessWidget.screen)
