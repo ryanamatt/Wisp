@@ -36,8 +36,8 @@ BarWidgetContainer {
         spacing: 6
 
         Image {
-            Layout.preferredWidth: 30
-            Layout.preferredHeight: 30
+            Layout.preferredWidth: batteryWidget.width * 0.25
+            Layout.preferredHeight: batteryWidget.width * 0.25
             fillMode: Image.PreserveAspectFit
             source: batteryWidget.currentAccessory
                 ? Icons.getIcon(batteryWidget.currentAccessory.icon)
@@ -47,7 +47,7 @@ BarWidgetContainer {
         Text {
             color: Colors.colors.foreground
             font.family: Config.font
-            font.pixelSize: 20
+            font.pixelSize: batteryWidget.width * 0.2
             text: batteryWidget.currentAccessory
                 ? (batteryWidget.currentAccessory.charging ? "+ " : "") + batteryWidget.currentAccessory.percent + "%"
                 : "--%"

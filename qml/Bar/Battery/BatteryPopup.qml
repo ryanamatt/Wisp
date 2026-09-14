@@ -245,6 +245,7 @@ BarPopup {
         }
 
         ColumnLayout {
+            id: col
             Layout.fillWidth: true
             spacing: 8
             visible: batteryPopup.accessories.length > 0
@@ -262,6 +263,8 @@ BarPopup {
                     Image {
                         source: Icons.getIcon(row.modelData.icon)
                         fillMode: Image.PreserveAspectFit
+                        Layout.preferredWidth: col.implicitWidth * 0.1
+                        Layout.preferredHeight: col.implicitWidth * 0.1
                     }
 
                     Text {
