@@ -11,8 +11,8 @@ BarWidgetContainer {
 
     required property var screen
 
-    icon.font.pixelSize: BrightnessSingleton.hasBacklight ? BrightnessSingleton.nightlightEnabled ? 12 : 15 : 30
-    icon.text: {
+    iconText.font.pixelSize: BrightnessSingleton.hasBacklight ? BrightnessSingleton.nightlightEnabled ? 12 : 15 : 30
+    iconText.text: {
         const nightGlyph = BrightnessSingleton.nightlightEnabled ? "\uf186 " : ""
 
         if (BrightnessSingleton.hasBacklight)

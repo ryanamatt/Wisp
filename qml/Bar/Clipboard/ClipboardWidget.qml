@@ -13,8 +13,8 @@ BarWidgetContainer {
 
     required property var screen
 
-    icon.text: "\udb82\ude38"
-    icon.font.pixelSize: implicitWidth * 0.6
+    iconText.text: "\udb82\ude38"
+    iconText.font.pixelSize: implicitWidth * 0.6
 
     isOpenHere: IpcState.clipboardWidget.isOpenOn(clipboardWidget.screen)
 

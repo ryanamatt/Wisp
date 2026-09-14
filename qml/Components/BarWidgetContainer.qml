@@ -18,7 +18,7 @@ Rectangle {
 
     default property alias content: container.data
 
-    property alias icon: icon
+    property alias iconText: iconText
     property alias iconImage: iconImage
 
     // ----- Open/close progress -----
@@ -94,7 +94,7 @@ Rectangle {
     function releaseFocusGrab() { focusGrab.active = false }
 
     Text {
-        id: icon
+        id: iconText
         anchors.centerIn: parent
         color: Colors.colors.foreground
         font.pixelSize: container.implicitWidth * 0.4

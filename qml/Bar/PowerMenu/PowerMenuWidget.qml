@@ -12,8 +12,8 @@ BarWidgetContainer {
 
     required property var screen
 
-    icon.text: "\udb81\udc25"
-    icon.font.pixelSize: implicitWidth * 0.6
+    iconText.text: "\udb81\udc25"
+    iconText.font.pixelSize: implicitWidth * 0.6
 
     isOpenHere: IpcState.powerMenu.isOpenOn(powerMenu.screen)
 

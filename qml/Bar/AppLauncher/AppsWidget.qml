@@ -15,8 +15,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    // icon.text: "\uf40e"
-    icon.visible: false
+    iconText.visible: false
     iconImage.source: Icons.getIcon("apps")
 
     isOpenHere: IpcState.appLauncher.isOpenOn(appsWidget.screen)

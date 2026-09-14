@@ -53,23 +53,23 @@ BarWidgetContainer {
 
                 audioWidget.audioBars = values;
 
-                icon.text = values
+                iconText.text = values
                     .map(v => audioWidget.barChars[Math.max(0, Math.min(audioWidget.maxRange, v))])
                     .join("");
             }
         }
 
         onExited: (exitCode, exitStatus) => {
-            icon.text = "cava error";
+            iconText.text = "cava error";
         }
     }
 
-    icon.text: "…"
-    icon.font.pixelSize: implicitWidth * 0.09
+    iconText.text: "…"
+    iconText.font.pixelSize: implicitWidth * 0.09
 
-    icon.anchors.centerIn: undefined
-    icon.anchors.horizontalCenter: audioWidget.horizontalCenter
-    icon.anchors.bottom: audioWidget.bottom
+    iconText.anchors.centerIn: undefined
+    iconText.anchors.horizontalCenter: audioWidget.horizontalCenter
+    iconText.anchors.bottom: audioWidget.bottom
 
     property bool popupOpen: false
 

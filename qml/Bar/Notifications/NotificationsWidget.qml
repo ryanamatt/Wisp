@@ -10,8 +10,8 @@ import "../../Colors"
 BarWidgetContainer {
     id: notifWidget 
 
-    icon.text: "\uf49a"
-    icon.font.pixelSize: implicitWidth * 0.6
+    iconText.text: "\uf49a"
+    iconText.font.pixelSize: implicitWidth * 0.6
 
     Process {
         id: runNotif

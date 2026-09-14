@@ -18,9 +18,9 @@ BarWidgetContainer {
     // even while the popup is closed.
     readonly property string connectionType: NetworkSingleton.connectionType
 
-    icon.text: connectionType === "ethernet" ? "\udb80\ude01" : "\uf1eb"
-    icon.color: connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.foreground
-    icon.font.pixelSize: implicitWidth * 0.6
+    iconText.text: connectionType === "ethernet" ? "\udb80\ude01" : "\uf1eb"
+    iconText.color: connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.foreground
+    iconText.font.pixelSize: implicitWidth * 0.6
 
     isOpenHere: IpcState.networkWidget.isOpenOn(networkWidget.screen)
 

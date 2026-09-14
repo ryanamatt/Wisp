@@ -26,9 +26,9 @@ BarWidgetContainer {
         return systemIconList[2]
     }
 
-    icon.font.pixelSize: implicitWidth * 0.125
-    icon.text: SystemMonitor.cpuTemp + "°C|"+ SystemMonitor.cpuUsage.toFixed(1) + "%"
-    icon.color: currentTempState.color
+    iconText.font.pixelSize: implicitWidth * 0.125
+    iconText.text: SystemMonitor.cpuTemp + "°C|"+ SystemMonitor.cpuUsage.toFixed(1) + "%"
+    iconText.color: currentTempState.color
 
     isOpenHere: IpcState.systemMonitorWidget.isOpenOn(systemMonitorWidget.screen)
 
