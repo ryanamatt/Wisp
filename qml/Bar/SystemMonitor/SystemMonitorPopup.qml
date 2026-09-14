@@ -8,6 +8,7 @@ import QtQuick.Controls
 import "../../Colors"
 import "../../Components"
 import "../../Config"
+import "../../Icons"
 import "../../Utils/Utils.js" as Utils
 import Wisp.System
 
@@ -42,7 +43,7 @@ BarPopup {
         MonitorLayout {
             id: cpuLayout
 
-            icon: "\uf2db"
+            icon: Icons.getIcon("devBoard")
             name: "CPU"
             beforeBarText: SystemMonitor.cpuTemp + "°C"
             afterBarText: SystemMonitor.cpuUsage.toFixed(1) + "%"
@@ -54,7 +55,7 @@ BarPopup {
         MonitorLayout {
             id: gpuLayout
 
-            icon: "\uf2db"
+            icon: Icons.getIcon("devBoard")
             name: "GPU"
             beforeBarText: SystemMonitor.gpuTemp + "°C"
             afterBarText: SystemMonitor.gpuUsage.toFixed(1) + "%"
@@ -66,7 +67,7 @@ BarPopup {
         MonitorLayout {
             id: memoryLayout
 
-            icon: "\udb80\udf5b"
+            icon: Icons.getIcon("memory")
             name: "MEM"
             afterBarText: Utils.formatSizePair(SystemMonitor.memUsed, SystemMonitor.memTotal)
             barValue: (SystemMonitor.memUsed / SystemMonitor.memTotal) * 100
@@ -78,7 +79,7 @@ BarPopup {
             MonitorLayout {
                 required property var modelData
 
-                icon: "\uf0a0"
+                icon: Icons.getIcon("hardDrive")
                 name: modelData.mountpoint  === "/" ? "disk" : modelData.mountpoint
                 afterBarText: Utils.formatSizePair(modelData.used, modelData.total)
                 barValue: modelData.total > 0 ? (modelData.used / modelData.total) * 100 : -1

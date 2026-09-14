@@ -14,21 +14,9 @@ BarWidgetContainer {
     required property var screen
 
     property var systemIconList: [
-        {
-            label: "cool",
-            glyph: "\uf2cb",
-            color: Colors.colors.success
-        },
-        {
-            label: "medium",
-            glyph: "\uf2c9",
-            color: Colors.colors.warning
-        },
-        {
-            label: "warm",
-            glyph: "\uf2c7",
-            color: Colors.colors.error
-        }
+        { label: "cool", color: Colors.colors.success },
+        { label: "medium", color: Colors.colors.warning },
+        { label: "warm", color: Colors.colors.error }
     ]
 
     property var currentTempState: {
@@ -39,7 +27,7 @@ BarWidgetContainer {
     }
 
     icon.font.pixelSize: implicitWidth * 0.125
-    icon.text: currentTempState.glyph + SystemMonitor.cpuTemp + "°C|"+ SystemMonitor.cpuUsage.toFixed(1) + "%"
+    icon.text: SystemMonitor.cpuTemp + "°C|"+ SystemMonitor.cpuUsage.toFixed(1) + "%"
     icon.color: currentTempState.color
 
     isOpenHere: IpcState.systemMonitorWidget.isOpenOn(systemMonitorWidget.screen)

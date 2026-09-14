@@ -8,13 +8,16 @@ import "../../Colors"
 import "../../Components"
 import "../../IpcState"
 import "../../Config"
+import "../../Icons"
 
 BarWidgetContainer {
     id: appsWidget
 
     required property var screen
 
-    icon.text: "\uf40e"
+    // icon.text: "\uf40e"
+    icon.visible: false
+    iconImage.source: Icons.getIcon("apps")
 
     isOpenHere: IpcState.appLauncher.isOpenOn(appsWidget.screen)
 

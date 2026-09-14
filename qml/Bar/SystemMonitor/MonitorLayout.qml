@@ -42,11 +42,11 @@ ColumnLayout {
             Layout.minimumWidth: rootLayout.labelWidth
             Layout.maximumWidth: rootLayout.labelWidth
 
-            Text {
-                text: rootLayout.icon
-                font.pixelSize: 22
-                font.family: Config.font
-                color: Colors.colors.foreground
+            Image {
+                source: rootLayout.icon
+                sourceSize.width: 25
+                sourceSize.height: 25
+                fillMode: Image.PreserveAspectFit
             }
 
             Text {
