@@ -22,7 +22,9 @@ BarWidgetContainer {
 
         Image {
             visible: BrightnessSingleton.nightlightEnabled
-            Layout.preferredWidth: brightnessWidget.width * 0.2
+            Layout.preferredWidth: BrightnessSingleton.hasBacklight 
+                ? brightnessWidget.width * 0.2
+                : brightnessWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
             source: Icons.getIcon("moon")
@@ -38,7 +40,16 @@ BarWidgetContainer {
             source: Icons.getIcon("brightness")
         }
 
+        Image {
+            visible: !BrightnessSingleton.hasBacklight && !BrightnessSingleton.nightlightEnabled
+            Layout.preferredWidth: brightnessWidget.width * 0.3
+            Layout.preferredHeight: Layout.preferredWidth
+            fillMode: Image.PreserveAspectFit
+            source: Icons.getIcon("moonOff")
+        }
+
         Text {
+            visible: BrightnessSingleton.hasBacklight
             color: Colors.colors.foreground
             font.family: Config.font
             font.pixelSize: Math.round(BrightnessSingleton.nightlightEnabled
