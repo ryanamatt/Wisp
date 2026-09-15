@@ -103,6 +103,8 @@ Rectangle {
 
     Image {
         id: iconImage
+        sourceSize.width: width * Screen.devicePixelRatio
+        sourceSize.height: height * Screen.devicePixelRatio
         anchors.centerIn: parent
         width: container.implicitWidth * 0.4
         height: width

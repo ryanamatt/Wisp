@@ -42,6 +42,8 @@ BarWidgetContainer {
             Layout.preferredHeight: batteryWidget.width * 0.2
             fillMode: Image.PreserveAspectFit
             source: Icons.getIcon("electricBolt")
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
         }
 
         Image {
@@ -53,6 +55,8 @@ BarWidgetContainer {
             source: batteryWidget.currentAccessory
                 ? Icons.getIcon(batteryWidget.currentAccessory.icon)
                 : Icons.getIcon("laptop")
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
         }
 
         Text {

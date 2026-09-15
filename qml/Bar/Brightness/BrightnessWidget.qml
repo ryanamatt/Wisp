@@ -28,6 +28,8 @@ BarWidgetContainer {
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
             source: Icons.getIcon("moon")
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
         }
 
         Image {
@@ -38,6 +40,8 @@ BarWidgetContainer {
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
             source: Icons.getIcon("brightness")
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
         }
 
         Image {
@@ -46,6 +50,8 @@ BarWidgetContainer {
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
             source: Icons.getIcon("moonOff")
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
         }
 
         Text {

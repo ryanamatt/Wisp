@@ -113,6 +113,7 @@ BarPopup {
             border.color: Colors.colors.borderSoft
 
             RowLayout {
+                id: innerLayout
                 anchors.fill: parent
                 anchors.leftMargin: 10
                 anchors.rightMargin: 8
@@ -123,6 +124,12 @@ BarPopup {
                     : networkPopup.connectionType === "wifi" ? Icons.getIcon("wifi")
                     : Icons.getIcon("wifiOff")
                     Layout.alignment: Qt.AlignVCenter
+
+                    Layout.preferredWidth: innerLayout.width * 0.1
+                    Layout.preferredHeight: width
+
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
                 }
 
                 ColumnLayout {
@@ -155,6 +162,12 @@ BarPopup {
                 Image {
                     source: Icons.getIcon("refresh")
                     Layout.alignment: Qt.AlignVCenter
+
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: innerLayout.width * 0.1
+                    Layout.preferredHeight: width
 
                     MouseArea {
                         anchors.fill: parent
@@ -363,6 +376,12 @@ BarPopup {
                                     : Icons.getIcon("wifi1Bar")
                                 Layout.alignment: Qt.AlignVCenter
                                 opacity: Math.max(0.35, entryDelegate.modelData.signal / 100)
+
+                                sourceSize.width: width * Screen.devicePixelRatio
+                                sourceSize.height: height * Screen.devicePixelRatio
+
+                                Layout.preferredWidth: innerLayout.width * 0.075
+                                Layout.preferredHeight: width
                             }
 
                             Text {
@@ -378,6 +397,12 @@ BarPopup {
                                 visible: entryDelegate.modelData.secured
                                 source: Icons.getIcon("lock")
                                 Layout.alignment: Qt.AlignVCenter
+
+                                sourceSize.width: width * Screen.devicePixelRatio
+                                sourceSize.height: height * Screen.devicePixelRatio
+
+                                Layout.preferredWidth: innerLayout.width * 0.075
+                                Layout.preferredHeight: width
                             }
 
                             Rectangle {

@@ -34,18 +34,26 @@ ColumnLayout {
     }
 
     RowLayout {
+        id: rowLayout
         Layout.fillWidth: true
         spacing: 4
 
         RowLayout {
+            id: innerLayout
             Layout.preferredWidth: rootLayout.labelWidth
             Layout.minimumWidth: rootLayout.labelWidth
             Layout.maximumWidth: rootLayout.labelWidth
+            spacing: 2
 
             Image {
                 source: rootLayout.icon
-                sourceSize.width: 25
-                sourceSize.height: 25
+                sourceSize.width: width * Screen.devicePixelRatio
+                sourceSize.height: height * Screen.devicePixelRatio
+
+                Layout.preferredWidth: rootLayout.labelWidth * 0.3
+                Layout.preferredHeight: rootLayout.labelWidth * 0.3
+                Layout.fillHeight: true
+
                 fillMode: Image.PreserveAspectFit
             }
 

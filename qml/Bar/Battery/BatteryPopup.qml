@@ -265,6 +265,8 @@ BarPopup {
                         fillMode: Image.PreserveAspectFit
                         Layout.preferredWidth: col.implicitWidth * 0.05
                         Layout.preferredHeight: col.implicitWidth * 0.05
+                        sourceSize.width: width * Screen.devicePixelRatio
+                        sourceSize.height: height * Screen.devicePixelRatio
                     }
 
                     Text {
