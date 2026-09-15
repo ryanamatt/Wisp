@@ -8,6 +8,7 @@ import "../../Components"
 import "../../Colors"
 import "../../Config"
 import "../../Icons"
+import Wisp.Brightness
 
 BarPopup {
     id: brightnessPopup
@@ -17,7 +18,7 @@ BarPopup {
     Keys.onEscapePressed: brightnessPopup.requestClose()
 
     function refreshBrightness() {
-        BrightnessSingleton.refreshBrightness()
+        Brightness.refreshBrightness()
     }
 
     Component.onCompleted: refreshBrightness()
@@ -34,7 +35,7 @@ BarPopup {
             id: row
             Layout.fillWidth: true
             spacing: 10
-            visible: BrightnessSingleton.hasBacklight
+            visible: Brightness.hasBacklight
 
             Image {
                 source: Icons.getIcon("brightness")
@@ -48,20 +49,20 @@ BarPopup {
                     anchors.fill: parent
                     anchors.margins: -4
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: BrightnessSingleton.setBrightness(1)
+                    onClicked: Brightness.setBrightness(1)
                 }
             }
 
             DragBar {
                 Layout.fillWidth: true
-                enabled: BrightnessSingleton.hasBacklight
-                value: BrightnessSingleton.brightnessValue
-                onMoved: v => BrightnessSingleton.setBrightness(v)
+                enabled: Brightness.hasBacklight
+                value: Brightness.brightnessValue
+                onMoved: v => Brightness.setBrightness(v)
             }
 
             Text {
                 Layout.preferredWidth: 34
-                text: BrightnessSingleton.brightnessPercent + "%"
+                text: Brightness.brightnessPercent + "%"
                 color: Colors.colors.foregroundMuted
                 font.family: Config.font
                 font.pixelSize: 12
@@ -70,7 +71,7 @@ BarPopup {
 
         Text {
             Layout.fillWidth: true
-            visible: !BrightnessSingleton.hasBacklight
+            visible: !Brightness.hasBacklight
             text: "No backlight on this display"
             horizontalAlignment: Text.AlignHCenter
             color: Colors.colors.foregroundMuted
@@ -98,9 +99,9 @@ BarPopup {
                 ToggleButton {
                     Layout.fillWidth: false
                     Layout.preferredWidth: 110 // Adjust this if the text gets cut off
-                    condition: BrightnessSingleton.nightlightEnabled
+                    condition: Brightness.nightlightEnabled
                     label: "Night Light"
-                    onToggled: (newValue) => BrightnessSingleton.toggleNightlight()
+                    onToggled: (newValue) => Brightness.toggleNightlight()
                 }
 
                 Item { Layout.fillWidth: true }
@@ -109,7 +110,7 @@ BarPopup {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
-                visible: BrightnessSingleton.nightlightEnabled
+                visible: Brightness.nightlightEnabled
 
                 Text {
                     text: "Warmth"
@@ -120,15 +121,15 @@ BarPopup {
 
                 DragBar {
                     Layout.fillWidth: true
-                    enabled: BrightnessSingleton.nightlightEnabled
+                    enabled: Brightness.nightlightEnabled
                     fillColor: Colors.colors.accentAlt
-                    value: BrightnessSingleton.nightlightWarmth
-                    onMoved: v => BrightnessSingleton.setNightlightWarmth(v)
+                    value: Brightness.nightlightWarmth
+                    onMoved: v => Brightness.setNightlightWarmth(v)
                 }
 
                 Text {
                     Layout.preferredWidth: 48
-                    text: BrightnessSingleton.currentKelvin + "K"
+                    text: Brightness.currentKelvin + "K"
                     color: Colors.colors.foregroundMuted
                     font.family: Config.font
                     font.pixelSize: 12
@@ -140,7 +141,7 @@ BarPopup {
         RowLayout {
             Layout.fillWidth: true
             spacing: 10
-            visible: BrightnessSingleton.hasKeyboardBacklight
+            visible: Brightness.hasKeyboardBacklight
 
             Text {
                 text: "Kbd Light"
@@ -151,14 +152,14 @@ BarPopup {
 
             DragBar {
                 Layout.fillWidth: true
-                enabled: BrightnessSingleton.hasKeyboardBacklight
+                enabled: Brightness.hasKeyboardBacklight
                 fillColor: Colors.colors.accentAlt
-                value: BrightnessSingleton.keyboardBacklightValue
-                onMoved: v => BrightnessSingleton.updateKeyboardBacklightValue(v)
+                value: Brightness.keyboardBacklightValue
+                onMoved: v => Brightness.updateKeyboardBacklightValue(v)
             }
 
             Text {
-                text: BrightnessSingleton.keyboardBacklightValue
+                text: Brightness.keyboardBacklightValue
                 color: Colors.colors.foregroundMuted
                 font.family: Config.font
                 font.pixelSize: 11
