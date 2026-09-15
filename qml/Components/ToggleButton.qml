@@ -7,7 +7,7 @@ import "../Config"
 
 Item {
     id: rootLayout
-    Layout.fillWidth: true
+    implicitWidth: contentRow.implicitWidth
     implicitHeight: contentRow.implicitHeight
 
     property bool condition: false
@@ -17,7 +17,8 @@ Item {
 
     Row {
         id: contentRow
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 6
 
         Rectangle {
