@@ -115,65 +115,17 @@ BarWidgetContainer {
         }
     }
 
-    PopupWindow {
+    WidgetPopup {
         id: batteryPopupWindow
-
-        anchor.item: batteryWidget
-        anchor.edges: batteryWidget.barAtBottom ? Edges.Top : Edges.Bottom
-        anchor.gravity: (batteryWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
-        anchor.margins.top: 0
-
-        color: "transparent"
-
+        widget: batteryWidget
         implicitWidth: 300
         implicitHeight: 260
 
-        visible: batteryWidget.openProgress > 0.001 || batteryWidget.isOpenHere
-
-        Item {
+        BatteryPopup {
+            id: popup
             anchors.fill: parent
 
-            Rectangle {
-                id: panel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: batteryWidget.barAtBottom ? undefined : parent.top
-                anchors.bottom: batteryWidget.barAtBottom ? parent.bottom : undefined
-                height: parent.height
-
-                transformOrigin: batteryWidget.barAtBottom ? Item.Bottom : Item.Top
-                scale: 0.85 + 0.15 * batteryWidget.openProgress
-                opacity: batteryWidget.openProgress
-                y: batteryWidget.barAtBottom
-                    ? (1 - batteryWidget.openProgress) * 14
-                    : (1 - batteryWidget.openProgress) * -14
-                radius: 20
-
-                color: Colors.colors.backgroundAlt
-                border.color: Colors.colors.background
-                border.width: 2
-
-                HoverHandler {
-                    id: popupHover
-                    onHoveredChanged: {
-                        if (popupHover.hovered) {
-                            batteryWidget.open()
-                        } else {
-                            batteryWidget.close()
-                        }
-                    }
-                }
-
-                BatteryPopup {
-                    id: popup
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    opacity: Math.max(0, (batteryWidget.openProgress - 0.25) / 0.75)
-
-                    onRequestClose: batteryWidget.forceClose()
-                }
-            }
+            onRequestClose: batteryWidget.forceClose()
         }
     }
 }

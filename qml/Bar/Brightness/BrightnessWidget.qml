@@ -81,65 +81,17 @@ BarWidgetContainer {
         }
     }
 
-    PopupWindow {
+    WidgetPopup {
         id: brightnessPopupWindow
-
-        anchor.item: brightnessWidget
-        anchor.edges: brightnessWidget.barAtBottom ? Edges.Top : Edges.Bottom
-        anchor.gravity: (brightnessWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
-        anchor.margins.top: 0
-
-        color: "transparent"
-
+        widget: brightnessWidget
         implicitWidth: 300
         implicitHeight: 190
 
-        visible: brightnessWidget.openProgress > 0.001 || brightnessWidget.isOpenHere
-
-        Item {
+        BrightnessPopup {
+            id: popup
             anchors.fill: parent
 
-            Rectangle {
-                id: panel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: brightnessWidget.barAtBottom ? undefined : parent.top
-                anchors.bottom: brightnessWidget.barAtBottom ? parent.bottom : undefined
-                height: parent.height
-
-                transformOrigin: brightnessWidget.barAtBottom ? Item.Bottom : Item.Top
-                scale: 0.85 + 0.15 * brightnessWidget.openProgress
-                opacity: brightnessWidget.openProgress
-                y: brightnessWidget.barAtBottom
-                    ? (1 - brightnessWidget.openProgress) * 14
-                    : (1 - brightnessWidget.openProgress) * -14
-                radius: 20
-
-                color: Colors.colors.backgroundAlt
-                border.color: Colors.colors.background
-                border.width: 2
-
-                HoverHandler {
-                    id: popupHover
-                    onHoveredChanged: {
-                        if (popupHover.hovered) {
-                            brightnessWidget.open()
-                        } else {
-                            brightnessWidget.close()
-                        }
-                    }
-                }
-
-                BrightnessPopup {
-                    id: popup
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    opacity: Math.max(0, (brightnessWidget.openProgress - 0.25) / 0.75)
-
-                    onRequestClose: brightnessWidget.forceClose()
-                }
-            }
+            onRequestClose: brightnessWidget.forceClose()
         }
     }
 }

@@ -41,65 +41,17 @@ BarWidgetContainer {
         }
     }
 
-    PopupWindow {
+    WidgetPopup {
         id: networkPopupWindow
-
-        anchor.item: networkWidget
-        anchor.edges: networkWidget.barAtBottom ? Edges.Top : Edges.Bottom
-        anchor.gravity: (networkWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
-        anchor.margins.top: 0
-
-        color: "transparent"
-
-        implicitHeight: 300
+        widget: networkWidget
         implicitWidth: 300
+        implicitHeight: 300
 
-        visible: networkWidget.openProgress > 0.001 || networkWidget.isOpenHere
-
-        Item {
+        NetworkPopup {
+            id: popup
             anchors.fill: parent
 
-            Rectangle {
-                id: panel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: networkWidget.barAtBottom ? undefined : parent.top
-                anchors.bottom: networkWidget.barAtBottom ? parent.bottom : undefined
-                height: parent.height
-
-                transformOrigin: networkWidget.barAtBottom ? Item.Bottom : Item.Top
-                scale: 0.85 + 0.15 * networkWidget.openProgress
-                opacity: networkWidget.openProgress
-                y: networkWidget.barAtBottom
-                    ? (1 - networkWidget.openProgress) * 14
-                    : (1 - networkWidget.openProgress) * -14
-                radius: 20
-
-                color: Colors.colors.backgroundAlt
-                border.color: Colors.colors.background
-                border.width: 2
-
-                HoverHandler {
-                    id: popupHover
-                    onHoveredChanged: {
-                        if (popupHover.hovered) {
-                            networkWidget.open()
-                        } else {
-                            networkWidget.close()
-                        }
-                    }
-                }
-
-                NetworkPopup {
-                    id: popup
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    opacity: Math.max(0, (networkWidget.openProgress - 0.25) / 0.75)
-
-                    onRequestClose: networkWidget.forceClose()
-                }
-            }
+            onRequestClose: networkWidget.forceClose()
         }
     }
 }
