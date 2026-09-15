@@ -93,14 +93,6 @@ Rectangle {
     function activateFocusGrab() { focusGrab.active = true }
     function releaseFocusGrab() { focusGrab.active = false }
 
-    Text {
-        id: iconText
-        anchors.centerIn: parent
-        color: Colors.colors.foreground
-        font.pixelSize: container.implicitWidth * 0.4
-        font.family: Config.font
-    }
-
     Image {
         id: iconImage
         sourceSize.width: width * Screen.devicePixelRatio
@@ -109,6 +101,14 @@ Rectangle {
         width: container.implicitWidth * 0.4
         height: width
         fillMode: Image.PreserveAspectFit
+    }
+
+    Text {
+        id: iconText
+        anchors.centerIn: parent
+        color: Colors.colors.foreground
+        font.pixelSize: container.implicitWidth * 0.4
+        font.family: Config.font
     }
 
 }
