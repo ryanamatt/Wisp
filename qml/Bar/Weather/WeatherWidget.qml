@@ -19,7 +19,7 @@ BarWidgetContainer {
         { 
             id: "sunny", 
             codes: [113],
-            icon: "\ue30d"
+            icon: "sunny"
         },
         {
             id: "overcast",
