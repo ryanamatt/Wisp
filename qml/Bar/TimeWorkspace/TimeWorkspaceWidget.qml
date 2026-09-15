@@ -55,65 +55,17 @@ BarWidgetContainer {
         }
     }
 
-    PopupWindow {
+    WidgetPopup {
         id: calendarPopup
-
-        anchor.item: timeWorkspace
-        anchor.edges: timeWorkspace.barAtBottom ? Edges.Top : Edges.Bottom
-        anchor.gravity: (timeWorkspace.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
-        anchor.margins.top: 0
-
-        color: "transparent"
-
-        implicitHeight: 300
+        widget: timeWorkspace
         implicitWidth: 600
+        implicitHeight: 300
 
-        visible: timeWorkspace.openProgress > 0.001 || timeWorkspace.isOpenHere
-
-        Item {
+        CalendarPopup {
+            id: popup
             anchors.fill: parent
 
-            Rectangle {
-                id: panel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: timeWorkspace.barAtBottom ? undefined : parent.top
-                anchors.bottom: timeWorkspace.barAtBottom ? parent.bottom : undefined
-                height: parent.height
-
-                transformOrigin: timeWorkspace.barAtBottom ? Item.Bottom : Item.Top
-                scale: 0.85 + 0.15 * timeWorkspace.openProgress
-                opacity: timeWorkspace.openProgress
-                y: timeWorkspace.barAtBottom
-                    ? (1 - timeWorkspace.openProgress) * 14
-                    : (1 - timeWorkspace.openProgress) * -14
-                radius: 20
-
-                color: Colors.colors.backgroundAlt
-                border.color: Colors.colors.background
-                border.width: 2
-
-                HoverHandler {
-                    id: popupHover
-                    onHoveredChanged: {
-                        if (popupHover.hovered) {
-                            timeWorkspace.open()
-                        } else {
-                            timeWorkspace.close()
-                        }
-                    }
-                }
-
-                CalendarPopup {
-                    id: popup
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    opacity: Math.max(0, (timeWorkspace.openProgress - 0.25) / 0.75)
-
-                    onRequestClose: timeWorkspace.forceClose()
-                }
-            }
+            onRequestClose: timeWorkspace.forceClose()
         }
     }
 }

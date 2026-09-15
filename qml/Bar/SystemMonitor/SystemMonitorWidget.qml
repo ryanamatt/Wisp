@@ -1,7 +1,6 @@
 // qml/Bar/SystemMonitor/SystemMonitorWidget.qml
 
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import "../../IpcState"
 import "../../Components"
@@ -60,66 +59,17 @@ BarWidgetContainer {
         }
     }
 
-    PopupWindow {
+    WidgetPopup {
         id: monitorPopup
-
-        anchor.item: systemMonitorWidget
-        anchor.edges: systemMonitorWidget.barAtBottom ? Edges.Top : Edges.Bottom
-        anchor.gravity: (systemMonitorWidget.barAtBottom ? Edges.Top : Edges.Bottom) | Edges.HCenter
-        anchor.margins.top: 0
-
-        color: "transparent"
-
-        implicitHeight: 200
+        widget: systemMonitorWidget
         implicitWidth: 400
+        implicitHeight: 200
 
-        visible: systemMonitorWidget.openProgress > 0.001 || systemMonitorWidget.isOpenHere
-
-        Item {
+        SystemMonitorPopup {
+            id: popup
             anchors.fill: parent
 
-            Rectangle {
-                id: panel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: systemMonitorWidget.barAtBottom ? undefined : parent.top
-                anchors.bottom: systemMonitorWidget.barAtBottom ? parent.bottom : undefined
-                height: parent.height
-
-                transformOrigin: systemMonitorWidget.barAtBottom ? Item.Bottom : Item.Top
-                scale: 0.85 + 0.15 * systemMonitorWidget.openProgress
-                opacity: systemMonitorWidget.openProgress
-                y: systemMonitorWidget.barAtBottom
-                    ? (1 - systemMonitorWidget.openProgress) * 14
-                    : (1 - systemMonitorWidget.openProgress) * -14
-                radius: 20
-
-                color: Colors.colors.backgroundAlt
-                border.color: Colors.colors.background
-                border.width: 2
-
-                HoverHandler {
-                    id: popupHover
-                    onHoveredChanged: {
-                        if (popupHover.hovered) {
-                            systemMonitorWidget.open()
-                        } else {
-                            systemMonitorWidget.close()
-                        }
-                    }
-                }
-
-                SystemMonitorPopup {
-                    id: popup
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    opacity: Math.max(0, (systemMonitorWidget.openProgress - 0.25) / 0.75)
-
-                    onRequestClose: systemMonitorWidget.forceClose()
-                }
-            }
+            onRequestClose: systemMonitorWidget.forceClose()
         }
     }
-
 }
