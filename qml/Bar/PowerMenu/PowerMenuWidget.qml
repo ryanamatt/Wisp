@@ -4,14 +4,16 @@ import QtQuick
 import Quickshell
 import "../../Components"
 import "../../IpcState"
+import "../../Colors"
+import "../../Icons"
 
 BarWidgetContainer {
     id: powerMenu
 
     required property var screen
 
-    icon.text: "\udb81\udc25"
-    icon.font.pixelSize: implicitWidth * 0.6
+    iconImage.source: Icons.getIcon("powerButton")
+    iconImage.width: powerMenu.width * 0.5
 
     isOpenHere: IpcState.powerMenu.isOpenOn(powerMenu.screen)
 

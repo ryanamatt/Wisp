@@ -4,13 +4,15 @@ import QtQuick
 import Quickshell
 import "../../Components"
 import "../../IpcState"
+import "../../Config"
+import "../../Icons"
 
 BarWidgetContainer {
     id: appsWidget
 
     required property var screen
 
-    icon.text: "\uf40e"
+    iconImage.source: Icons.getIcon("apps")
 
     isOpenHere: IpcState.appLauncher.isOpenOn(appsWidget.screen)
 

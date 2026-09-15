@@ -1,9 +1,13 @@
 // qml/Bar/Battery/BatteryWidget.qml
 
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import "../../Components"
 import "../../IpcState"
+import "../../Colors"
+import "../../Config"
+import "../../Icons"
 
 BarWidgetContainer {
     id: batteryWidget
@@ -23,18 +27,42 @@ BarWidgetContainer {
         cycleAnim.start()
     }
 
-    // Un-anchor from the container's default centerIn so the slide
-    // animation below has somewhere to move to/from.
-    icon.anchors.centerIn: undefined
-    icon.anchors.horizontalCenter: batteryWidget.horizontalCenter
-    icon.anchors.verticalCenter: batteryWidget.verticalCenter
-    icon.font.pixelSize: batteryWidget.currentAccessory ? batteryWidget.currentAccessory.charging ? implicitWidth * 0.15 : implicitWidth * 0.2 : implicitWidth * 0.2
+    RowLayout {
+        id: contentLayout
+        anchors.centerIn: parent
+        spacing: 6
+        Layout.alignment: Qt.AlignCenter
 
-    icon.text: batteryWidget.currentAccessory
-        ? (batteryWidget.currentAccessory.charging ? "\uf0e7 " : "")
-          + batteryWidget.currentAccessory.icon + "  "
-          + batteryWidget.currentAccessory.percent + "%"
-        : "\uf109 --"
+        Image {
+            visible: batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging
+            Layout.preferredWidth: 16
+            Layout.preferredHeight: 16
+            fillMode: Image.PreserveAspectFit
+            source: Icons.getIcon("electricBolt")
+        }
+
+        Image {
+            Layout.preferredWidth: (batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging) 
+                ? 16 
+                : 20
+            Layout.preferredHeight: Layout.preferredWidth
+            fillMode: Image.PreserveAspectFit
+            source: batteryWidget.currentAccessory
+                ? Icons.getIcon(batteryWidget.currentAccessory.icon)
+                : Icons.getIcon("laptop")
+        }
+
+        Text {
+            color: Colors.colors.foreground
+            font.family: Config.font
+            font.pixelSize: (batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging) 
+                ? batteryWidget.width * 0.15
+                : batteryWidget.width * 0.2
+            text: batteryWidget.currentAccessory
+                ? batteryWidget.currentAccessory.percent + "%"
+                : "--%"
+        }
+    }
 
     // Rotate to the next accessory every 3-5s with a little slide + fade,
     // like a flip display rolling over to the next card.
@@ -53,8 +81,8 @@ BarWidgetContainer {
         id: cycleAnim
 
         ParallelAnimation {
-            NumberAnimation { target: icon; property: "opacity"; to: 0; duration: 160; easing.type: Easing.InQuad }
-            NumberAnimation { target: icon; property: "anchors.verticalCenterOffset"; to: -8; duration: 160; easing.type: Easing.InQuad }
+            NumberAnimation { target: iconImage; property: "opacity"; to: 0; duration: 160; easing.type: Easing.InQuad }
+            NumberAnimation { target: iconImage; property: "anchors.verticalCenterOffset"; to: -8; duration: 160; easing.type: Easing.InQuad }
         }
         ScriptAction {
             script: {
@@ -62,10 +90,10 @@ BarWidgetContainer {
                 batteryWidget.cycleIndex = (batteryWidget.cycleIndex + 1) % count
             }
         }
-        PropertyAction { target: icon; property: "anchors.verticalCenterOffset"; value: 8 }
+        PropertyAction { target: iconImage; property: "anchors.verticalCenterOffset"; value: 8 }
         ParallelAnimation {
-            NumberAnimation { target: icon; property: "opacity"; to: 1; duration: 180; easing.type: Easing.OutQuad }
-            NumberAnimation { target: icon; property: "anchors.verticalCenterOffset"; to: 0; duration: 180; easing.type: Easing.OutQuad }
+            NumberAnimation { target: iconImage; property: "opacity"; to: 1; duration: 180; easing.type: Easing.OutQuad }
+            NumberAnimation { target: iconImage; property: "anchors.verticalCenterOffset"; to: 0; duration: 180; easing.type: Easing.OutQuad }
         }
     }
 

@@ -18,7 +18,8 @@ Rectangle {
 
     default property alias content: container.data
 
-    property alias icon: icon
+    property alias iconText: iconText
+    property alias iconImage: iconImage
 
     // ----- Open/close progress -----
     // Bind isOpenHere to whatever condition means "my popup is the one
@@ -92,8 +93,18 @@ Rectangle {
     function activateFocusGrab() { focusGrab.active = true }
     function releaseFocusGrab() { focusGrab.active = false }
 
+    Image {
+        id: iconImage
+        sourceSize.width: width * Screen.devicePixelRatio
+        sourceSize.height: height * Screen.devicePixelRatio
+        anchors.centerIn: parent
+        width: container.implicitWidth * 0.4
+        height: width
+        fillMode: Image.PreserveAspectFit
+    }
+
     Text {
-        id: icon
+        id: iconText
         anchors.centerIn: parent
         color: Colors.colors.foreground
         font.pixelSize: container.implicitWidth * 0.4

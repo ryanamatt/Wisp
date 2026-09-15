@@ -7,6 +7,7 @@ import Quickshell.Io
 import "../../Components"
 import "../../IpcState"
 import "../../Colors"
+import "../../Icons"
 
 BarWidgetContainer {
     id: networkWidget
@@ -18,9 +19,8 @@ BarWidgetContainer {
     // even while the popup is closed.
     readonly property string connectionType: NetworkSingleton.connectionType
 
-    icon.text: connectionType === "ethernet" ? "\udb80\ude01" : "\uf1eb"
-    icon.color: connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.foreground
-    icon.font.pixelSize: implicitWidth * 0.6
+    iconImage.source: connectionType === "ethernet" ? Icons.getIcon("ethernet") : Icons.getIcon("wifi")
+    iconImage.width: networkWidget.implicitWidth * 0.5
 
     isOpenHere: IpcState.networkWidget.isOpenOn(networkWidget.screen)
 

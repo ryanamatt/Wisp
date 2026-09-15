@@ -7,6 +7,7 @@ import Quickshell
 import "../../Components"
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 BarPopup {
     id: batteryPopup
@@ -15,10 +16,10 @@ BarPopup {
 
     Keys.onEscapePressed: batteryPopup.requestClose()
 
-    readonly property string systemIcon: "\uf109"   // laptop
-    readonly property string razerIcon: "\uf11b"     // gamepad (stand-in for Razer peripherals)
-    readonly property string headsetIcon: "\uf025"   // headphones
-    readonly property string bluetoothIcon: "\uf293" // bluetooth
+    readonly property string systemIcon: "laptop"   // laptop
+    readonly property string razerIcon: "mouse"     // gamepad (stand-in for Razer peripherals)
+    readonly property string headsetIcon: "headphones"   // headphones
+    readonly property string bluetoothIcon: "bluetooth" // bluetooth
 
     property var systemBatteryList: []
     property var razerList: []
@@ -244,6 +245,7 @@ BarPopup {
         }
 
         ColumnLayout {
+            id: col
             Layout.fillWidth: true
             spacing: 8
             visible: batteryPopup.accessories.length > 0
@@ -258,12 +260,13 @@ BarPopup {
                     Layout.fillWidth: true
                     spacing: 10
 
-                    Text {
-                        text: row.modelData.icon
-                        font.family: Config.font
-                        font.pixelSize: 16
-                        color: row.modelData.charging ? Colors.colors.accentAlt : Colors.colors.foreground
-                        Layout.preferredWidth: 20
+                    Image {
+                        source: Icons.getIcon(row.modelData.icon)
+                        fillMode: Image.PreserveAspectFit
+                        Layout.preferredWidth: col.implicitWidth * 0.05
+                        Layout.preferredHeight: col.implicitWidth * 0.05
+                        sourceSize.width: width * Screen.devicePixelRatio
+                        sourceSize.height: height * Screen.devicePixelRatio
                     }
 
                     Text {

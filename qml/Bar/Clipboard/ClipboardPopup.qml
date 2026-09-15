@@ -8,6 +8,7 @@ import Quickshell
 import "../../Components"
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 BarPopup {
     id: clipboardPopup
@@ -71,17 +72,19 @@ BarPopup {
             Behavior on border.color { ColorAnimation { duration: 120 } }
 
             RowLayout {
+                id: innerLayout
                 anchors.fill: parent
                 anchors.leftMargin: 10
                 anchors.rightMargin: 8
                 spacing: 6
 
-                Text {
-                    text: "⌕"
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 15
-                    font.family: Config.font
-                    Layout.alignment: Qt.AlignVCenter
+                Image {
+                    source: Icons.getIcon("search")
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: innerLayout.width * 0.075
+                    Layout.preferredHeight: width
                 }
 
                 Item {

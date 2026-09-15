@@ -5,9 +5,11 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Effects
 import "../../Colors"
 import "../../Components"
 import "../../Config"
+import "../../Icons"
 
 BarPopup {
     id: powerMenuPopup
@@ -33,35 +35,35 @@ BarPopup {
         {
             id: "lock",
             label: "Lock",
-            glyph: "\uf023",
+            glyph: "lock",
             colorKey: "accent",
             command: ["hyprlock"]
         },
         {
             id: "sleep",
             label: "Sleep",
-            glyph: "\uf186",
+            glyph: "moon",
             colorKey: "info",
             command: ["systemctl", "suspend"]
         },
         {
             id: "logout",
             label: "Log Out",
-            glyph: "\uf2f5",
+            glyph: "logout",
             colorKey: "accentAlt",
             command: ["hyprctl", "dispatch", "hl.dsp.exit()"]
         },
         {
             id: "reboot",
-            label: "reboot",
-            glyph: "\uf2f1",
+            label: "Reboot",
+            glyph: "reboot",
             colorKey: "warning",
             command: ["systemctl", "reboot"]
         },
         {
             id: "shutdown",
             label: "Shut Down",
-            glyph: "\uf011",
+            glyph: "powerButton",
             colorKey: "error",
             command: ["systemctl", "poweroff"]
         }
@@ -117,7 +119,6 @@ BarPopup {
                 id: tile
 
                 required property var modelData
-
                 required property int index
 
                 Layout.fillWidth: true
@@ -130,25 +131,43 @@ BarPopup {
                 border.width: selected ? 3 : 1
                 border.color: powerMenuPopup.colorFor(modelData)
 
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 2
+                Item {
+                    anchors.fill: parent
 
-                    Text {
-                        text: modelData.glyph
-                        font.family: Config.font
-                        font.pixelSize: confirming ? 25 : 32
-                        color: confirming ? Colors.colors.success : powerMenuPopup.colorFor(modelData)
-                        Layout.alignment: Qt.AlignHCenter
-                    }
+                    Row {
+                        id: contentRow
+                        anchors.centerIn: parent
+                        spacing: 0
 
-                    Text {
-                        text: "?"
-                        visible: confirming
-                        font.pixelSize: 25
-                        font.bold: true
-                        font.family: Config.font
-                        color: Colors.colors.success  
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        
+                        Image {
+                            source: Icons.getIcon(modelData.glyph)
+                            sourceSize.width: width * Screen.devicePixelRatio
+                            sourceSize.height: height * Screen.devicePixelRatio
+                            width: tile.confirming 
+                                ? tile.height * 0.5
+                                : tile.height * 0.6
+
+                            height: width
+                            anchors.verticalCenter: parent.verticalCenter
+                            layer.enabled: true
+                                layer.effect: MultiEffect {
+                                    colorization: 1.0
+                                    colorizationColor: powerMenuPopup.colorFor(modelData)
+                                }
+                        }
+
+                        Text {
+                            text: "?"
+                            visible: tile.confirming
+                            font.pixelSize: 25
+                            font.bold: true
+                            font.family: Config.font
+                            color: Colors.colors.success  
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
                 }
 

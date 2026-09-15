@@ -8,6 +8,7 @@ import Quickshell
 import "../../Components"
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 BarPopup {
     id: networkPopup
@@ -112,19 +113,23 @@ BarPopup {
             border.color: Colors.colors.borderSoft
 
             RowLayout {
+                id: innerLayout
                 anchors.fill: parent
                 anchors.leftMargin: 10
                 anchors.rightMargin: 8
                 spacing: 8
 
-                Text {
-                    text: networkPopup.connectionType === "ethernet" ? "\udb80\ude01"
-                        : networkPopup.connectionType === "wifi" ? "\uf1eb"
-                        : "\uf1eb"
-                    color: networkPopup.connectionType === "none" ? Colors.colors.foregroundMuted : Colors.colors.success
-                    font.pixelSize: 18
-                    font.family: Config.font
+                Image {
+                    source: networkPopup.connectionType === "ethernet" ? Icons.getIcon("ethernet")
+                    : networkPopup.connectionType === "wifi" ? Icons.getIcon("wifi")
+                    : Icons.getIcon("wifiOff")
                     Layout.alignment: Qt.AlignVCenter
+
+                    Layout.preferredWidth: innerLayout.width * 0.1
+                    Layout.preferredHeight: width
+
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
                 }
 
                 ColumnLayout {
@@ -154,12 +159,15 @@ BarPopup {
                     }
                 }
 
-                Text {
-                    text: "\uf021"
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 13
-                    font.family: Config.font
+                Image {
+                    source: Icons.getIcon("refresh")
                     Layout.alignment: Qt.AlignVCenter
+
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: innerLayout.width * 0.1
+                    Layout.preferredHeight: width
 
                     MouseArea {
                         anchors.fill: parent
@@ -168,6 +176,7 @@ BarPopup {
                         onClicked: networkPopup.refreshAll()
                     }
                 }
+
             }
         }
 
@@ -361,14 +370,18 @@ BarPopup {
                             anchors.rightMargin: 8
                             spacing: 8
 
-                            Text {
-                                text: entryDelegate.modelData.signal >= 70 ? "\uf1eb"
-                                    : entryDelegate.modelData.signal >= 40 ? "\uf1eb"
-                                    : "\uf1eb"
-                                color: entryDelegate.modelData.inUse ? Colors.colors.success : Colors.colors.foregroundMuted
-                                font.pixelSize: 14
-                                font.family: Config.font
+                            Image {
+                                source: entryDelegate.modelData.signal >= 70 ? Icons.getIcon("wifi")
+                                    : entryDelegate.modelData.signal >= 40 ? Icons.getIcon("wifi2Bar")
+                                    : Icons.getIcon("wifi1Bar")
+                                Layout.alignment: Qt.AlignVCenter
                                 opacity: Math.max(0.35, entryDelegate.modelData.signal / 100)
+
+                                sourceSize.width: width * Screen.devicePixelRatio
+                                sourceSize.height: height * Screen.devicePixelRatio
+
+                                Layout.preferredWidth: innerLayout.width * 0.075
+                                Layout.preferredHeight: width
                             }
 
                             Text {
@@ -380,12 +393,16 @@ BarPopup {
                                 verticalAlignment: Text.AlignVCenter
                             }
 
-                            Text {
+                            Image {
                                 visible: entryDelegate.modelData.secured
-                                text: "\uf023"
-                                color: Colors.colors.foregroundMuted
-                                font.pixelSize: 11
-                                font.family: Config.font
+                                source: Icons.getIcon("lock")
+                                Layout.alignment: Qt.AlignVCenter
+
+                                sourceSize.width: width * Screen.devicePixelRatio
+                                sourceSize.height: height * Screen.devicePixelRatio
+
+                                Layout.preferredWidth: innerLayout.width * 0.075
+                                Layout.preferredHeight: width
                             }
 
                             Rectangle {

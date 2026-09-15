@@ -134,4 +134,6 @@ wisp log tail 5
 
 ## License
 
-MIT
+Wisp is licensed under the MIT License.
+
+Icons are provided by Google's Material Symbols & Icons, which are Apache Licensed. You can find a copy of the license in [assets/icons/LICENSE](assets/icons/LICENSE).
