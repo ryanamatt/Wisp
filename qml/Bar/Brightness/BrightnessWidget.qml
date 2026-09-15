@@ -8,6 +8,7 @@ import "../../IpcState"
 import "../../Colors"
 import "../../Config"
 import "../../Icons"
+import Wisp.Brightness
 
 BarWidgetContainer {
     id: brightnessWidget
@@ -21,8 +22,8 @@ BarWidgetContainer {
         Layout.alignment: Qt.AlignCenter
 
         Image {
-            visible: BrightnessSingleton.nightlightEnabled
-            Layout.preferredWidth: BrightnessSingleton.hasBacklight 
+            visible: Brightness.nightlightEnabled
+            Layout.preferredWidth: Brightness.hasBacklight 
                 ? brightnessWidget.width * 0.2
                 : brightnessWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
@@ -33,8 +34,8 @@ BarWidgetContainer {
         }
 
         Image {
-            visible: BrightnessSingleton.hasBacklight
-            Layout.preferredWidth: BrightnessSingleton.nightlightEnabled 
+            visible: Brightness.hasBacklight
+            Layout.preferredWidth: Brightness.nightlightEnabled 
                 ? brightnessWidget.width * 0.2
                 : brightnessWidget.width * 0.25
             Layout.preferredHeight: Layout.preferredWidth
@@ -43,7 +44,7 @@ BarWidgetContainer {
         }
 
         Image {
-            visible: !BrightnessSingleton.hasBacklight && !BrightnessSingleton.nightlightEnabled
+            visible: !Brightness.hasBacklight && !Brightness.nightlightEnabled
             Layout.preferredWidth: brightnessWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
@@ -51,14 +52,14 @@ BarWidgetContainer {
         }
 
         Text {
-            visible: BrightnessSingleton.hasBacklight
+            visible: Brightness.hasBacklight
             color: Colors.colors.foreground
             font.family: Config.font
-            font.pixelSize: Math.round(BrightnessSingleton.nightlightEnabled
+            font.pixelSize: Math.round(Brightness.nightlightEnabled
                 ? brightnessWidget.width * 0.15
                 : brightnessWidget.width * 0.2)
-            text: BrightnessSingleton.brightnessPercent
-            ? BrightnessSingleton.brightnessPercent + "%"
+            text: Brightness.brightnessPercent
+            ? Brightness.brightnessPercent + "%"
             : "--%"
         }
 
@@ -73,7 +74,7 @@ BarWidgetContainer {
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
-            BrightnessSingleton.refreshBrightness()
+            Brightness.refreshBrightness()
             popup.forceActiveFocus()
             activateFocusGrab()
         } else {

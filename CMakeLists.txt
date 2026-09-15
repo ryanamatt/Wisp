@@ -53,6 +53,25 @@ target_link_libraries(wispsystem PRIVATE
     Qt6::Qml
 )
 
+# --- wispBrightness QML module ---
+qt_add_qml_module(wispbrightness
+    URI Wisp.Brightness
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Brightness
+    SOURCES
+        src/backend/brightness/brightness.hpp
+        src/backend/brightness/brightness.cpp
+)
+
+target_include_directories(wispbrightness PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/backend/brightness
+)
+
+target_link_libraries(wispbrightness PRIVATE
+    Qt6::Core
+    Qt6::Qml
+)
+
 # --- wispCalendar QML module ---
 qt_add_qml_module(wispcalendar
     URI Wisp.Calendar
