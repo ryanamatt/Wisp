@@ -7,14 +7,18 @@ import "../../Components"
 import "../../IpcState"
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 BarWidgetContainer {
     id: clipboardWidget
 
     required property var screen
 
-    iconText.text: "\udb82\ude38"
-    iconText.font.pixelSize: implicitWidth * 0.6
+    // iconText.text: "\udb82\ude38"
+    // iconText.font.pixelSize: implicitWidth * 0.6
+
+    iconImage.source: Icons.getIcon("clipboard")
+    iconImage.width: clipboardWidget.implicitWidth * 0.6
 
     isOpenHere: IpcState.clipboardWidget.isOpenOn(clipboardWidget.screen)
 
