@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <optional>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
@@ -56,6 +57,58 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
         // Only reached if execvp itself failed.
         wisp::log::error(std::string("failed to launch quickshell: ") + std::strerror(errno));
         wisp::log::error("is quickshell installed and on PATH?");
+        _exit(127);
+    }
+
+    return pid;
+}
+
+// Looks for a binary named `name` in the same directory as the
+// currently running wisp executable. This is how `./build/wisp` finds
+// `./build/wispd` during development without needing it on PATH, and
+// it keeps working unchanged once both are installed side by side.
+// Returns nullopt if /proc/self/exe can't be resolved or no such sibling
+// exists, in which case the caller should fall back to a plain PATH lookup.
+std::optional<std::filesystem::path> siblingBinary(const std::string &name) {
+    std::error_code ec;
+    std::filesystem::path exePath = std::filesystem::read_symlink("/proc/self/exe", ec);
+    if (ec) return std::nullopt;
+
+    std::filesystem::path candidate = exePath.parent_path() / name;
+    if (!std::filesystem::exists(candidate, ec) || ec) return std::nullopt;
+
+    return candidate;
+}
+
+// Forks and execs the wispd daemon. Returns the child's pid in the
+// parent, and never returns in the child (it either execs or
+// _exit(127)s on failure). Returns -1 if fork() itself failed.
+pid_t spawnWispd() {
+    pid_t pid = fork();
+    if (pid < 0) {
+        wisp::log::error(std::string("fork failed: ") + std::strerror(errno));
+        return -1;
+    }
+
+    if (pid == 0) {
+        // Child: become wispd.
+        std::string wispdPath = "wispd";
+        if (auto sibling = siblingBinary("wispd")) {
+            wispdPath = sibling->string();
+            wisp::log::debug("found wispd next to the running wisp binary: " + wispdPath);
+        }
+
+        std::vector<char *> args;
+        args.push_back(const_cast<char *>(wispdPath.c_str()));
+        args.push_back(nullptr);
+
+        wisp::log::debug("exec: " + wispdPath);
+
+        execvp(wispdPath.c_str(), args.data());
+
+        // Only reached if execvp itself failed.
+        wisp::log::error(std::string("failed to launch wispd: ") + std::strerror(errno));
+        wisp::log::error("is wispd built alongside wisp, or installed and on PATH?");
         _exit(127);
     }
 
@@ -130,10 +183,17 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
 
     wisp::log::info("bar started (quickshell pid " + std::to_string(child) + ")");
 
+    pid_t wispdPid = spawnWispd();
+    if (wispdPid < 0) {
+        wisp::log::warning("failed to start wispd, continuing without it");
+    } else {
+        wisp::log::info("wispd started (pid " + std::to_string(wispdPid) + ")");
+    }
+
     int exitCode = 0;
     for (;;) {
         int status = 0;
-        pid_t waited = waitpid(child, &status, 0);
+        pid_t waited = waitpid(-1, &status, 0);
 
         if (waited == -1) {
             if (errno != EINTR) break;
@@ -142,6 +202,10 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
                 wisp::log::info("stop signal received, shutting down");
                 kill(child, SIGTERM);
                 waitpid(child, &status, 0);
+                if (wispdPid > 0) {
+                    kill(wispdPid, SIGTERM);
+                    waitpid(wispdPid, &status, 0);
+                }
                 break;
             }
             if (wisp::process::gotReloadSignal()) {
@@ -151,6 +215,8 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
                 wisp::config::load(configPath);
                 wisp::log::info("reloaded config from " + configPath);
 
+                // wispd doesn't touch QML, so it rides through a
+                // reload untouched; only quickshell gets restarted.
                 kill(child, SIGTERM);
                 waitpid(child, &status, 0);
                 child = spawnQuickshell(qmlDir);
@@ -161,6 +227,18 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
                 }
                 wisp::log::info("quickshell restarted (pid " + std::to_string(child) + ")");
             }
+            continue;
+        }
+
+        if (wispdPid > 0 && waited == wispdPid) {
+            // wispd exiting isn't fatal to the bar (yet): log it and
+            // keep supervising quickshell.
+            if (WIFEXITED(status)) {
+                wisp::log::warning("wispd exited with code " + std::to_string(WEXITSTATUS(status)));
+            } else if (WIFSIGNALED(status)) {
+                wisp::log::warning("wispd terminated by signal " + std::to_string(WTERMSIG(status)));
+            }
+            wispdPid = -1;
             continue;
         }
 
@@ -176,6 +254,11 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
         } else if (WIFSIGNALED(status)) {
             exitCode = 128 + WTERMSIG(status);
             wisp::log::warning("quickshell terminated by signal " + std::to_string(WTERMSIG(status)));
+        }
+
+        if (wispdPid > 0) {
+            kill(wispdPid, SIGTERM);
+            waitpid(wispdPid, &status, 0);
         }
         break;
     }

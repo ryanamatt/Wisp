@@ -193,6 +193,15 @@ target_compile_definitions(wisp PRIVATE
     WISP_SHARE_DIR="${WISP_SHARE_DIR}"
 )
 
+# --- wispd Executable ---
+# Background daemon, spawned by `wisp run` alongside quickshell and
+# supervised for the lifetime of the bar.
+add_executable(wispd
+    src/daemon/daemon.cpp
+)
+
+target_link_libraries(wispd PRIVATE wisplogcore)
+
 # --- Install: QML tree ---
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/qml/
     DESTINATION ${WISP_SHARE_DIR}/qml
