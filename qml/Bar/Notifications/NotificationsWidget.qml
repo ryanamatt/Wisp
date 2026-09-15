@@ -11,9 +11,6 @@ import "../../Icons"
 BarWidgetContainer {
     id: notifWidget 
 
-    // iconText.text: "\uf49a"
-    // iconText.font.pixelSize: implicitWidth * 0.6
-
     iconImage.source: Icons.getIcon("notification")
     iconImage.width: notifWidget.implicitWidth * 0.6
 
