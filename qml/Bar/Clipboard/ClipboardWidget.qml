@@ -14,9 +14,6 @@ BarWidgetContainer {
 
     required property var screen
 
-    // iconText.text: "\udb82\ude38"
-    // iconText.font.pixelSize: implicitWidth * 0.6
-
     iconImage.source: Icons.getIcon("clipboard")
     iconImage.width: clipboardWidget.implicitWidth * 0.6
 
