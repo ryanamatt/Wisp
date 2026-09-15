@@ -8,6 +8,7 @@ import QtQuick.Layouts
 import "../../Colors"
 import "../../Components"
 import "../../Config"
+import "../../Icons"
 
 BarPopup {
     id: audioPopup
@@ -114,14 +115,20 @@ BarPopup {
 
         // ----- Microphone -----
         RowLayout {
+            id: micLayout
             Layout.fillWidth: true
             spacing: 10
 
-            Text {
-                text: audioPopup.micMuted ? "\uf131" : "\uf130"
-                font.family: Config.font
-                font.pixelSize: 18
-                color: audioPopup.micMuted ? Colors.colors.foregroundMuted : Colors.colors.foreground
+            Image {
+                source: audioPopup.micMuted
+                    ? Icons.getIcon("audio/micOff")
+                    : Icons.getIcon("audio/mic")
+
+                sourceSize.width: width * Screen.devicePixelRatio
+                sourceSize.height: height * Screen.devicePixelRatio
+
+                Layout.preferredWidth: micLayout.width * 0.075
+                Layout.preferredHeight: width
 
                 MouseArea {
                     anchors.fill: parent
@@ -155,16 +162,24 @@ BarPopup {
 
         // ----- Volume -----
         RowLayout {
+            id: volLayout
             Layout.fillWidth: true
             spacing: 10
 
-            Text {
-                text: audioPopup.muted ? "\ueee8"
-                      : audioPopup.volume > 0.5 ? "\uf028"
-                      : audioPopup.volume > 0 ? "\uf027" : "\uf026"
-                font.family: Config.font
-                font.pixelSize: 18
-                color: audioPopup.muted ? Colors.colors.foregroundMuted : Colors.colors.foreground
+            Image {
+                source: {
+                    if (audioPopup.muted || audioPopup.volume === 0)
+                        return Icons.getIcon("audio/volumeOff")
+                    if (audioPopup.volume < 0.3)
+                        return Icons.getIcon("audio/volumeDown")
+                    return Icons.getIcon("audio/volumeUp")
+                }
+
+                sourceSize.width: width * Screen.devicePixelRatio
+                sourceSize.height: height * Screen.devicePixelRatio
+
+                Layout.preferredWidth: volLayout.width * 0.075
+                Layout.preferredHeight: width
 
                 MouseArea {
                     anchors.fill: parent
@@ -198,6 +213,7 @@ BarPopup {
 
         // ----- MPRIS player -----
         ColumnLayout {
+            id: playerLayout
             Layout.fillWidth: true
             visible: audioPopup.hasPlayer
             spacing: 10
@@ -224,7 +240,7 @@ BarPopup {
                     Text {
                         anchors.centerIn: parent
                         visible: !audioPopup.hasPlayer || audioPopup.activePlayer.trackArtUrl === ""
-                        text: "\uf001"
+                        text: "Unkown"
                         font.family: Config.font
                         font.pixelSize: 20
                         color: Colors.colors.foregroundMuted
@@ -272,8 +288,9 @@ BarPopup {
             }
 
             RowLayout {
+                id: buttonLayout
                 Layout.fillWidth: true
-                spacing: 20
+                spacing: 10
 
                 Text {
                     text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.position) : "0:00"
@@ -284,12 +301,13 @@ BarPopup {
 
                 Item { Layout.fillWidth: true }
 
-                Text {
-                    text: "\uf048"
-                    font.family: Config.font
-                    font.pixelSize: 16
-                    color: (audioPopup.hasPlayer && audioPopup.activePlayer.canGoPrevious)
-                           ? Colors.colors.foreground : Colors.colors.foregroundMuted
+                Image {
+                    source: Icons.getIcon("audio/previous")
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: volLayout.width * 0.1
+                    Layout.preferredHeight: width
 
                     MouseArea {
                         anchors.fill: parent
@@ -300,11 +318,13 @@ BarPopup {
                     }
                 }
 
-                Text {
-                    text: (audioPopup.hasPlayer && audioPopup.activePlayer.isPlaying) ? "\uf04c" : "\uf04b"
-                    font.family: Config.font
-                    font.pixelSize: 20
-                    color: Colors.colors.accent
+                Image {
+                    source: (audioPopup.hasPlayer && audioPopup.activePlayer.isPlaying) ? Icons.getIcon("audio/pause") : Icons.getIcon("audio/play")
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: volLayout.width * 0.1
+                    Layout.preferredHeight: width
 
                     MouseArea {
                         anchors.fill: parent
@@ -315,12 +335,13 @@ BarPopup {
                     }
                 }
 
-                Text {
-                    text: "\uf051"
-                    font.family: Config.font
-                    font.pixelSize: 16
-                    color: (audioPopup.hasPlayer && audioPopup.activePlayer.canGoNext)
-                           ? Colors.colors.foreground : Colors.colors.foregroundMuted
+                Image {
+                    source: Icons.getIcon("audio/next")
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: volLayout.width * 0.1
+                    Layout.preferredHeight: width
 
                     MouseArea {
                         anchors.fill: parent
