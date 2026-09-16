@@ -37,21 +37,36 @@ Singleton {
     property bool isVolumeOSDVisible: false
 
     readonly property PwNode sink: Pipewire.defaultAudioSink
+    readonly property var sinkAudio: sink ? sink.audio : null
 
     // Keeps sink.audio.volume/muted live.
     PwObjectTracker {
         objects: root.sink ? [root.sink] : []
     }
 
+    property bool _volumeValueInitialized: false
+    property bool _mutedValueInitialized: false
+
+    onSinkAudioChanged: {
+        _volumeValueInitialized = false
+        _mutedValueInitialized = false
+    }
+
     Connections {
-        target: (root.sink && root.sink.audio) ? root.sink.audio : null
+        target: root.sinkAudio
         function onVolumeChanged() {
-            if (!root._ready) return
+            if (!root._volumeValueInitialized) {
+                root._volumeValueInitialized = true
+                return
+            }
             root.isVolumeOSDVisible = true
             volumeOSDVisibleTimer.restart()
         }
         function onMutedChanged() {
-            if (!root._ready) return
+            if (!root._mutedValueInitialized) {
+                root._mutedValueInitialized = true
+                return
+            }
             root.isVolumeOSDVisible = true
             volumeOSDVisibleTimer.restart()
         }
