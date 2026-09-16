@@ -20,4 +20,5 @@ Scope {
     Screenshot {}
 
     OSDBrightness {}
+    OSDVolume {}
 }

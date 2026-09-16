@@ -73,10 +73,11 @@ Scope {
                 }
 
                 Text {
+                    Layout.preferredWidth: rect.width / 3.5
                     Layout.alignment: Qt.AlignCenter
                     text: osdScope.valueText
                     color: Colors.colors.accent
-                    font.pixelSize: width * 0.5
+                    font.pixelSize: width * 0.4
                     font.family: Config.font
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
