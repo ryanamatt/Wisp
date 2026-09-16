@@ -3,27 +3,36 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Hyprland
 import "../Components"
 import "../Colors"
 import "../Config"
 
-Variants {
-    model: Quickshell.screens
-
+Scope {
     property bool whenVisible: false
     property string icon: ""
     property real barValue: 0
     property string valueText: ""
 
+    // Find your primary screen, or fallback to the first available screen
+    // You can also filter by name, e.g., Quickshell.screens.find(s => s.name === "HDMI-1")
+    property var targetScreen: {
+        let focusedName = Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "";
+        for (let i = 0; i < Quickshell.screens.length; i++) {
+            if (Quickshell.screens[i].name === focusedName)
+                return Quickshell.screens[i];
+        }
+        return Quickshell.screens[0];
+    }
+
     PanelWindow {
         id: osd
-        required property var modelData
-        screen: modelData
+        screen: targetScreen
 
-        visible: whenVisible
+        visible: whenVisible && targetScreen !== null
 
         anchors { bottom: true; left: true; right: true }
-        margins.bottom: osd.screen.height / 10
+        margins.bottom: (osd.screen ? osd.screen.height : 1000) / 10
         color: "transparent"
 
         exclusionMode: ExclusionMode.Ignore 
