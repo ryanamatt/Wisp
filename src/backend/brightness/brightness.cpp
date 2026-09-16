@@ -81,9 +81,12 @@ void Brightness::detectBacklightDevice() {
 }
 
 void Brightness::refreshBrightness() {
+    const bool hadBacklightBefore = m_hasBacklight;
+    const int previousPercent = m_brightnessPercent;
+
     if (!m_hasBacklight) detectBacklightDevice();
     if (!m_hasBacklight) {
-        emit brightnessChanged();
+        if (hadBacklightBefore) emit brightnessChanged();
         return;
     }
 
@@ -104,7 +107,8 @@ void Brightness::refreshBrightness() {
     const QString brightnessFile = m_backlightPath + "/brightness";
     if (!m_backlightWatcher.files().contains(brightnessFile)) { m_backlightWatcher.addPath(brightnessFile); }
 
-    emit brightnessChanged();
+    // Only notify when something actually changed.
+    if (!hadBacklightBefore || m_brightnessPercent != previousPercent) { emit brightnessChanged(); }
 }
 
 void Brightness::onBacklightFileChanged(const QString &path) {
