@@ -26,7 +26,7 @@ PopupWindow {
 
     anchor.item: widget
     anchor.edges: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? 0 : Edges.Left)
-    anchor.gravity: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? Edges.HCenter : Edges.Left)
+    anchor.gravity: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? Edges.HCenter : Edges.Right)
     anchor.margins.top: 0
     anchor.margins.bottom: 0
 
