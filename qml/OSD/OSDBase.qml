@@ -1,4 +1,4 @@
-// qml/OSD/OSD.qml
+// qml/OSD/OSDBase.qml
 
 import QtQuick
 import QtQuick.Layouts
