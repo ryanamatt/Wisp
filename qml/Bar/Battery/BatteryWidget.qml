@@ -30,20 +30,20 @@ BarWidgetContainer {
     RowLayout {
         id: contentLayout
         anchors.centerIn: parent
-        spacing: 6
+        spacing: (batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging) ? 2 : 6
         Layout.alignment: Qt.AlignCenter
 
         Image {
             visible: batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
+            Layout.preferredWidth: 14
+            Layout.preferredHeight: 14
             fillMode: Image.PreserveAspectFit
             source: Icons.getIcon("electricBolt")
         }
 
         Image {
             Layout.preferredWidth: (batteryWidget.currentAccessory && batteryWidget.currentAccessory.charging) 
-                ? 16 
+                ? 14 
                 : 20
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
