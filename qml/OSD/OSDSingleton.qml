@@ -10,10 +10,12 @@ import Wisp.Brightness
 Singleton {
 
     property bool isBrightnessOSDVisible: false
+    property bool _ready: false
 
     Connections {
         target: Brightness
         function onBrightnessChanged() {
+            if (!_ready) return
             isBrightnessOSDVisible = true
             brightnessOSDVisibleTimer.restart()
         }
@@ -25,5 +27,7 @@ Singleton {
         repeat: false
         onTriggered: isBrightnessOSDVisible = false
     }
+
+    Component.onCompleted: Qt.callLater(() => _ready = true)
 
 }
