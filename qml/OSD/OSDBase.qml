@@ -9,13 +9,13 @@ import "../Colors"
 import "../Config"
 
 Scope {
+    id: osdScope
+
     property bool whenVisible: false
     property string icon: ""
     property real barValue: 0
     property string valueText: ""
 
-    // Find your primary screen, or fallback to the first available screen
-    // You can also filter by name, e.g., Quickshell.screens.find(s => s.name === "HDMI-1")
     property var targetScreen: {
         let focusedName = Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "";
         for (let i = 0; i < Quickshell.screens.length; i++) {
@@ -29,7 +29,7 @@ Scope {
         id: osd
         screen: targetScreen
 
-        visible: whenVisible && targetScreen !== null
+        visible: osdScope.whenVisible && targetScreen !== null
 
         anchors { bottom: true; left: true; right: true }
         margins.bottom: (osd.screen ? osd.screen.height : 1000) / 10
@@ -57,7 +57,7 @@ Scope {
 
                 Image {
                     id: iconImage
-                    source: icon
+                    source: osdScope.icon
                     Layout.preferredWidth: rect.width * 0.15
                     Layout.preferredHeight: Layout.preferredWidth
                     Layout.alignment: Qt.AlignCenter
@@ -67,14 +67,14 @@ Scope {
                 UsageBar {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignCenter
-                    value: barValue
+                    value: osdScope.barValue
                     barColor: Colors.colors.foregroundMuted
                     barFillColor: Colors.colors.accent
                 }
 
                 Text {
                     Layout.alignment: Qt.AlignCenter
-                    text: valueText
+                    text: osdScope.valueText
                     color: Colors.colors.accent
                     font.pixelSize: width * 0.5
                     font.family: Config.font
