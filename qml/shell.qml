@@ -6,6 +6,7 @@ import "ThemeSwitcher"
 import "WorkspaceSwitcher"
 import "CommandCenter"
 import "Screenshot"
+import "OSD"
 
 Scope {
     Bar {}
@@ -17,4 +18,6 @@ Scope {
     CommandCenter {}
 
     Screenshot {}
+
+    OSDBrightness {}
 }
