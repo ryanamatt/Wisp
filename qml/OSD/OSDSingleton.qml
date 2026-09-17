@@ -78,4 +78,40 @@ Singleton {
         repeat: false
         onTriggered: root.isVolumeOSDVisible = false
     }
+
+    // ----- Mic OSD -----
+    property bool isMicOSDVisible: false
+
+    readonly property PwNode source: Pipewire.defaultAudioSource
+    readonly property var sourceAudio: source ? source.audio : null
+
+    // Keeps source.audio.muted live.
+    PwObjectTracker {
+        objects: root.source ? [root.source] : []
+    }
+
+    property bool _micMutedValueInitialized: false
+
+    onSourceAudioChanged: {
+        _micMutedValueInitialized = false
+    }
+
+    Connections {
+        target: root.sourceAudio
+        function onMutedChanged() {
+            if (!root._micMutedValueInitialized) {
+                root._micMutedValueInitialized = true
+                return
+            }
+            root.isMicOSDVisible = true
+            micOSDVisibleTimer.restart()
+        }
+    }
+
+    Timer {
+        id: micOSDVisibleTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.isMicOSDVisible = false
+    }
 }
