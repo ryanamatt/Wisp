@@ -160,6 +160,7 @@ BarPopup {
                 }
 
                 Image {
+                    id: refreshIcon
                     source: Icons.getIcon("refresh")
                     Layout.alignment: Qt.AlignVCenter
 
@@ -169,11 +170,25 @@ BarPopup {
                     Layout.preferredWidth: innerLayout.width * 0.1
                     Layout.preferredHeight: width
 
+                    rotation: 0
+
+                    RotationAnimation on rotation {
+                        id: spinAnimation
+                        target: refreshIcon
+                        from: 0
+                        to: 360
+                        duration: 600
+                        running: false
+                    }
+
                     MouseArea {
                         anchors.fill: parent
                         anchors.margins: -6
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: networkPopup.refreshAll()
+                        onClicked: {
+                            spinAnimation.restart()
+                            networkPopup.refreshAll()
+                        }
                     }
                 }
 
