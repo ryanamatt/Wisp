@@ -7,6 +7,7 @@ import Quickshell.Io
 import "../../Colors"
 import "../../Effects"
 import "../../Config"
+import "../../Icons"
 
 ColumnLayout {
     id: root
@@ -71,7 +72,7 @@ ColumnLayout {
 
         Image {
             id: mascot
-            source: Quickshell.env("WISP_SHARE_DIR") + "/assets/wisp.svg"
+            source: Icons.getMascot()
             sourceSize.width: 256
             fillMode: Image.PreserveAspectFit
         }

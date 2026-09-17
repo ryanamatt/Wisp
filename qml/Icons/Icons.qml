@@ -7,10 +7,17 @@ import Quickshell
 
 Singleton {
 
-    readonly property string base: Quickshell.env("WISP_SHARE_DIR") + "/assets/icons"
+    readonly property string base: Quickshell.env("WISP_SHARE_DIR") + "/assets"
+    readonly property string icons: base + "/icons"
+
+    readonly property string mascot: base + "/wisp.svg"
+
+    function getMascot() {
+        return mascot
+    }
 
     function getIcon(name) {
-        return `${base}/${name}.svg`
+        return `${icons}/${name}.svg`
     }
 
 }
