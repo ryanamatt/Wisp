@@ -19,6 +19,9 @@ public:
 
     QString time() const;
 
+    // overwrites WISP_TIME_FORMAT in the running process environment
+    Q_INVOKABLE void setFormatOverride(const QString &format);
+
 signals:
     void timeChanged();
 
