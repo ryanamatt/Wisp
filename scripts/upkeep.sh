@@ -26,6 +26,7 @@ flatpak uninstall --unused -y
 
 yay -Sc
 
+echo -e "sudo rm -rf /var/cache/pacman/pkg/download-*"
 sudo rm -rf /var/cache/pacman/pkg/download-*
 
 notify-send -a "Wisp" -i "$WISP_SHARE_DIR/assets/wisp.svg" "Updated System" "System Packages Updated & Cache, Orphans Removed"
