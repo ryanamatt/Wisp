@@ -21,4 +21,5 @@ Scope {
 
     OSDBrightness {}
     OSDVolume {}
+    OSDMic {}
 }

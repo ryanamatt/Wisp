@@ -13,6 +13,7 @@ Scope {
 
     property bool whenVisible: false
     property string icon: ""
+    property bool showBar: true
     property real barValue: 0
     property string valueText: ""
 
@@ -65,6 +66,7 @@ Scope {
                 }
 
                 UsageBar {
+                    visible: osdScope.showBar
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignCenter
                     value: osdScope.barValue
