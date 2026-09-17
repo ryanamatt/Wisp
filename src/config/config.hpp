@@ -13,6 +13,7 @@ namespace wisp::config {
 inline constexpr const char *kDefaultTimeFormat = "ddd MMM d hh:mm:ss AP";
 inline constexpr const char *kDefaultBarOrientation = "top";
 inline constexpr const char *kDefaultFont = "Noto Sans";
+inline constexpr const char *kDefaultWallpaperSubdir = "Pictures/wallpapers"; // Relative to $HOME
 
 // One entry in the app launcher's grid.
 struct AppEntry {
@@ -30,6 +31,7 @@ struct Config {
     std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;
     std::vector<AppEntry> apps = defaultApps();
+    std::string wallpaperDir;
 };
 
 // Resolves the default config file location:

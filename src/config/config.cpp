@@ -71,11 +71,26 @@ std::optional<std::vector<AppEntry>> parseApps(const nlohmann::json &j) {
     return apps;
 }
 
+// Resolves the wallpaper directory to use.
+std::string resolveWallpaperDir(const std::string &configured) {
+    const char *home = std::getenv("HOME");
+
+    if (configured.empty()) { return home && *home ? std::string(home) + "/" + kDefaultWallpaperSubdir : ""; }
+
+    if (configured == "~") { return home && *home ? std::string(home) : configured; }
+    if (configured.rfind("~/", 0) == 0) {
+        return home && *home ? std::string(home) + configured.substr(1) : configured;
+    }
+
+    return configured;
+}
+
 void exportEnv(const Config &cfg) {
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
     setenv(wisp::env::kFont, cfg.font.c_str(), 1);
     setenv(wisp::env::kAppsJson, appsToJson(cfg.apps).c_str(), 1);
+    setenv(wisp::env::kWallpaperDir, cfg.wallpaperDir.c_str(), 1);
 }
 
 } // namespace
@@ -100,6 +115,7 @@ std::string defaultPath() {
 
 Config load(const std::string &path) {
     Config cfg;
+    cfg.wallpaperDir = resolveWallpaperDir("");
 
     std::ifstream in(path);
     if (!in.is_open()) {
@@ -140,6 +156,16 @@ Config load(const std::string &path) {
             cfg.font = j["font"].get<std::string>();
         else
             wisp::log::warning("config", "font must be a string, ignoring");
+    }
+
+    if (j.contains("wallpaper") && j["wallpaper"].is_object()) {
+        const auto &wallpaper = j["wallpaper"];
+        if (wallpaper.contains("directory")) {
+            if (wallpaper["directory"].is_string())
+                cfg.wallpaperDir = resolveWallpaperDir(wallpaper["directory"].get<std::string>());
+            else
+                wisp::log::warning("config", "wallpaper.directory must be a string, ignoring");
+        }
     }
 
     if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
