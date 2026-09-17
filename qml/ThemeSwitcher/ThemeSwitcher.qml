@@ -12,7 +12,10 @@ import "../Config"
 PanelWindow {
     id: window
 
-    readonly property string wallpaperDir: Quickshell.env("HOME") + "/Pictures/wallpapers"
+    readonly property string wallpaperDir: {
+        let dir = Quickshell.env("WISP_WALLPAPER_DIR")
+        return dir && dir !== "" ? dir : Quickshell.env("HOME") + "/Pictures/wallpapers"
+    }
 
     property var wallpapers: []
     property int focusedIndex: 0

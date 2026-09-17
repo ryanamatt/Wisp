@@ -12,6 +12,7 @@ inline constexpr const char *kTimeFormat = "WISP_TIME_FORMAT";
 inline constexpr const char *kBarOrientation = "WISP_BAR_ORIENTATION";
 inline constexpr const char *kFont = "WISP_FONT";
 inline constexpr const char *kAppsJson = "WISP_APPS_JSON";
+inline constexpr const char *kWallpaperDir = "WISP_WALLPAPER_DIR";
 
 // Other
 inline constexpr const char *kShareDir = "WISP_SHARE_DIR";
