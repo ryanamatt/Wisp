@@ -14,7 +14,6 @@ ColumnLayout {
     clip: true
     spacing: 14
 
-    // Adjust this if upkeep.sh lives somewhere else.
     property string upkeepScriptPath: Quickshell.env("WISP_SHARE_DIR") + "/scripts/upkeep.sh"
 
     property bool refreshing: false
