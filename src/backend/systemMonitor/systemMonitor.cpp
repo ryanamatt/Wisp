@@ -35,6 +35,8 @@ void populate_defaults(SystemStats *systemStats) {
     systemStats->loadAvg1 = -1.0;
     systemStats->loadAvg5 = -1.0;
     systemStats->loadAvg15 = -1.0;
+    systemStats->netRxBytesPerSec = -1.0;
+    systemStats->netTxBytesPerSec = -1.0;
 }
 
 // Runs a shell command and returns its stdout, or empty string on failure.
@@ -299,6 +301,52 @@ QVariantList SystemMonitorWorker::partitionsAsVariantList() const {
     return list;
 }
 
+void SystemMonitorWorker::getNetworkStats() {
+    static const std::string netRoot = "/sys/class/net";
+
+    unsigned long long rxTotal = 0;
+    unsigned long long txTotal = 0;
+    bool foundAny = false;
+
+    if (std::filesystem::exists(netRoot)) {
+        for (const auto &entry : std::filesystem::directory_iterator(netRoot)) {
+            std::string iface = entry.path().filename().string();
+            if (iface == "lo") continue;
+
+            // Physical NICs have a "device" symlink into the PCI/USB tree
+            if (!std::filesystem::exists(entry.path() / "device")) continue;
+
+            std::ifstream rxFile(entry.path() / "statistics" / "rx_bytes");
+            std::ifstream txFile(entry.path() / "statistics" / "tx_bytes");
+
+            unsigned long long rxBytes = 0;
+            unsigned long long txBytes = 0;
+            if (!(rxFile >> rxBytes)) continue;
+            if (!(txFile >> txBytes)) continue;
+
+            rxTotal += rxBytes;
+            txTotal += txBytes;
+            foundAny = true;
+        }
+    }
+
+    if (!foundAny) {
+        systemStats.netRxBytesPerSec = -1.0;
+        systemStats.netTxBytesPerSec = -1.0;
+        m_hasPrevNetSample = false;
+        return;
+    }
+
+    if (m_hasPrevNetSample && rxTotal >= m_prevRxBytes && txTotal >= m_prevTxBytes) {
+        systemStats.netRxBytesPerSec = static_cast<double>(rxTotal - m_prevRxBytes);
+        systemStats.netTxBytesPerSec = static_cast<double>(txTotal - m_prevTxBytes);
+    }
+
+    m_prevRxBytes = rxTotal;
+    m_prevTxBytes = txTotal;
+    m_hasPrevNetSample = true;
+}
+
 // Figures out once which GPU backend to use, then caches it (and any
 // sysfs paths it needs) so we're not re-probing every second.
 void SystemMonitorWorker::detectGpuBackend() {
@@ -519,6 +567,7 @@ void SystemMonitorWorker::updateSystem() {
     getLoadAverage();
     getPartitions();
     getGpuStats();
+    getNetworkStats();
 
     emit statsReady(systemStats, partitionsAsVariantList());
 }
@@ -588,6 +637,13 @@ double SystemMonitor::loadAvg15() const {
 
 QVariantList SystemMonitor::partitions() const {
     return m_partitions;
+}
+
+double SystemMonitor::netRxBytesPerSec() const {
+    return systemStats.netRxBytesPerSec;
+}
+double SystemMonitor::netTxBytesPerSec() const {
+    return systemStats.netTxBytesPerSec;
 }
 
 void SystemMonitor::onStatsReady(SystemStats stats, QVariantList partitions) {
