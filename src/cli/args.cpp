@@ -47,9 +47,16 @@ void printUsage(const char *argv0) {
 }
 
 void printVersion() {
-    std::cout << "Wisp\n"
+    std::cout << "        .-.\n"
+              << "     .-(   )-.\n"
+              << "    (__  Wisp __)\n"
+              << "       `-._.-'\n"
+              << "\n"
               << "Version: " << WISP_VERSION << "\n"
-              << "Built: " << WISP_BUILD_DATE << "\n";
+              << "Built: " << WISP_BUILD_DATE << "\n"
+              << "Commit: " << WISP_COMMIT_HASH << "\n"
+              << "\n"
+              << "Keep following the strange light\n";
 }
 
 ParsedArgs parse(int argc, char *argv[]) {
