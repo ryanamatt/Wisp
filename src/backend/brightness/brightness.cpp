@@ -97,8 +97,8 @@ void Brightness::refreshBrightness() {
         return;
     }
 
-    m_brightnessPercent =
-        static_cast<int>(std::lround(static_cast<double>(raw) * 100.0 / static_cast<double>(m_backlightMaxRaw)));
+    m_brightnessPercent = static_cast<int>(
+        std::lround(static_cast<double>(raw) * 100.0 / static_cast<double>(m_backlightMaxRaw)));
 
     // (Re)watch the brightness attribute so external changes (hardware
     // keys, other tools) show up without polling. Sysfs backlight
