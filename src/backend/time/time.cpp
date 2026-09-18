@@ -25,6 +25,11 @@ QString Time::time() const {
     return m_time;
 }
 
+void Time::setFormatOverride(const QString &format) {
+    qputenv(wisp::env::kTimeFormat, format.toUtf8());
+    updateTime();
+}
+
 void Time::updateTime() {
     const QString format = qEnvironmentVariable(wisp::env::kTimeFormat, kFallbackFormat);
     const QString formatted = QDateTime::currentDateTime().toString(format);

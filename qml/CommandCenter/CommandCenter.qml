@@ -10,6 +10,7 @@ import "../IpcState"
 import "SystemSection"
 import "WelcomeSection"
 import "PackagesSection"
+import "SettingsSection"
 import Wisp.Version
 
 FloatingWindow {
@@ -29,7 +30,8 @@ FloatingWindow {
     property var sectionColumns: [
         { id: "welcome", text: "Welcome" },
         { id: "system", text: "System" },
-        { id: "packages", text: "Packages" }     
+        { id: "packages", text: "Packages" },
+        { id: "settings", text: "Settings" }
     ]
 
     // Which section card is currently selected
