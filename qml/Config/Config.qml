@@ -19,21 +19,26 @@ Singleton {
 
     property string timeFormat: Quickshell.env("WISP_TIME_FORMAT") || "ddd MMM d hh:mm:ss AP"
 
-    // Staged value edited by settings UI.
     property string pendingTimeFormat: timeFormat
+    property string pendingBarOrientation: barOrientation
 
     // True whenever a staged setting differs from what's currently live.
-    readonly property bool dirty: pendingTimeFormat !== timeFormat
+    readonly property bool dirty: pendingTimeFormat !== timeFormat ||
+                                  pendingBarOrientation !== barOrientation
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
         pendingTimeFormat = format
     }
 
-    function discardChanges() {
-        pendingTimeFormat = timeFormat
+    function stageBarOrientation(orientation) {
+        pendingBarOrientation = orientation
     }
 
+    function discardChanges() {
+        pendingTimeFormat = timeFormat
+        pendingBarOrientation = barOrientation
+    }
     // Applies every pending setting to the live bar and rewrites
     // config.json, leaving unrelated keys (font, wallpaper, apps...) as
     // they were.
@@ -43,12 +48,15 @@ Singleton {
         timeFormat = pendingTimeFormat
         Time.setFormatOverride(timeFormat)
 
+        barOrientation = pendingBarOrientation
+
         try {
             const raw = configFile.text()
             const parsed = raw.length > 0 ? JSON.parse(raw) : {}
 
             if (!parsed.bar || typeof parsed.bar !== "object") parsed.bar = {}
             parsed.bar.timeFormat = timeFormat
+            parsed.bar.orientation = barOrientation
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {

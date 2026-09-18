@@ -6,7 +6,6 @@ import QtQuick.Controls
 import Quickshell
 import "../../Colors"
 import "../../Config"
-import "TimeFormat"
 
 ColumnLayout {
     id: rootLayout
@@ -46,8 +45,14 @@ ColumnLayout {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        TimeFormatSetting { width: scrollView.availableWidth }
-        
+        ColumnLayout {
+            width: scrollView.availableWidth
+            spacing: 20
+
+            TimeFormatSetting { Layout.fillWidth: true }
+            BarOrientationSetting { Layout.fillWidth: true }
+        }
+
     }
 
     Item { Layout.fillHeight: true }

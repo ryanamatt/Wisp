@@ -1,13 +1,11 @@
-// qml/CommandCenter/SettingsSection/TimeFormat/TimeFormatSetting.qml
+// qml/CommandCenter/SettingsSection/TimeFormatSetting.qml
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell
-import "../../../Colors"
-import "../../../Config"
-import "../../../Icons"
-import "../SettingsComponents"
+import "../../Colors"
+import "../../Config"
+import "SettingsComponents"
 
 ColumnLayout {
     id: root
