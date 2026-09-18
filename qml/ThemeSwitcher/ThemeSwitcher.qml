@@ -47,8 +47,6 @@ PanelWindow {
         onStarted: {
             window.wallpapers = []
             wallpaperModel.clear()
-        }
-        onExited: (exitCode) => {
             wallpaperModel.append({ filePath: "", isRandom: true })
         }
     }
