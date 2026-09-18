@@ -19,6 +19,14 @@ ColumnLayout {
     property string pendingValue: ""
     property var presets: []
 
+    // Shared metrics
+    readonly property int labelWidth: 160
+    readonly property int controlWidth: 240
+    readonly property int rowSpacing: 14
+    readonly property int controlHeight: 32
+    readonly property int controlRadius: 8
+    readonly property int controlBorderWidth: 1
+
     signal activated(var value)
 
 
@@ -36,8 +44,9 @@ ColumnLayout {
     }
 
     RowLayout {
-        Layout.alignment: Qt.AlignHCenter
-        spacing: 14
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignLeft
+        spacing: root.rowSpacing
 
         Text {
             id: settingLabel
@@ -46,13 +55,17 @@ ColumnLayout {
             font.family: Config.font
             font.bold: true
             color: Colors.colors.foregroundMuted
+
+            Layout.preferredWidth: root.labelWidth
+            Layout.alignment: Qt.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
         }
 
         ComboBox {
             id: comboBox
 
-            Layout.preferredWidth: 240
-            implicitHeight: 32
+            Layout.preferredWidth: root.controlWidth
+            implicitHeight: root.controlHeight
 
             model: root.fullModel
             textRole: "label"
@@ -65,10 +78,10 @@ ColumnLayout {
             onActivated: (index) => root.activated(root.fullModel[index].value)
 
             background: Rectangle {
-                implicitHeight: 32
-                radius: 8
+                implicitHeight: root.controlHeight
+                radius: root.controlRadius
                 color: Colors.colors.surfaceAlt
-                border.width: 1
+                border.width: root.controlBorderWidth
                 border.color: comboBox.hovered ? Colors.colors.borderActive : Colors.colors.border
             }
 
@@ -116,9 +129,9 @@ ColumnLayout {
                 padding: 4
 
                 background: Rectangle {
-                    radius: 8
+                    radius: root.controlRadius
                     color: Colors.colors.surface
-                    border.width: 1
+                    border.width: root.controlBorderWidth
                     border.color: Colors.colors.border
                 }
 

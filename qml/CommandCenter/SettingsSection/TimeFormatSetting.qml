@@ -24,6 +24,7 @@ ColumnLayout {
     ]
 
     SettingComboBox {
+        id: timeFormatRow
         settingText: "Time Format"
         pendingValue: Config.pendingTimeFormat
         presets: root.presets
@@ -32,7 +33,10 @@ ColumnLayout {
 
     Text {
         id: previewText
-        Layout.alignment: Qt.AlignHCenter
+        Layout.alignment: Qt.AlignLeft
+        Layout.leftMargin: timeFormatRow.labelWidth + timeFormatRow.rowSpacing
+        Layout.preferredWidth: timeFormatRow.controlWidth
+        horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 12
         font.family: Config.font
         color: Colors.colors.accentAlt
