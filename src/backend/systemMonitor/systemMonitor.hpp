@@ -23,6 +23,8 @@ typedef struct {
     double loadAvg1;
     double loadAvg5;
     double loadAvg15;
+    double netRxBytesPerSec;
+    double netTxBytesPerSec;
 } SystemStats;
 
 Q_DECLARE_METATYPE(SystemStats)
@@ -74,6 +76,11 @@ private:
     std::vector<PartitionStats> m_partitions;
     QVariantList partitionsAsVariantList() const;
 
+    unsigned long long m_prevRxBytes = 0;
+    unsigned long long m_prevTxBytes = 0;
+    bool m_hasPrevNetSample = false;
+    void getNetworkStats();
+
     // GPU stats: supports NVIDIA (via nvidia-smi) and other vendors
     // (AMD/Intel) via sysfs.
     enum class GpuBackend { Unknown, None, Nvidia, Amd, Intel };
@@ -112,6 +119,8 @@ class SystemMonitor : public QObject {
     Q_PROPERTY(double loadAvg5 READ loadAvg5 NOTIFY systemChanged)
     Q_PROPERTY(double loadAvg15 READ loadAvg15 NOTIFY systemChanged)
     Q_PROPERTY(QVariantList partitions READ partitions NOTIFY systemChanged)
+    Q_PROPERTY(double netRxBytesPerSec READ netRxBytesPerSec NOTIFY systemChanged)
+    Q_PROPERTY(double netTxBytesPerSec READ netTxBytesPerSec NOTIFY systemChanged)
 
 public:
     explicit SystemMonitor(QObject *parent = nullptr);
@@ -128,6 +137,8 @@ public:
     double loadAvg5() const;
     double loadAvg15() const;
     QVariantList partitions() const;
+    double netRxBytesPerSec() const;
+    double netTxBytesPerSec() const;
 
 signals:
     void systemChanged();
