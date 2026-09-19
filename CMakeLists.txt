@@ -15,83 +15,40 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(WISP_SHARE_DIR "/usr/share/wisp" CACHE PATH "Fixed install location for wisp's QML tree")
 
+# Helper function to define standard Wisp QML modules
+function(add_wisp_qml_module target_name uri_name module_dir source_name)
+    qt_add_qml_module(${target_name}
+        URI Wisp.${uri_name}
+        OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/${uri_name}
+        SOURCES
+            src/${module_dir}/${source_name}.hpp
+            src/${module_dir}/${source_name}.cpp
+    )
+
+    target_include_directories(${target_name} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/${module_dir}
+    )
+
+    target_link_libraries(${target_name} PRIVATE
+        Qt6::Core
+        Qt6::Qml
+    )
+endfunction()
+
 # --- wisptime QML module ---
-qt_add_qml_module(wisptime
-    URI Wisp.Time
-    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Time
-    SOURCES
-        src/backend/time/time.hpp
-        src/backend/time/time.cpp
-)
-
-target_include_directories(wisptime PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend/time
-)
-
-target_link_libraries(wisptime PRIVATE
-    Qt6::Core
-    Qt6::Qml
-)
+add_wisp_qml_module(wisptime Time backend/time time)
 
 # --- wispSystem QML module ---
-qt_add_qml_module(wispsystem
-    URI Wisp.System
-    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/System
-    SOURCES
-        src/backend/systemMonitor/systemMonitor.hpp
-        src/backend/systemMonitor/systemMonitor.cpp
-)
-
-target_include_directories(wispsystem PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend/systemMonitor
-)
-
-target_link_libraries(wispsystem PRIVATE
-    Qt6::Core
-    Qt6::Qml
-)
+add_wisp_qml_module(wispsystem System backend/systemMonitor systemMonitor)
 
 # --- wispBrightness QML module ---
-qt_add_qml_module(wispbrightness
-    URI Wisp.Brightness
-    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Brightness
-    SOURCES
-        src/backend/brightness/brightness.hpp
-        src/backend/brightness/brightness.cpp
-)
-
-target_include_directories(wispbrightness PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend/brightness
-)
-
-target_link_libraries(wispbrightness PRIVATE
-    Qt6::Core
-    Qt6::Qml
-)
+add_wisp_qml_module(wispbrightness Brightness backend/brightness brightness)
 
 # --- wispCalendar QML module ---
-qt_add_qml_module(wispcalendar
-    URI Wisp.Calendar
-    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Calendar
-    SOURCES
-        src/backend/calendar/calendar.hpp
-        src/backend/calendar/calendar.cpp
-)
+add_wisp_qml_module(wispcalendar Calendar backend/calendar calendar)
 
-target_include_directories(wispcalendar PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend/calendar
-)
-
-target_link_libraries(wispcalendar PRIVATE
-    Qt6::Core
-    Qt6::Qml
-)
-
-# --- wisplogcore: plain C++ logging, no Qt dependency ---
+# --- wisplogcore: plain C++ logging ---
 add_library(wisplogcore STATIC
     src/logging/log.cpp
 )
@@ -103,24 +60,8 @@ target_include_directories(wisplogcore PUBLIC
 set_target_properties(wisplogcore PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # --- wispLog QML module ---
-qt_add_qml_module(wisplog
-    URI Wisp.Log
-    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Log
-    SOURCES
-        src/backend/logger/logger.hpp
-        src/backend/logger/logger.cpp
-)
-
-target_include_directories(wisplog PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend/logger
-)
-
-target_link_libraries(wisplog PRIVATE
-    Qt6::Core
-    Qt6::Qml
-    wisplogcore
-)
+add_wisp_qml_module(wisplog Log backend/logger logger)
+target_link_libraries(wisplog PRIVATE wisplogcore)
 
 # --- wispconfig library ---
 add_library(wispconfig STATIC
@@ -149,26 +90,9 @@ add_custom_target(wisp_version_header ALL
 )
 
 # --- wispVersion QML module ---
-qt_add_qml_module(wispversion
-    URI Wisp.Version
-    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Version
-    SOURCES
-        src/backend/version/versionInfo.hpp
-        src/backend/version/versionInfo.cpp
-)
-
+add_wisp_qml_module(wispversion Version backend/version versionInfo)
 add_dependencies(wispversion wisp_version_header)
-
-target_include_directories(wispversion PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend/version
-    ${CMAKE_BINARY_DIR}/generated
-)
-
-target_link_libraries(wispversion PRIVATE
-    Qt6::Core
-    Qt6::Qml
-)
+target_include_directories(wispversion PRIVATE ${CMAKE_BINARY_DIR}/generated)
 
 # --- wisp Executable ---
 add_executable(wisp
