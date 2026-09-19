@@ -27,6 +27,8 @@ PanelWindow {
 
     property var selectedWorkspace: null
 
+    WlrLayershell.layer: WlrLayer.Overlay
+
     // Resolves a window's WM_CLASS to something usable as an
     // IconImage.source, in order of confidence:
     //   1. exact / case-insensitive desktop-entry id match
@@ -199,10 +201,6 @@ PanelWindow {
             implicitHeight: 300
             radius: 50
 
-            // Finaly Product will have Color be transparent but is this now for testing and visibility
-            // color: Colors.colors.surface
-            // border.color: Colors.colors.backgroundAlt
-            // border.width: 4
             color: "transparent"
 
             MouseArea {
