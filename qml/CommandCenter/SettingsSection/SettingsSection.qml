@@ -60,9 +60,16 @@ ColumnLayout {
 
             SettingsSubSection {
                 Layout.fillWidth: true
-                sectionLabel: "Theme"
+                sectionLabel: "Theme Settings"
 
                 WallpaperDirSetting { Layout.fillWidth: true }
+            }
+
+            SettingsSubSection {
+                Layout.fillWidth: true
+                sectionLabel: "Font Settings"
+
+                FontSetting { Layout.fillWidth: true }
             }
         }
 

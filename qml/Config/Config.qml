@@ -13,22 +13,23 @@ Singleton {
     readonly property string home: Quickshell.env("HOME")
     readonly property string configPath: home + "/.config/wisp/config.json"
 
-    property string barOrientation: Quickshell.env("WISP_BAR_ORIENTATION") || "top"
-
-    property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
-
     property string timeFormat: Quickshell.env("WISP_TIME_FORMAT") || "ddd MMM d hh:mm:ss AP"
-
     property string pendingTimeFormat: timeFormat
+
+    property string barOrientation: Quickshell.env("WISP_BAR_ORIENTATION") || "top"
     property string pendingBarOrientation: barOrientation
 
     property string wallpaperDirectory: Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers"
     property string pendingWallpaperDirectory: wallpaperDirectory
 
+    property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
+    property string pendingFont: font
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
-                                  pendingWallpaperDirectory !== wallpaperDirectory
+                                  pendingWallpaperDirectory !== wallpaperDirectory ||
+                                  pendingFont !== font
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -43,10 +44,15 @@ Singleton {
         pendingWallpaperDirectory = dir
     }
 
+    function stageFont(font) {
+        pendingFont = font
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
         pendingWallpaperDirectory = wallpaperDirectory
+        pendingFont = font
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -57,9 +63,9 @@ Singleton {
 
         timeFormat = pendingTimeFormat
         Time.setFormatOverride(timeFormat)
-
         barOrientation = pendingBarOrientation
         wallpaperDirectory = pendingWallpaperDirectory
+        font = pendingFont
 
         try {
             const raw = configFile.text()
@@ -71,6 +77,9 @@ Singleton {
 
             if (!parsed.wallpaper || typeof parsed.wallpaper !== "object") parsed.wallpaper = {}
             parsed.wallpaper.directory = wallpaperDirectory
+
+            if (!parsed.font) parsed.font = {}
+            parsed.font = font
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {
