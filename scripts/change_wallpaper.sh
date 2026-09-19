@@ -7,7 +7,11 @@ set -euo pipefail
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 
 WISP_SHARE_DIR="${WISP_SHARE_DIR:-/usr/share/wisp}"
-MATUGEN_CONFIG="$WISP_SHARE_DIR/matugen/config.toml"
+if [[ -f "$WISP_SHARE_DIR/config/matugen/config.toml" ]]; then
+    MATUGEN_CONFIG="$WISP_SHARE_DIR/config/matugen/config.toml"
+else
+    MATUGEN_CONFIG="$WISP_SHARE_DIR/matugen/config.toml"
+fi
 
 WISP_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/wisp"
 mkdir -p "$WISP_STATE_DIR"
