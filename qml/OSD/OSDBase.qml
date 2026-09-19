@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import "../Components"
 import "../Colors"
 import "../Config"
@@ -31,6 +32,8 @@ Scope {
         screen: targetScreen
 
         visible: osdScope.whenVisible && targetScreen !== null
+
+        WlrLayershell.layer: WlrLayer.Overlay
 
         anchors { bottom: true; left: true; right: true }
         margins.bottom: (osd.screen ? osd.screen.height : 1000) / 10
