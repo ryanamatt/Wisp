@@ -6,6 +6,7 @@ import QtQuick.Controls
 import Quickshell
 import "../../Colors"
 import "../../Config"
+import "SettingsComponents"
 
 ColumnLayout {
     id: rootLayout
@@ -45,9 +46,9 @@ ColumnLayout {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        ColumnLayout {
+        SettingsSubSection {
             width: scrollView.availableWidth
-            spacing: 20
+            sectionLabel: "Bar Settings"
 
             TimeFormatSetting { Layout.fillWidth: true }
             BarOrientationSetting { Layout.fillWidth: true }
