@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 import "../../Colors"
 import "../../Config"
+import "../../Icons"
 
 ColumnLayout {
     id: root
@@ -103,8 +104,11 @@ ColumnLayout {
 
     // Header
     RowLayout {
+        id: innerLayout
         Layout.fillWidth: true
         Layout.topMargin: 10
+        Layout.rightMargin: 15
+        Layout.leftMargin: 15
         spacing: 10
 
         Text {
@@ -124,32 +128,39 @@ ColumnLayout {
             color: Colors.colors.foregroundMuted
         }
 
-        Rectangle {
-            id: refreshButton
-            implicitWidth: refreshText.implicitWidth + 20
-            implicitHeight: 26
-            radius: 8
-            color: Colors.colors.surfaceAlt
-            border.color: Colors.colors.border
-            border.width: 1
-            opacity: root.refreshing ? 0.6 : 1.0
+        Image {
+            id: refreshIcon
+            source: Icons.getIcon("refresh")
+            Layout.alignment: Qt.AlignVCenter
 
-            Text {
-                id: refreshText
-                anchors.centerIn: parent
-                text: "Refresh"
-                font.pixelSize: 12
-                font.family: Config.font
-                color: Colors.colors.accentAlt
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
+
+            Layout.preferredWidth: root.Width * 0.1
+            Layout.preferredHeight: width
+
+            rotation: 0
+
+            RotationAnimation on rotation {
+                id: spinAnimation
+                target: refreshIcon
+                from: 0
+                to: 360
+                duration: 600
+                running: false
             }
 
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 enabled: !root.refreshing
-                onClicked: root.refreshAll()
+                onClicked: {
+                    spinAnimation.restart()
+                    root.refreshAll()
+                }
             }
         }
+
     }
 
     // Stat cards
