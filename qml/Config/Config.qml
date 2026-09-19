@@ -22,9 +22,13 @@ Singleton {
     property string pendingTimeFormat: timeFormat
     property string pendingBarOrientation: barOrientation
 
+    property string wallpaperDirectory: Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers"
+    property string pendingWallpaperDirectory: wallpaperDirectory
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
-                                  pendingBarOrientation !== barOrientation
+                                  pendingBarOrientation !== barOrientation ||
+                                  pendingWallpaperDirectory !== wallpaperDirectory
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -35,10 +39,16 @@ Singleton {
         pendingBarOrientation = orientation
     }
 
+    function stageWallpaperDirectory(dir) {
+        pendingWallpaperDirectory = dir
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
+        pendingWallpaperDirectory = wallpaperDirectory
     }
+
     // Applies every pending setting to the live bar and rewrites
     // config.json, leaving unrelated keys (font, wallpaper, apps...) as
     // they were.
@@ -49,6 +59,7 @@ Singleton {
         Time.setFormatOverride(timeFormat)
 
         barOrientation = pendingBarOrientation
+        wallpaperDirectory = pendingWallpaperDirectory
 
         try {
             const raw = configFile.text()
@@ -57,6 +68,9 @@ Singleton {
             if (!parsed.bar || typeof parsed.bar !== "object") parsed.bar = {}
             parsed.bar.timeFormat = timeFormat
             parsed.bar.orientation = barOrientation
+
+            if (!parsed.wallpaper || typeof parsed.wallpaper !== "object") parsed.wallpaper = {}
+            parsed.wallpaper.directory = wallpaperDirectory
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {

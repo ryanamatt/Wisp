@@ -12,10 +12,10 @@ import "../Config"
 PanelWindow {
     id: window
 
-    readonly property string wallpaperDir: {
-        let dir = Quickshell.env("WISP_WALLPAPER_DIR")
-        return dir && dir !== "" ? dir : Quickshell.env("HOME") + "/Pictures/wallpapers"
-    }
+    // readonly property string wallpaperDir: {
+    //     let dir = Quickshell.env("WISP_WALLPAPER_DIR")
+    //     return dir && dir !== "" ? dir : Quickshell.env("HOME") + "/Pictures/wallpapers"
+    // }
 
     property var wallpapers: []
     property int focusedIndex: 0
@@ -35,7 +35,7 @@ PanelWindow {
 
     Process {
         id: listWallpapersProcess
-        command: ["bash", "-c", "find " + window.wallpaperDir + " -maxdepth 1 -type f \\( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' -o -name '*.webp' -o -name '*.gif' \\) | sort"]
+        command: ["bash", "-c", "find " + Config.wallpaperDirectory + " -maxdepth 1 -type f \\( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' -o -name '*.webp' -o -name '*.gif' \\) | sort"]
         stdout: SplitParser {
             onRead: data => {
                 if (data.trim() !== "") {
