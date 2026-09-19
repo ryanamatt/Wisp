@@ -46,12 +46,24 @@ ColumnLayout {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        SettingsSubSection {
+        ColumnLayout {
             width: scrollView.availableWidth
-            sectionLabel: "Bar Settings"
+            spacing: 20
 
-            TimeFormatSetting { Layout.fillWidth: true }
-            BarOrientationSetting { Layout.fillWidth: true }
+            SettingsSubSection {
+                Layout.fillWidth: true
+                sectionLabel: "Bar Settings"
+
+                TimeFormatSetting { Layout.fillWidth: true }
+                BarOrientationSetting { Layout.fillWidth: true }
+            }
+
+            SettingsSubSection {
+                Layout.fillWidth: true
+                sectionLabel: "Theme"
+
+                WallpaperDirSetting { Layout.fillWidth: true }
+            }
         }
 
     }
