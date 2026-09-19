@@ -153,6 +153,10 @@ ColumnLayout {
 
             HSpacer {}
 
+            NetworkCard { Layout.fillWidth: true }
+
+            HSpacer {}
+
             Repeater {
                 model: root.partitionRows
 
