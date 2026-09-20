@@ -230,17 +230,41 @@ BarPopup {
                     clip: true
 
                     Image {
+                        id: artImage
                         anchors.fill: parent
-                        source: audioPopup.hasPlayer ? audioPopup.activePlayer.trackArtUrl : ""
+
+                        readonly property url artUrl: audioPopup.hasPlayer ? audioPopup.activePlayer.trackArtUrl : ""
+                        property int retries: 0
+                        property bool reloading: false
+
+                        // Toggling through "" forces a fresh request without breaking the binding
+                        source: reloading ? "" : artUrl
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
-                        visible: source.toString() !== ""
+                        visible: status === Image.Ready
+
+                        onArtUrlChanged: retries = 0
+
+                        onStatusChanged: {
+                            if (status === Image.Error && retries < 3 && artUrl.toString() !== "")
+                                retryTimer.restart()
+                        }
+
+                        Timer {
+                            id: retryTimer
+                            interval: 1000
+                            onTriggered: {
+                                artImage.retries++
+                                artImage.reloading = true
+                                Qt.callLater(() => artImage.reloading = false)
+                            }
+                        }
                     }
 
                     Text {
                         anchors.centerIn: parent
-                        visible: !audioPopup.hasPlayer || audioPopup.activePlayer.trackArtUrl === ""
-                        text: "Unkown"
+                        visible: artImage.status !== Image.Ready
+                        text: "Unknown"
                         font.family: Config.font
                         font.pixelSize: 20
                         color: Colors.colors.foregroundMuted
