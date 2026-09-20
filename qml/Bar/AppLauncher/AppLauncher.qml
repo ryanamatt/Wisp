@@ -1,7 +1,6 @@
 // qml/bar/AppLauncher/AppLauncher.qml
 
 import Quickshell
-import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -44,13 +43,7 @@ BarPopup {
     property var appsModel: loadAppsModel()
 
     function launch(cmd) {
-        launchProc.command = cmd
-        launchProc.running = false
-        launchProc.running = true
-    }
-
-    Process {
-        id: launchProc
+        Quickshell.execDetached(cmd)
     }
 
     readonly property alias columns: appsFlow.columns
