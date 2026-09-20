@@ -6,6 +6,7 @@ import QtQuick.Effects
 import "../../Colors"
 import "../../Config"
 import "../../Icons"
+import "../../Utils/Utils.js" as Utils
 import Wisp.System
 
 Rectangle {
@@ -26,20 +27,6 @@ Rectangle {
 
     readonly property real currentRx: SystemMonitor.netRxBytesPerSec
     readonly property real currentTx: SystemMonitor.netTxBytesPerSec
-
-    // Formats a bytes/sec rate as e.g. "482 KB/s" or "1.3 MB/s".
-    function formatRate(bytesPerSec) {
-        if (bytesPerSec < 0) return "--"
-        var units = ["B/s", "KB/s", "MB/s", "GB/s"]
-        var i = 0
-        var val = bytesPerSec
-        while (val >= 1024 && i < units.length - 1) {
-            val /= 1024
-            i++
-        }
-        var decimals = (i > 0 && val < 10) ? 1 : 0
-        return val.toFixed(decimals) + " " + units[i]
-    }
 
     function pushSample(rx, tx) {
         var safeRx = rx >= 0 ? rx : 0
@@ -99,7 +86,7 @@ Rectangle {
 
                 Text {
                     id: rxText
-                    text: root.formatRate(root.currentRx)
+                    text: Utils.formatRate(root.currentRx)
                     font.pixelSize: 16
                     font.family: Config.font
                     color: Colors.colors.foreground
@@ -128,7 +115,7 @@ Rectangle {
 
                 Text {
                     id: txText
-                    text: root.formatRate(root.currentRx)
+                    text: Utils.formatRate(root.currentRx)
                     font.pixelSize: 16
                     font.family: Config.font
                     color: Colors.colors.foreground

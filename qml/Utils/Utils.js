@@ -50,3 +50,17 @@ function formatUptime(seconds) {
 function formatLoad(value) {
     return value < 0 ? "—" : value.toFixed(2)
 }
+
+// Formats a bytes/sec rate as e.g. "482 KB/s" or "1.3 MB/s".
+function formatRate(bytesPerSec) {
+    if (bytesPerSec < 0) return "--"
+    var units = ["B/s", "KB/s", "MB/s", "GB/s"]
+    var i = 0
+    var val = bytesPerSec
+    while (val >= 1024 && i < units.length - 1) {
+        val /= 1024
+        i++
+    }
+    var decimals = (i > 0 && val < 10) ? 1 : 0
+    return val.toFixed(decimals) + " " + units[i]
+}
