@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../../Components"
+import "../../Config"
 
 BarWidgetContainer {
     id: audioWidget
@@ -62,8 +63,37 @@ BarWidgetContainer {
         }
     }
 
+    // ----- Font-aware sizing -----
+    // Glyph widths differ between fonts (and block characters often fall back
+    // to a different font), so measure the full bar string at a reference size
+    // and scale down so it always fits inside the widget.
+    readonly property real measureSize: 100
+    readonly property real sidePadding: 4
+
+    TextMetrics {
+        id: barMetrics
+        font.family: Config.font
+        font.pixelSize: audioWidget.measureSize
+        text: "█".repeat(audioWidget.barCount)
+    }
+
+    FontMetrics {
+        id: barFontMetrics
+        font.family: Config.font
+        font.pixelSize: audioWidget.measureSize
+    }
+
+    readonly property real maxSizeByWidth: barMetrics.advanceWidth > 0
+        ? (width - 2 * (border.width + sidePadding)) * measureSize / barMetrics.advanceWidth
+        : Number.POSITIVE_INFINITY
+
+    readonly property real maxSizeByHeight: barFontMetrics.height > 0
+        ? (height - 2 * border.width) * measureSize / barFontMetrics.height
+        : Number.POSITIVE_INFINITY
+
     iconText.text: "…"
-    iconText.font.pixelSize: implicitWidth * 0.09
+    iconText.font.pixelSize: Math.max(1, Math.floor(
+        Math.min(implicitWidth * 0.09, maxSizeByWidth, maxSizeByHeight)))
 
     iconText.anchors.centerIn: undefined
     iconText.anchors.horizontalCenter: audioWidget.horizontalCenter
