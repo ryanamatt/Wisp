@@ -197,6 +197,7 @@ BarPopup {
 
         // ----- Wi-Fi toggle + rescan row -----
         RowLayout {
+            id: rescanToggleRow
             Layout.margins: 5
             Layout.fillWidth: true
             Layout.preferredHeight: 22
@@ -213,19 +214,19 @@ BarPopup {
             Rectangle {
                 id: rescanButton
                 implicitHeight: 22
-                implicitWidth: rescanLabel.implicitWidth + 16
+                implicitWidth: rescanToggleRow.implicitWidth / 2.5
                 radius: 6
                 visible: networkPopup.wifiRadioOn
                 color: rescanHover.hovered ? Colors.colors.surfaceAlt : "transparent"
                 border.width: 1
-                border.color: Colors.colors.borderSoft
+                border.color: networkPopup.busy ? Colors.colors.info : Colors.colors.borderSoft
 
                 Behavior on color { ColorAnimation { duration: 120 } }
 
                 Text {
                     id: rescanLabel
                     anchors.centerIn: parent
-                    text: networkPopup.busy ? "Scanning..." : "Rescan"
+                    text: networkPopup.busy ? "Scanning" : "Rescan"
                     color: Colors.colors.foregroundMuted
                     font.pixelSize: 11
                     font.family: Config.font
