@@ -66,10 +66,15 @@ Item {
             anchors.margins: 10        
             spacing: 6
 
-            ToggleButton {
-                condition: screenshotTab.isSaveToDisk
-                label: "Save to Disk?"
-                onToggled: (newValue) => screenshotTab.isSaveToDisk = newValue
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+
+                ToggleButton {
+                    condition: screenshotTab.isSaveToDisk
+                    label: "Save to Disk?"
+                    onToggled: (newValue) => screenshotTab.isSaveToDisk = newValue
+                }
             }
 
             RowLayout {
