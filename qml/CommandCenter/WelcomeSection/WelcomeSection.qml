@@ -3,7 +3,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import "../../Colors"
 import "../../Effects"
 import "../../Config"
@@ -16,23 +15,12 @@ ColumnLayout {
     clip: true
     spacing: 120
 
-    property var userName: ""
-
-    Process {
-        id: getUser
-        command: ["bash", "-c", "whoami"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const name = this.text.trim()
-                userName = name.charAt(0).toUpperCase() + name.slice(1)
-            }
-        }
+    readonly property string userName: {
+        const name = Quickshell.env("USER") || ""
+        return name.charAt(0).toUpperCase() + name.slice(1)
     }
 
-    Component.onCompleted: {
-        getUser.running = true
-    }
+    property string greetingPrefix: greeting()
 
     function greeting() {
         const hour = new Date().getHours()
@@ -43,22 +31,22 @@ ColumnLayout {
         return "Good Night"
     }
 
+    Timer {
+        interval: 60000
+        running: true
+        repeat: true
+        onTriggered: root.greetingPrefix = root.greeting()
+    }
+
     Text {
         id: greetingText
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 10
 
-        text: userName ? root.greeting() + ", " + userName + "!" : root.greeting()
+        text: root.userName ? root.greetingPrefix + ", " + root.userName + "!" : root.greetingPrefix
         font.pixelSize: 25
         font.family: Config.font
         color: Colors.colors.foregroundMuted
-
-        Timer {
-            interval: 60000
-            running: true
-            repeat: true
-            onTriggered: greetingText.text = root.greeting()
-        }
     }
 
     FloatingEffect {
