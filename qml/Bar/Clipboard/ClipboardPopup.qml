@@ -134,6 +134,7 @@ BarPopup {
 
         // ----- Toggle + Clear row -----
         RowLayout {
+            id: clearRow
             Layout.margins: 5
             Layout.fillWidth: true
             Layout.preferredHeight: 22
@@ -150,9 +151,9 @@ BarPopup {
             Rectangle {
                 id: clearButton
                 implicitHeight: 22
-                implicitWidth: clearLabel.implicitWidth + 16
+                implicitWidth: clearRow.implicitWidth / 3
                 radius: 6
-                color: clearHover.hovered ? (confirmingClear ? Colors.colors.error : Colors.colors.surfaceAlt) : "transparent"
+                color: clearHover.hovered ? (confirmingClear ? Colors.colors.hover : Colors.colors.surfaceAlt) : "transparent"
                 border.width: 1
                 border.color: confirmingClear ? Colors.colors.error : Colors.colors.borderSoft
 
@@ -170,7 +171,7 @@ BarPopup {
                 Text {
                     id: clearLabel
                     anchors.centerIn: parent
-                    text: clearButton.confirmingClear ? "Confirm clear?" : "Clear all"
+                    text: clearButton.confirmingClear ? "Confirm?" : "Clear all"
                     color: clearButton.confirmingClear ? Colors.colors.error : Colors.colors.foregroundMuted
                     font.pixelSize: 11
                     font.family: Config.font
