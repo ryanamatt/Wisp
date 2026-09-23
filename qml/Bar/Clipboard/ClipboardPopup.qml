@@ -114,13 +114,15 @@ BarPopup {
                     }
                 }
 
-                Text {
-                    text: "✕"
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 11
-                    font.family: Config.font
-                    visible: searchInput.text.length > 0
-                    Layout.alignment: Qt.AlignVCenter
+                Image {
+                    source: Icons.getIcon("close")
+                    visible: searchInput.length > 0
+                    fillMode: Image.PreserveAspectCrop
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+
+                    Layout.preferredWidth: innerLayout.width * 0.075
+                    Layout.preferredHeight: width
 
                     MouseArea {
                         anchors.fill: parent
