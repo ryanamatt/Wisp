@@ -77,7 +77,7 @@ ColumnLayout {
         id: yayUpdatesProc
         command: ["yay", "-Qu"]
         stdout: StdioCollector {
-            onStreamFinished: root.yayUpdates = root.nonEmptyLines(this.text)
+            onStreamFinished: root.yayUpdates = root.nonEmptyLines(this.text).sort()
         }
         onExited: root.finishCheck()
     }
@@ -95,7 +95,7 @@ ColumnLayout {
         id: flatpakUpdatesProc
         command: ["flatpak", "remote-ls", "--updates", "--columns=application"]
         stdout: StdioCollector {
-            onStreamFinished: root.flatpakUpdates = root.nonEmptyLines(this.text)
+            onStreamFinished: root.flatpakUpdates = root.nonEmptyLines(this.text).sort()
         }
         onExited: root.finishCheck()
     }
