@@ -416,7 +416,7 @@ BarPopup {
                                 sourceSize.width: width * Screen.devicePixelRatio
                                 sourceSize.height: height * Screen.devicePixelRatio
 
-                                Layout.preferredWidth: innerLayout.implicitWidth * 0.075
+                                Layout.preferredWidth: innerLayout.implicitWidth * 0.15
                                 Layout.preferredHeight: width
                             }
 
