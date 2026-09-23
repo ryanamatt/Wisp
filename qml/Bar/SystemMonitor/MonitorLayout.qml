@@ -50,8 +50,8 @@ ColumnLayout {
                 sourceSize.width: width * Screen.devicePixelRatio
                 sourceSize.height: height * Screen.devicePixelRatio
 
-                Layout.preferredWidth: rootLayout.labelWidth * 0.3
-                Layout.preferredHeight: rootLayout.labelWidth * 0.3
+                Layout.preferredWidth: rootLayout.labelWidth * 0.25
+                Layout.preferredHeight: rootLayout.labelWidth * 0.25
                 Layout.fillHeight: true
 
                 fillMode: Image.PreserveAspectFit
