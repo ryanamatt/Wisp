@@ -122,6 +122,7 @@ ColumnLayout {
         Item { Layout.fillWidth: true }
 
         Text {
+            id: lastCheckedText
             text: root.refreshing ? "Checking..." : (root.lastChecked.length ? "Checked " + root.lastChecked : "")
             font.pixelSize: 11
             font.family: Config.font
@@ -133,11 +134,11 @@ ColumnLayout {
             source: Icons.getIcon("refresh")
             Layout.alignment: Qt.AlignVCenter
 
+            Layout.preferredHeight: lastCheckedText.implicitHeight * 1.4
+            Layout.preferredWidth: Layout.preferredHeight
+
             sourceSize.width: width * Screen.devicePixelRatio
             sourceSize.height: height * Screen.devicePixelRatio
-
-            Layout.preferredWidth: root.Width * 0.1
-            Layout.preferredHeight: width
 
             rotation: 0
 
