@@ -39,7 +39,7 @@ BarPopup {
         ColumnLayout {
             id: contentLayout
             width: parent.width
-            spacing: 8
+            spacing: 2
 
             RowLayout {
                 Layout.fillWidth: true
@@ -53,8 +53,8 @@ BarPopup {
                         sourceSize.width: width * Screen.devicePixelRatio
                         sourceSize.height: height * Screen.devicePixelRatio
 
-                        Layout.preferredWidth: rxText.height
-                        Layout.preferredHeight: rxText.height
+                        Layout.preferredWidth: rxText.height * 0.8
+                        Layout.preferredHeight: rxText.height * 0.8
 
                         fillMode: Image.PreserveAspectFit
 
@@ -82,8 +82,8 @@ BarPopup {
                         sourceSize.width: width * Screen.devicePixelRatio
                         sourceSize.height: height * Screen.devicePixelRatio
 
-                        Layout.preferredWidth: txText.height
-                        Layout.preferredHeight: txText.height
+                        Layout.preferredWidth: txText.height * 0.8
+                        Layout.preferredHeight: txText.height * 0.8
 
                         fillMode: Image.PreserveAspectFit
 
