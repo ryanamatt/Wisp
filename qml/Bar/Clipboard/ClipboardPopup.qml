@@ -243,7 +243,8 @@ BarPopup {
                         Component.onCompleted: {
                             if (entryDelegate.isImage) {
                                 ClipboardSingleton.decodeToFile(entryDelegate.modelData, function(path) {
-                                    entryDelegate.imagePath = path
+                                    if (entryDelegate)
+                                        entryDelegate.imagePath = path
                                 })
                             }
                         }
