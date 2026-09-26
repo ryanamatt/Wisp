@@ -7,9 +7,21 @@ success = { color = "#6fbf73", blend = true }
 warning = { color = "#c9a24a", blend = true }
 info    = { color = "#a8d8e0", blend = true }
 ember   = { color = "#d9884a", blend = true }
+purple  = { color = "#9c6ade", blend = true }
+blue    = { color = "#4a90d9", blend = true }
+cyan    = { color = "#4dd0e1", blend = true }
+teal    = { color = "#26a69a", blend = true }
+green   = { color = "#5cb85c", blend = true }
+lime    = { color = "#b0d94e", blend = true }
+yellow  = { color = "#e6c34d", blend = true }
+orange  = { color = "#e2984a", blend = true }
+red     = { color = "#d9534f", blend = true }
+pink    = { color = "#e07fa8", blend = true }
+magenta = { color = "#c454c4", blend = true }
+indigo  = { color = "#6272c4", blend = true }
 
 [templates.quickshell_colors]
-input_path = '~/Projects/wisp/config/matugen/templates/quickshell-colors.json'
+input_path = '~/Projects/wisp/config/matugen/templates/wisp-colors.json'
 output_path = '~/.config/wisp/colors.json'
 
 [templates.starship]
