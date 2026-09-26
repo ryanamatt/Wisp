@@ -1,11 +1,10 @@
 // qml/OSD/OSDMic.qml
 
 import "../Icons"
-import Quickshell.Services.Pipewire
+import Wisp.Audio
 
 OSDBase {
-    readonly property PwNode source: Pipewire.defaultAudioSource
-    readonly property bool muted: (source && source.audio) ? source.audio.muted : false
+    readonly property bool muted: Audio.sourceMuted
 
     whenVisible: OSDSingleton.isMicOSDVisible
 

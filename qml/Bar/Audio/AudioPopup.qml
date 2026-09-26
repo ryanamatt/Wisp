@@ -2,13 +2,13 @@
 
 import Quickshell
 import Quickshell.Services.Mpris
-import Quickshell.Services.Pipewire
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
 import "../../Components"
 import "../../Config"
 import "../../Icons"
+import Wisp.Audio
 
 BarPopup {
     id: audioPopup
@@ -17,48 +17,28 @@ BarPopup {
 
     Keys.onEscapePressed: audioPopup.requestClose()
 
-    // ----- Pipewire: default sink volume / mute -----
-    readonly property PwNode sink: Pipewire.defaultAudioSink
-    readonly property bool muted: (sink && sink.audio) ? sink.audio.muted : false
-    readonly property real volume: (sink && sink.audio) ? sink.audio.volume : 0
-
-    // Binding the sink here is what actually keeps its audio properties live.
-    PwObjectTracker {
-        objects: audioPopup.sink ? [audioPopup.sink] : []
-    }
+    // ----- Audio: default sink volume / mute -----
+    readonly property bool muted: Audio.sinkMuted
+    readonly property real volume: Audio.sinkVolume
 
     function setVolume(v) {
-        if (sink && sink.ready && sink.audio) {
-            sink.audio.volume = Math.max(0, Math.min(1, v))
-        }
+        Audio.setSinkVolume(v)
     }
 
     function toggleMute() {
-        if (sink && sink.ready && sink.audio) {
-            sink.audio.muted = !sink.audio.muted
-        }
+        Audio.toggleSinkMute()
     }
 
-    // ----- Pipewire: default source (microphone) volume / mute -----
-    readonly property PwNode source: Pipewire.defaultAudioSource
-    readonly property bool micMuted: (source && source.audio) ? source.audio.muted : false
-    readonly property real micVolume: (source && source.audio) ? source.audio.volume : 0
-
-    // Binding the source here is what actually keeps its audio properties live.
-    PwObjectTracker {
-        objects: audioPopup.source ? [audioPopup.source] : []
-    }
+    // ----- Audio: default source (microphone) volume / mute -----
+    readonly property bool micMuted: Audio.sourceMuted
+    readonly property real micVolume: Audio.sourceVolume
 
     function setMicVolume(v) {
-        if (source && source.ready && source.audio) {
-            source.audio.volume = Math.max(0, Math.min(1, v))
-        }
+        Audio.setSourceVolume(v)
     }
 
     function toggleMicMute() {
-        if (source && source.ready && source.audio) {
-            source.audio.muted = !source.audio.muted
-        }
+        Audio.toggleSourceMute()
     }
 
     // ----- MPRIS: pick whichever player is actually playing -----
@@ -140,7 +120,7 @@ BarPopup {
 
             DragBar {
                 Layout.fillWidth: true
-                enabled: audioPopup.source !== null
+                enabled: Audio.hasSource
                 value: audioPopup.micMuted ? 0 : audioPopup.micVolume
                 onMoved: v => audioPopup.setMicVolume(v)
             }
@@ -191,7 +171,7 @@ BarPopup {
 
             DragBar {
                 Layout.fillWidth: true
-                enabled: audioPopup.sink !== null
+                enabled: Audio.hasSink
                 value: audioPopup.muted ? 0 : audioPopup.volume
                 onMoved: v => audioPopup.setVolume(v)
             }
