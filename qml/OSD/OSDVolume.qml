@@ -1,13 +1,11 @@
 // qml/OSD/OSDVolume.qml
 
 import "../Icons"
-import Quickshell.Services.Pipewire
+import Wisp.Audio
 
 OSDBase {
-    readonly property PwNode sink: Pipewire.defaultAudioSink
-    readonly property bool muted: (sink && sink.audio) ? sink.audio.muted : false
-    readonly property real volume: (sink && sink.audio) ? sink.audio.volume : 0
-    readonly property int volumePercent: Math.round(volume * 100)
+    readonly property bool muted: Audio.sinkMuted
+    readonly property int volumePercent: Math.round(Audio.sinkVolume * 100)
 
     whenVisible: OSDSingleton.isVolumeOSDVisible
 

@@ -45,6 +45,9 @@ add_wisp_qml_module(wispsystem System backend/systemMonitor systemMonitor)
 # --- wispBrightness QML module ---
 add_wisp_qml_module(wispbrightness Brightness backend/brightness brightness)
 
+# --- wispAudio QML module ---
+add_wisp_qml_module(wispaudio Audio backend/audio audio)
+
 # --- wispCalendar QML module ---
 add_wisp_qml_module(wispcalendar Calendar backend/calendar calendar)
 

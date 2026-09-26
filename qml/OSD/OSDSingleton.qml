@@ -4,8 +4,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import Quickshell.Services.Pipewire
+import Wisp.Audio
 import Wisp.Brightness
 
 Singleton {
@@ -36,37 +35,10 @@ Singleton {
     // ----- Volume OSD -----
     property bool isVolumeOSDVisible: false
 
-    readonly property PwNode sink: Pipewire.defaultAudioSink
-    readonly property var sinkAudio: sink ? sink.audio : null
-
-    // Keeps sink.audio.volume/muted live.
-    PwObjectTracker {
-        objects: root.sink ? [root.sink] : []
-    }
-
-    property bool _volumeValueInitialized: false
-    property bool _mutedValueInitialized: false
-
-    onSinkAudioChanged: {
-        _volumeValueInitialized = false
-        _mutedValueInitialized = false
-    }
-
     Connections {
-        target: root.sinkAudio
-        function onVolumeChanged() {
-            if (!root._volumeValueInitialized) {
-                root._volumeValueInitialized = true
-                return
-            }
-            root.isVolumeOSDVisible = true
-            volumeOSDVisibleTimer.restart()
-        }
-        function onMutedChanged() {
-            if (!root._mutedValueInitialized) {
-                root._mutedValueInitialized = true
-                return
-            }
+        target: Audio
+        function onSinkChanged() {
+            if (!root._ready) return
             root.isVolumeOSDVisible = true
             volumeOSDVisibleTimer.restart()
         }
@@ -82,27 +54,10 @@ Singleton {
     // ----- Mic OSD -----
     property bool isMicOSDVisible: false
 
-    readonly property PwNode source: Pipewire.defaultAudioSource
-    readonly property var sourceAudio: source ? source.audio : null
-
-    // Keeps source.audio.muted live.
-    PwObjectTracker {
-        objects: root.source ? [root.source] : []
-    }
-
-    property bool _micMutedValueInitialized: false
-
-    onSourceAudioChanged: {
-        _micMutedValueInitialized = false
-    }
-
     Connections {
-        target: root.sourceAudio
-        function onMutedChanged() {
-            if (!root._micMutedValueInitialized) {
-                root._micMutedValueInitialized = true
-                return
-            }
+        target: Audio
+        function onSourceChanged() {
+            if (!root._ready) return
             root.isMicOSDVisible = true
             micOSDVisibleTimer.restart()
         }
