@@ -2,6 +2,7 @@
 
 import Quickshell
 import Quickshell.Services.Mpris
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import "../../Colors"
@@ -214,30 +215,52 @@ BarPopup {
                         anchors.fill: parent
 
                         readonly property url artUrl: audioPopup.hasPlayer ? audioPopup.activePlayer.trackArtUrl : ""
+                        property bool verified: false
                         property int retries: 0
-                        property bool reloading: false
 
-                        // Toggling through "" forces a fresh request without breaking the binding
-                        source: reloading ? "" : artUrl
+                        // Only ever hand this to Image once confirmed the file is actually there.
+                        source: verified ? artUrl : ""
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
                         visible: status === Image.Ready
 
-                        onArtUrlChanged: retries = 0
+                        onArtUrlChanged: {
+                            retries = 0
+                            verified = false
+                            checkArt()
+                        }
 
-                        onStatusChanged: {
-                            if (status === Image.Error && retries < 3 && artUrl.toString() !== "")
-                                retryTimer.restart()
+                        function checkArt() {
+                            const url = artUrl.toString()
+                            if (url === "")
+                                return
+
+                            if (url.indexOf("file://") !== 0) {
+                                // Remote or embedded art has nothing to check on disk.
+                                verified = true
+                                return
+                            }
+
+                            existsCheck.command = ["test", "-e", url.substring(7)]
+                            existsCheck.running = true
+                        }
+
+                        Process {
+                            id: existsCheck
+                            onExited: exitCode => {
+                                if (exitCode === 0) {
+                                    artImage.verified = true
+                                } else if (artImage.retries < 10) {
+                                    artImage.retries++
+                                    retryTimer.restart()
+                                }
+                            }
                         }
 
                         Timer {
                             id: retryTimer
-                            interval: 1000
-                            onTriggered: {
-                                artImage.retries++
-                                artImage.reloading = true
-                                Qt.callLater(() => artImage.reloading = false)
-                            }
+                            interval: 200
+                            onTriggered: artImage.checkArt()
                         }
                     }
 
