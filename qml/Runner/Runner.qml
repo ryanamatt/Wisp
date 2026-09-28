@@ -7,6 +7,7 @@ import Quickshell.Hyprland
 import "../IpcState"
 import "../Colors"
 import "../Config"
+import Wisp.Calculator
 
 Scope {
     id: runnerScope
@@ -113,8 +114,16 @@ Scope {
                                 border.color: textField.activeFocus ? Colors.colors.borderActive : Colors.colors.border
                             }
 
-                            onTextEdited: runnerScope.runnerText = text
-                            onAccepted: console.log("Accepted text:", text);
+                            onTextEdited: {
+                                runnerScope.runnerText = text
+
+                                if (runnerScope.runnerText.charAt(0) === "=" 
+                                    && runnerScope.runnerText.length > 1) {
+                                    let isSolveable = Calculator.solve(text.slice(1));
+                                    if (isSolveable) { console.log("=", Calculator.answer); }
+                                }
+                            }
+
 
                         }
                         

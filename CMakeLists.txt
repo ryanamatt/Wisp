@@ -51,6 +51,9 @@ add_wisp_qml_module(wispaudio Audio backend/audio audio)
 # --- wispCalendar QML module ---
 add_wisp_qml_module(wispcalendar Calendar backend/calendar calendar)
 
+# --- wispcalculator QML module ---
+add_wisp_qml_module(wispcalculator Calculator backend/calculator calculator)
+
 # --- wisplogcore: plain C++ logging ---
 add_library(wisplogcore STATIC
     src/logging/log.cpp
