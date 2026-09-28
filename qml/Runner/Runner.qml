@@ -26,6 +26,15 @@ Scope {
 
     property string runnerText: ""
 
+    // Current mode, decided by the first character of the text field.
+    // "none" | "command" | "calculator"
+    readonly property string mode: {
+        const first = runnerText.charAt(0);
+        if (first === ">") return "command";
+        if (first === "=") return "calculator";
+        return "none";
+    }
+
     PanelWindow {
         id: runner
         focusable: true
@@ -72,7 +81,7 @@ Scope {
                     id: root
                     anchors.fill: parent
                     
-                    Layout.margins: 5
+                    Layout.margins: 0
                     spacing: -25
 
                     Text { 
@@ -91,6 +100,14 @@ Scope {
                         Layout.alignment: Qt.AlignVCenter 
                         Layout.leftMargin: 15
                         Layout.rightMargin: 15
+                        spacing: 8
+
+                        ModeBadge {
+                            mode: runnerScope.mode
+                            Layout.preferredWidth: textField.implicitHeight
+                            Layout.preferredHeight: textField.implicitHeight
+                            Layout.alignment: Qt.AlignVCenter
+                        }
 
                         TextField {
                             id: textField
@@ -102,7 +119,7 @@ Scope {
                             text: runnerScope.runnerText
                             selectByMouse: true
 
-                            font.pixelSize: 12
+                            font.pixelSize: 15
                             font.family: Config.font
                             color: Colors.colors.foreground
                             verticalAlignment: TextInput.AlignVCenter
@@ -117,7 +134,7 @@ Scope {
                             onTextEdited: {
                                 runnerScope.runnerText = text
 
-                                if (runnerScope.runnerText.charAt(0) === "=" 
+                                if (runnerScope.mode === "calculator" 
                                     && runnerScope.runnerText.length > 1) {
                                     let isSolveable = Calculator.solve(text.slice(1));
                                     if (isSolveable) { console.log("=", Calculator.answer); }
