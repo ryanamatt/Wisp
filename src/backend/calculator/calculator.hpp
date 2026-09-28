@@ -5,13 +5,15 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <string>
+#include <utility>
 #include <vector>
 
+// ----- Token Stuff -----
 enum class TokenType { Number, Add, Subtract, Multiply, Divide };
 
 class Token {
 public:
-    Token(TokenType token, std::string value, int line = 0) : token(token), value(std::move(value)) {
+    Token(TokenType token, std::string value) : token(token), value(std::move(value)) {
     }
 
     TokenType get_token() const {
@@ -26,6 +28,7 @@ private:
     std::string value;
 };
 
+// ----- Calculator -----
 class Calculator : public QObject {
     Q_OBJECT
     QML_ELEMENT
@@ -52,7 +55,7 @@ private:
     double parseTerm();
     double parseFactor();
 
-    double m_answer;
+    double m_answer = 0.0;
     std::string m_equation;
     std::vector<Token> m_tokens;
     size_t m_parser_pos = 0;

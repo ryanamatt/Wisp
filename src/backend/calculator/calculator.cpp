@@ -2,7 +2,7 @@
 
 #include "calculator.hpp"
 #include <cctype>
-#include <iostream>
+#include <cmath>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -11,12 +11,17 @@ bool Calculator::solve(QString equation) {
     m_tokens.clear();
     m_parser_pos = 0;
 
-    runLexer();
-
+    // The lexer throws too (bad numbers, unknown characters), so it must be
+    // inside the try. An exception escaping a Q_INVOKABLE would crash the shell.
     try {
-        m_answer = runParser();
+        runLexer();
+
+        double result = runParser();
+        if (!std::isfinite(result)) { throw std::runtime_error("Result is not finite"); }
+
+        m_answer = result;
         return true;
-    } catch (const std::exception &e) { return false; }
+    } catch (const std::exception &) { return false; }
 }
 
 void Calculator::runLexer() {
@@ -44,7 +49,7 @@ void Calculator::runLexer() {
         }
 
         else
-            current_pos++; // Skip unknown characters
+            throw std::runtime_error("Unknown character in expression");
     }
 }
 
@@ -73,7 +78,13 @@ Token Calculator::make_number(int &current_pos) {
 double Calculator::runParser() {
     if (m_tokens.empty()) return 0.0;
     m_parser_pos = 0;
-    return parseExpression();
+
+    double result = parseExpression();
+
+    // Everything must be consumed, otherwise input like "5 3" would quietly give 5.
+    if (m_parser_pos != m_tokens.size()) { throw std::runtime_error("Unexpected token after expression"); }
+
+    return result;
 }
 
 // Handles Addition and Subtraction (Lowest precedence)
@@ -124,14 +135,26 @@ double Calculator::parseTerm() {
     return result;
 }
 
-// Handles atomic units (Numbers)
+// Handles atomic units (Numbers), including any leading unary signs: -5, +5, 2 * -3, --4
 double Calculator::parseFactor() {
+    bool negative = false;
+
+    while (m_parser_pos < m_tokens.size()) {
+        TokenType type = m_tokens[m_parser_pos].get_token();
+        if (type == TokenType::Subtract)
+            negative = !negative;
+        else if (type != TokenType::Add)
+            break;
+        m_parser_pos++;
+    }
+
     if (m_parser_pos >= m_tokens.size()) { throw std::runtime_error("Unexpected end of expression"); }
 
     Token token = m_tokens[m_parser_pos];
     if (token.get_token() == TokenType::Number) {
         m_parser_pos++;
-        return std::stod(token.get_value());
+        double value = std::stod(token.get_value());
+        return negative ? -value : value;
     }
 
     throw std::runtime_error("Unexpected token in expression");

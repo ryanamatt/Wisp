@@ -35,6 +35,27 @@ Scope {
         return "none";
     }
 
+    // Calculator state that feeds RunnerCalcPopup.
+    property bool calcSolvable: false
+    property string calcExpression: ""
+    property real calcAnswer: 0
+
+    function updateCalc() {
+        calcSolvable = false;
+        if (mode !== "calculator") return;
+
+        const expr = runnerText.slice(1);
+        // Ignore empty input and input with no digits at all.
+        if (!/\d/.test(expr)) return;
+
+        if (Calculator.solve(expr)) {
+            // Answer has no change signal, so read it right after solve().
+            calcExpression = expr;
+            calcAnswer = Calculator.answer;
+            calcSolvable = true;
+        }
+    }
+
     PanelWindow {
         id: runner
         focusable: true
@@ -58,6 +79,8 @@ Scope {
                 textField.selectAll()
             } else {
                 runnerScope.runnerText = ""
+                runnerScope.calcSolvable = false
+                calcPopup.snapClosed()
             }
         }
 
@@ -72,6 +95,9 @@ Scope {
                 anchors.fill: parent
 
                 radius: rect.width / 5
+                // Bottom corners square off as the calculator popup opens.
+                bottomLeftRadius: rect.height / 2 * (1 - calcPopup.cornerProgress)
+                bottomRightRadius: rect.height / 2 * (1 - calcPopup.cornerProgress)
 
                 color: Colors.colors.backgroundAlt
                 border.color: Colors.colors.background
@@ -90,6 +116,7 @@ Scope {
                         text: "Wisp Runner"
                         color: Colors.colors.accent
                         font.pixelSize: root.width * 0.05
+                        font.bold: true
                         font.family: Config.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -133,14 +160,8 @@ Scope {
 
                             onTextEdited: {
                                 runnerScope.runnerText = text
-
-                                if (runnerScope.mode === "calculator" 
-                                    && runnerScope.runnerText.length > 1) {
-                                    let isSolveable = Calculator.solve(text.slice(1));
-                                    if (isSolveable) { console.log("=", Calculator.answer); }
-                                }
+                                runnerScope.updateCalc()
                             }
-
 
                         }
                         
@@ -151,6 +172,17 @@ Scope {
 
         }
 
+    }
+
+    RunnerCalcPopup {
+        id: calcPopup
+        screen: runnerScope.targetScreen
+        runnerWidth: runnerScope.runnerWidth
+        runnerHeight: runnerScope.runnerHeight
+        runnerTopMargin: runner.margins.top
+        open: runner.visible && runnerScope.calcSolvable
+        expression: runnerScope.calcExpression
+        answer: runnerScope.calcAnswer
     }
 
 }
