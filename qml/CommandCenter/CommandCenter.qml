@@ -16,7 +16,7 @@ import Wisp.Version
 FloatingWindow {
     id: commandCenter
 
-    title: "Command Center"
+    title: "Wisp Command Center"
 
     implicitWidth: 800
     implicitHeight: 600
