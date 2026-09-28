@@ -9,7 +9,7 @@
 #include <vector>
 
 // ----- Token Stuff -----
-enum class TokenType { Number, Add, Subtract, Multiply, Divide };
+enum class TokenType { Number, Add, Subtract, Multiply, Divide, Modulo, LeftParen, RightParen };
 
 class Token {
 public:

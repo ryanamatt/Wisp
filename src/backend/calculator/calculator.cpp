@@ -25,11 +25,14 @@ bool Calculator::solve(QString equation) {
 }
 
 void Calculator::runLexer() {
-    std::unordered_map<char, TokenType> symbol_map = {
+std::unordered_map<char, TokenType> symbol_map = {
         {'+', TokenType::Add},
         {'-', TokenType::Subtract},
         {'*', TokenType::Multiply},
         {'/', TokenType::Divide},
+        {'%', TokenType::Modulo},
+        {'(', TokenType::LeftParen},
+        {')', TokenType::RightParen},
     };
 
     int current_pos = 0;
@@ -128,6 +131,13 @@ double Calculator::parseTerm() {
             result /= divisor;
         }
 
+        else if (type == TokenType::Modulo) {
+            m_parser_pos++;
+            double divisor = parseFactor();
+            if (divisor == 0.0) { throw std::runtime_error("Division by zero"); }
+            result = std::fmod(result, divisor);
+        }
+
         else {
             break;
         }
@@ -135,7 +145,7 @@ double Calculator::parseTerm() {
     return result;
 }
 
-// Handles atomic units (Numbers), including any leading unary signs: -5, +5, 2 * -3, --4
+// Handles atomic units (Numbers) and parenthesized sub-expressions, including leading unary signs
 double Calculator::parseFactor() {
     bool negative = false;
 
@@ -151,6 +161,20 @@ double Calculator::parseFactor() {
     if (m_parser_pos >= m_tokens.size()) { throw std::runtime_error("Unexpected end of expression"); }
 
     Token token = m_tokens[m_parser_pos];
+
+    // Handle parentheses: ( expression )
+    if (token.get_token() == TokenType::LeftParen) {
+        m_parser_pos++; // Consume '('
+        double result = parseExpression();
+
+        if (m_parser_pos >= m_tokens.size() || m_tokens[m_parser_pos].get_token() != TokenType::RightParen) {
+            throw std::runtime_error("Mismatched parentheses: expected ')'");
+        }
+        m_parser_pos++; // Consume ')'
+        return negative ? -result : result;
+    }
+
+    // Handle regular numbers
     if (token.get_token() == TokenType::Number) {
         m_parser_pos++;
         double value = std::stod(token.get_value());
