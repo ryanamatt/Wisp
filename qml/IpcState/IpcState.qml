@@ -22,4 +22,5 @@ Singleton {
     property WindowState workspaceSwitcher: WindowState { ipcName: "workspaceSwitcher" }
     property WindowState commandCenter: WindowState { ipcName: "commandCenter" }
     property WindowState screenshot: WindowState { ipcName: "screenshot" }
+    property WindowState runner: WindowState { ipcName: "runner" }
 }
