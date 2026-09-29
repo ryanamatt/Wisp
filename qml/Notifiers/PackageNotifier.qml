@@ -54,8 +54,6 @@ Scope {
         if (checking)
             return
 
-        console.log("PackageNotifier: checking for updates (" + reason + ")")
-
         checking = true
         lastCheckMs = Date.now()
         saveLastCheck()
@@ -96,7 +94,7 @@ Scope {
 
     FileView {
         id: stateFile
-        path: root.statePath
+        path: root.statePath ? root.statePath : ""
         blockLoading: true
     }
 
@@ -140,8 +138,6 @@ Scope {
 
         if (Date.now() - lastCheckMs >= startupCooldownMs) {
             startupTimer.start()
-        } else {
-            console.log("PackageNotifier: skipping startup check, last check was recent")
         }
     }
 
