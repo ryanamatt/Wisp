@@ -47,7 +47,7 @@ function(add_wisp_qml_module target_name uri_name module_dir source_name)
 endfunction()
 
 # --- wisptime QML module ---
-add_wisp_qml_module(wisptime Time backend/time time countdownTimer)
+add_wisp_qml_module(wisptime Time backend/time time countdownTimer stopwatch)
 
 # --- wispSystem QML module ---
 add_wisp_qml_module(wispsystem System backend/systemMonitor systemMonitor)
