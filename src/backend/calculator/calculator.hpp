@@ -9,7 +9,21 @@
 #include <vector>
 
 // ----- Token Stuff -----
-enum class TokenType { Number, Add, Subtract, Multiply, Divide, Modulo, LeftParen, RightParen };
+enum class TokenType {
+    Number,
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Modulo,
+    Power,
+    Sqrt,
+    Sin,
+    Cos,
+    Tan,
+    LeftParen,
+    RightParen
+};
 
 class Token {
 public:
@@ -49,10 +63,12 @@ public:
 private:
     void runLexer();
     Token make_number(int &current_pos);
+    Token make_identifier(int &current_pos);
 
     double runParser();
     double parseExpression();
     double parseTerm();
+    double parsePower();
     double parseFactor();
 
     double m_answer = 0.0;
