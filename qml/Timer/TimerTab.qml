@@ -9,13 +9,35 @@ import "../Colors"
 import "../Config"
 import Wisp.Time
 
-Item {
+FocusScope {
     id: timerTab
+    focus: true
+
+    Component.onCompleted: forceActiveFocus()
 
     Connections {
-        target: Timer
+        target: CountdownTimer
         function onTimerFinished() {
-            console.log("TIMER FINISHED")
+            sendEndNotification.running = true
+        }
+    }
+
+    Process {
+        id: sendEndNotification
+        command: ["notify-send", "-a", "Wisp", "-i", "clock", "Timer", "Timer has Ended"]
+    }
+
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            // If we are currently editing, let the TextInput / editingFinished handle it (committing edit without starting)
+            if (timerContainer.isEditing) {
+                return;
+            }
+
+            if (CountdownTimer.totalMs > 0) {
+                CountdownTimer.toggle();
+                event.accepted = true;
+            }
         }
     }
 
@@ -87,8 +109,17 @@ Item {
                     focus: timerContainer.isEditing
                     selectByMouse: true
 
-                    // Enter, or focus leaving the field, applies the edit.
+                    // Focus leaving the field applies the edit.
                     onEditingFinished: timerContainer.commitEdit()
+
+                    // Enter applies the edit and is consumed here, so it does not
+                    // bubble up to timerTab and start the timer. Starting needs a second Enter.
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            timerContainer.commitEdit();
+                            event.accepted = true;
+                        }
+                    }
 
                     // Escape cancels the edit instead of closing the window.
                     Keys.onEscapePressed: (event) => {
