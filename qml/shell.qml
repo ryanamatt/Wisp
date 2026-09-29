@@ -8,6 +8,7 @@ import "WorkspaceSwitcher"
 import "CommandCenter"
 import "Screenshot"
 import "Runner"
+import "Timer"
 import "OSD"
 
 Scope {
@@ -24,6 +25,8 @@ Scope {
     Screenshot {}
 
     Runner {}
+
+    Timer {}
 
     OSDBrightness {}
     OSDVolume {}
