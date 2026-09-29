@@ -85,12 +85,24 @@ std::string resolveWallpaperDir(const std::string &configured) {
     return configured;
 }
 
+// Reads j[key] into `out` if it is a boolean. Otherwise warns and leaves
+// `out` untouched. `label` is the dotted config path used in the warning.
+void readBool(const nlohmann::json &j, const char *key, const std::string &label, bool &out) {
+    if (!j.contains(key)) return;
+    if (j[key].is_boolean())
+        out = j[key].get<bool>();
+    else
+        wisp::log::warning("config", label + " must be a boolean, ignoring");
+}
+
 void exportEnv(const Config &cfg) {
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
     setenv(wisp::env::kFont, cfg.font.c_str(), 1);
     setenv(wisp::env::kAppsJson, appsToJson(cfg.apps).c_str(), 1);
     setenv(wisp::env::kWallpaperDir, cfg.wallpaperDir.c_str(), 1);
+    setenv(wisp::env::kPackagesNotifyOnStartUp, cfg.packagesNotifyOnStartUp ? "true" : "false", 1);
+    setenv(wisp::env::kPackagesNotifyEveryDay, cfg.packagesNotifyEveryDay ? "true" : "false", 1);
 }
 
 } // namespace
@@ -166,6 +178,12 @@ Config load(const std::string &path) {
             else
                 wisp::log::warning("config", "wallpaper.directory must be a string, ignoring");
         }
+    }
+
+    if (j.contains("packages") && j["packages"].is_object()) {
+        const auto &packages = j["packages"];
+        readBool(packages, "notifyOnStartUp", "packages.notifyOnStartUp", cfg.packagesNotifyOnStartUp);
+        readBool(packages, "notifyEveryDay", "packages.notifyEveryDay", cfg.packagesNotifyEveryDay);
     }
 
     if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
