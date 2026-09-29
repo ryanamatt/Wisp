@@ -1,0 +1,409 @@
+// src/backend/calculator.cpp
+
+#include "calculator.hpp"
+#include <cctype>
+#include <cmath>
+#include <stdexcept>
+#include <unordered_map>
+
+namespace {
+// True if this token can begin a factor that may be implicitly multiplied,
+// e.g. the "(3)" in "2(3)", the "pi" in "2pi", or the "sin" in "2sin(x)".
+bool startsImplicitFactor(TokenType type) {
+    switch (type) {
+        case TokenType::Number:
+        case TokenType::LeftParen:
+        case TokenType::Pi:
+        case TokenType::E:
+        case TokenType::Sqrt:
+        case TokenType::Sin:
+        case TokenType::Cos:
+        case TokenType::Tan:
+        case TokenType::Asin:
+        case TokenType::Acos:
+        case TokenType::Atan:
+        case TokenType::Csc:
+        case TokenType::Sec:
+        case TokenType::Cot:
+        case TokenType::Log:
+        case TokenType::Log10: return true;
+        default: return false;
+    }
+}
+
+double factorial(double n) {
+    if (n < 0.0 || n != std::floor(n)) { throw std::runtime_error("Factorial requires a non-negative integer"); }
+    if (n > 170.0) { throw std::runtime_error("Factorial result too large"); }
+
+    double result = 1.0;
+    for (int i = 2; i <= (int)n; i++) { result *= i; }
+    return result;
+}
+
+} // namespace
+
+bool Calculator::solve(QString equation) {
+    m_equation = equation.toStdString();
+    m_tokens.clear();
+    m_parser_pos = 0;
+
+    // The lexer throws too (bad numbers, unknown characters), so it must be
+    // inside the try. An exception escaping a Q_INVOKABLE would crash the shell.
+    try {
+        runLexer();
+        completeTokens();
+
+        double result = runParser();
+        if (!std::isfinite(result)) { throw std::runtime_error("Result is not finite"); }
+
+        m_answer = result;
+        return true;
+    } catch (const std::exception &) { return false; }
+}
+
+void Calculator::runLexer() {
+    std::unordered_map<char, TokenType> symbol_map = {
+        {'+', TokenType::Add},       {'-', TokenType::Subtract},   {'*', TokenType::Multiply},
+        {'/', TokenType::Divide},    {'%', TokenType::Modulo},     {'^', TokenType::Power},
+        {'(', TokenType::LeftParen}, {')', TokenType::RightParen}, {'!', TokenType::Factorial},
+    };
+
+    int current_pos = 0;
+
+    while (current_pos < (int)m_equation.size()) {
+        char ch = m_equation[current_pos];
+
+        if (std::isspace((unsigned char)ch))
+            current_pos++;
+
+        else if (std::isdigit((unsigned char)ch) || ch == '.')
+            m_tokens.push_back(this->make_number(current_pos));
+
+        else if (std::isalpha((unsigned char)ch))
+            m_tokens.push_back(this->make_identifier(current_pos));
+
+        else if (symbol_map.find(ch) != symbol_map.end()) {
+            m_tokens.push_back(Token(symbol_map[ch], std::string(1, ch)));
+            current_pos++;
+        }
+
+        else
+            throw std::runtime_error("Unknown character in expression");
+    }
+}
+
+Token Calculator::make_number(int &current_pos) {
+    std::string num_str;
+    int dot_count = 0;
+
+    while (current_pos < (int)m_equation.size() &&
+           (std::isdigit((unsigned char)m_equation[current_pos]) || m_equation[current_pos] == '.')) {
+        if (m_equation[current_pos] == '.') {
+            dot_count++;
+            if (dot_count > 1) { throw std::runtime_error("Multiple decimal points in number"); }
+        }
+
+        num_str += m_equation[current_pos];
+        current_pos++;
+    }
+
+    if (!num_str.empty() && num_str.back() == '.') { throw std::runtime_error("Trailing decimal point"); }
+
+    return Token(TokenType::Number, num_str);
+}
+
+Token Calculator::make_identifier(int &current_pos) {
+    std::string ident_str;
+
+    while (current_pos < (int)m_equation.size() && std::isalpha((unsigned char)m_equation[current_pos])) {
+        ident_str += (char)std::tolower((unsigned char)m_equation[current_pos]);
+        current_pos++;
+    }
+
+    // The loop above only reads letters, so "log10" would be split into "log"
+    // and "10". If we just read "log" and a "10" follows, glue them together.
+    if (ident_str == "log" && current_pos + 1 < (int)m_equation.size() && m_equation[current_pos] == '1' &&
+        m_equation[current_pos + 1] == '0') {
+        ident_str += "10";
+        current_pos += 2;
+    }
+
+    if (ident_str == "sqrt")
+        return Token(TokenType::Sqrt, ident_str);
+    else if (ident_str == "sin")
+        return Token(TokenType::Sin, ident_str);
+    else if (ident_str == "cos")
+        return Token(TokenType::Cos, ident_str);
+    else if (ident_str == "tan")
+        return Token(TokenType::Tan, ident_str);
+    else if (ident_str == "asin")
+        return Token(TokenType::Asin, ident_str);
+    else if (ident_str == "acos")
+        return Token(TokenType::Acos, ident_str);
+    else if (ident_str == "atan")
+        return Token(TokenType::Atan, ident_str);
+    else if (ident_str == "csc")
+        return Token(TokenType::Csc, ident_str);
+    else if (ident_str == "sec")
+        return Token(TokenType::Sec, ident_str);
+    else if (ident_str == "cot")
+        return Token(TokenType::Cot, ident_str);
+
+    else if (ident_str == "ln")
+        return Token(TokenType::Log, ident_str);
+
+    else if (ident_str == "log10" || ident_str == "log")
+        return Token(TokenType::Log10, "log10");
+
+    else if (ident_str == "pi") {
+        return Token(TokenType::Pi, ident_str);
+    } else if (ident_str == "e") {
+        return Token(TokenType::E, ident_str);
+    }
+
+    throw std::runtime_error("Unknown function or identifier: " + ident_str);
+}
+
+// Makes a half-typed expression solvable so the answer can be previewed while
+// typing (like Desmos): "2(3" becomes "2(3)", and "2+" becomes "2".
+void Calculator::completeTokens() {
+    if (m_tokens.empty()) return;
+
+    // Drop anything dangling at the end that cannot finish an expression:
+    // binary operators, function names, and an opening paren with nothing in it.
+    while (!m_tokens.empty()) {
+        switch (m_tokens.back().get_token()) {
+            case TokenType::Add:
+            case TokenType::Subtract:
+            case TokenType::Multiply:
+            case TokenType::Divide:
+            case TokenType::Modulo:
+            case TokenType::Power:
+            case TokenType::Sqrt:
+            case TokenType::Sin:
+            case TokenType::Cos:
+            case TokenType::Tan:
+            case TokenType::Asin:
+            case TokenType::Acos:
+            case TokenType::Atan:
+            case TokenType::Csc:
+            case TokenType::Sec:
+            case TokenType::Cot:
+            case TokenType::Log:
+            case TokenType::Log10:
+            case TokenType::LeftParen: m_tokens.pop_back(); continue;
+            default: break;
+        }
+        break;
+    }
+
+    // Nothing usable was typed yet, e.g. just "(" or "sin(".
+    if (m_tokens.empty()) { throw std::runtime_error("Incomplete expression"); }
+
+    // Close any parentheses that are still open. Extra ')' are left alone so
+    // the parser rejects them.
+    int depth = 0;
+    for (const Token &t : m_tokens) {
+        if (t.get_token() == TokenType::LeftParen)
+            depth++;
+        else if (t.get_token() == TokenType::RightParen && depth > 0)
+            depth--;
+    }
+    for (; depth > 0; depth--) { m_tokens.push_back(Token(TokenType::RightParen, ")")); }
+}
+
+// --- Parser Implementation ---
+
+double Calculator::runParser() {
+    if (m_tokens.empty()) return 0.0;
+    m_parser_pos = 0;
+
+    double result = parseExpression();
+
+    // Everything must be consumed, otherwise input like "5 3" would quietly give 5.
+    if (m_parser_pos != m_tokens.size()) { throw std::runtime_error("Unexpected token after expression"); }
+
+    return result;
+}
+
+// Handles Addition and Subtraction (Lowest precedence)
+double Calculator::parseExpression() {
+    double result = parseTerm();
+
+    while (m_parser_pos < m_tokens.size()) {
+        TokenType type = m_tokens[m_parser_pos].get_token();
+        if (type == TokenType::Add) {
+            m_parser_pos++;
+            result += parseTerm();
+        }
+
+        else if (type == TokenType::Subtract) {
+            m_parser_pos++;
+            result -= parseTerm();
+        }
+
+        else {
+            break;
+        }
+    }
+    return result;
+}
+
+// Handles Multiplication and Division (Higher precedence)
+double Calculator::parseTerm() {
+    double result = parsePower();
+
+    while (m_parser_pos < m_tokens.size()) {
+        TokenType type = m_tokens[m_parser_pos].get_token();
+        if (type == TokenType::Multiply) {
+            m_parser_pos++;
+            result *= parsePower();
+        }
+
+        else if (type == TokenType::Divide) {
+            m_parser_pos++;
+            double divisor = parsePower();
+            if (divisor == 0.0) { throw std::runtime_error("Division by zero"); }
+            result /= divisor;
+        }
+
+        else if (type == TokenType::Modulo) {
+            m_parser_pos++;
+            double divisor = parsePower();
+            if (divisor == 0.0) { throw std::runtime_error("Division by zero"); }
+            result = std::fmod(result, divisor);
+        }
+
+        // Implicit multiplication: 2(3), (2)(3), 2pi, 2sin(x)
+        else if (startsImplicitFactor(type)) {
+            result *= parsePower();
+        }
+
+        else {
+            break;
+        }
+    }
+    return result;
+}
+
+// Handles Exponentiation (Right-associative)
+double Calculator::parsePower() {
+    double base = parseFactor();
+
+    if (m_parser_pos < m_tokens.size() && m_tokens[m_parser_pos].get_token() == TokenType::Power) {
+        m_parser_pos++;
+        double exponent = parsePower(); // Recursive call ensures right-associativity
+        return std::pow(base, exponent);
+    }
+
+    return base;
+}
+
+// Handles leading unary signs and postfix factorials
+double Calculator::parseFactor() {
+    bool negative = false;
+
+    while (m_parser_pos < m_tokens.size()) {
+        TokenType type = m_tokens[m_parser_pos].get_token();
+        if (type == TokenType::Subtract)
+            negative = !negative;
+        else if (type != TokenType::Add)
+            break;
+        m_parser_pos++;
+    }
+
+    double value = parseAtom();
+
+    // Postfix factorial binds tighter than the sign: -3! == -(3!)
+    while (m_parser_pos < m_tokens.size() && m_tokens[m_parser_pos].get_token() == TokenType::Factorial) {
+        m_parser_pos++;
+        value = factorial(value);
+    }
+
+    return negative ? -value : value;
+}
+
+// Handles atomic units: functions, parenthesized sub-expressions, numbers, and constants
+double Calculator::parseAtom() {
+    if (m_parser_pos >= m_tokens.size()) { throw std::runtime_error("Unexpected end of expression"); }
+
+    Token token = m_tokens[m_parser_pos];
+
+    // Handle functions: sqrt, sin, cos, tan, ln, log10
+    TokenType t_type = token.get_token();
+    if (t_type == TokenType::Sqrt || t_type == TokenType::Sin || t_type == TokenType::Cos || t_type == TokenType::Tan ||
+        t_type == TokenType::Asin || t_type == TokenType::Acos || t_type == TokenType::Atan ||
+        t_type == TokenType::Csc || t_type == TokenType::Sec || t_type == TokenType::Cot || t_type == TokenType::Log ||
+        t_type == TokenType::Log10) {
+        std::string func_name = token.get_value();
+        m_parser_pos++; // Consume function token
+
+        if (m_parser_pos >= m_tokens.size() || m_tokens[m_parser_pos].get_token() != TokenType::LeftParen) {
+            throw std::runtime_error("Expected '(' after " + func_name);
+        }
+        m_parser_pos++; // Consume '('
+
+        double result = parseExpression();
+
+        if (m_parser_pos >= m_tokens.size() || m_tokens[m_parser_pos].get_token() != TokenType::RightParen) {
+            throw std::runtime_error("Mismatched parentheses: expected ')' after " + func_name);
+        }
+        m_parser_pos++; // Consume ')'
+
+        if (t_type == TokenType::Sqrt) {
+            if (result < 0.0) { throw std::runtime_error("Square root of negative number"); }
+            return std::sqrt(result);
+        } else if (t_type == TokenType::Sin)
+            return std::sin(result);
+        else if (t_type == TokenType::Cos)
+            return std::cos(result);
+        else if (t_type == TokenType::Tan)
+            return std::tan(result);
+        else if (t_type == TokenType::Asin)
+            return std::asin(result);
+        else if (t_type == TokenType::Acos)
+            return std::acos(result);
+        else if (t_type == TokenType::Atan)
+            return std::atan(result);
+        else if (t_type == TokenType::Csc)
+            return 1 / std::sin(result);
+        else if (t_type == TokenType::Sec)
+            return 1 / std::cos(result);
+        else if (t_type == TokenType::Cot)
+            return 1 / std::tan(result);
+        else if (t_type == TokenType::Log)
+            return std::log(result);
+        else
+            return std::log10(result);
+    }
+
+    // Handle parentheses: ( expression )
+    if (token.get_token() == TokenType::LeftParen) {
+        m_parser_pos++; // Consume '('
+        double result = parseExpression();
+
+        if (m_parser_pos >= m_tokens.size() || m_tokens[m_parser_pos].get_token() != TokenType::RightParen) {
+            throw std::runtime_error("Mismatched parentheses: expected ')'");
+        }
+        m_parser_pos++; // Consume ')'
+        return result;
+    }
+
+    // Handle regular numbers
+    if (token.get_token() == TokenType::Number) {
+        m_parser_pos++;
+        return std::stod(token.get_value());
+    }
+
+    if (token.get_token() == TokenType::Pi) {
+        m_parser_pos++;
+        return M_PI;
+    }
+
+    if (token.get_token() == TokenType::E) {
+        m_parser_pos++;
+        return M_E;
+    }
+
+    throw std::runtime_error("Unexpected token in expression");
+}

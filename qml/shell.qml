@@ -6,6 +6,7 @@ import "ThemeSwitcher"
 import "WorkspaceSwitcher"
 import "CommandCenter"
 import "Screenshot"
+import "Runner"
 import "OSD"
 
 Scope {
@@ -18,6 +19,8 @@ Scope {
     CommandCenter {}
 
     Screenshot {}
+
+    Runner {}
 
     OSDBrightness {}
     OSDVolume {}
