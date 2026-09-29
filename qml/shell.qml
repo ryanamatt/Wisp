@@ -1,6 +1,7 @@
 // qml/shell.qml
 
 import Quickshell
+import "Notifiers"
 import "Bar"
 import "ThemeSwitcher"
 import "WorkspaceSwitcher"
@@ -10,6 +11,8 @@ import "Runner"
 import "OSD"
 
 Scope {
+    PackageNotifier {}
+
     Bar {}
 
     ThemeSwitcher {}

@@ -13,6 +13,8 @@ inline constexpr const char *kBarOrientation = "WISP_BAR_ORIENTATION";
 inline constexpr const char *kFont = "WISP_FONT";
 inline constexpr const char *kAppsJson = "WISP_APPS_JSON";
 inline constexpr const char *kWallpaperDir = "WISP_WALLPAPER_DIR";
+inline constexpr const char *kPackagesNotifyOnStartUp = "WISP_PACKAGES_NOTIFY_ON_STARTUP";
+inline constexpr const char *kPackagesNotifyEveryDay = "WISP_PACKAGES_NOTIFY_EVERY_DAY";
 
 // Other
 inline constexpr const char *kShareDir = "WISP_SHARE_DIR";
