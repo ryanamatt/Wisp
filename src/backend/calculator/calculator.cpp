@@ -11,27 +11,35 @@ namespace {
 // e.g. the "(3)" in "2(3)", the "pi" in "2pi", or the "sin" in "2sin(x)".
 bool startsImplicitFactor(TokenType type) {
     switch (type) {
-    case TokenType::Number:
-    case TokenType::LeftParen:
-    case TokenType::Pi:
-    case TokenType::E:
-    case TokenType::Sqrt:
-    case TokenType::Sin:
-    case TokenType::Cos:
-    case TokenType::Tan:
-    case TokenType::Asin:
-    case TokenType::Acos:
-    case TokenType::Atan:
-    case TokenType::Csc:
-    case TokenType::Sec:
-    case TokenType::Cot:
-    case TokenType::Log:
-    case TokenType::Log10:
-        return true;
-    default:
-        return false;
+        case TokenType::Number:
+        case TokenType::LeftParen:
+        case TokenType::Pi:
+        case TokenType::E:
+        case TokenType::Sqrt:
+        case TokenType::Sin:
+        case TokenType::Cos:
+        case TokenType::Tan:
+        case TokenType::Asin:
+        case TokenType::Acos:
+        case TokenType::Atan:
+        case TokenType::Csc:
+        case TokenType::Sec:
+        case TokenType::Cot:
+        case TokenType::Log:
+        case TokenType::Log10: return true;
+        default: return false;
     }
 }
+
+double factorial(double n) {
+    if (n < 0.0 || n != std::floor(n)) { throw std::runtime_error("Factorial requires a non-negative integer"); }
+    if (n > 170.0) { throw std::runtime_error("Factorial result too large"); }
+
+    double result = 1.0;
+    for (int i = 2; i <= (int)n; i++) { result *= i; }
+    return result;
+}
+
 } // namespace
 
 bool Calculator::solve(QString equation) {
@@ -55,8 +63,9 @@ bool Calculator::solve(QString equation) {
 
 void Calculator::runLexer() {
     std::unordered_map<char, TokenType> symbol_map = {
-        {'+', TokenType::Add},    {'-', TokenType::Subtract}, {'*', TokenType::Multiply},  {'/', TokenType::Divide},
-        {'%', TokenType::Modulo}, {'^', TokenType::Power},    {'(', TokenType::LeftParen}, {')', TokenType::RightParen},
+        {'+', TokenType::Add},       {'-', TokenType::Subtract},   {'*', TokenType::Multiply},
+        {'/', TokenType::Divide},    {'%', TokenType::Modulo},     {'^', TokenType::Power},
+        {'(', TokenType::LeftParen}, {')', TokenType::RightParen}, {'!', TokenType::Factorial},
     };
 
     int current_pos = 0;
@@ -139,7 +148,6 @@ Token Calculator::make_identifier(int &current_pos) {
         return Token(TokenType::Sec, ident_str);
     else if (ident_str == "cot")
         return Token(TokenType::Cot, ident_str);
-    
 
     else if (ident_str == "ln")
         return Token(TokenType::Log, ident_str);
@@ -149,8 +157,7 @@ Token Calculator::make_identifier(int &current_pos) {
 
     else if (ident_str == "pi") {
         return Token(TokenType::Pi, ident_str);
-    }
-    else if (ident_str == "e") {
+    } else if (ident_str == "e") {
         return Token(TokenType::E, ident_str);
     }
 
@@ -166,29 +173,26 @@ void Calculator::completeTokens() {
     // binary operators, function names, and an opening paren with nothing in it.
     while (!m_tokens.empty()) {
         switch (m_tokens.back().get_token()) {
-        case TokenType::Add:
-        case TokenType::Subtract:
-        case TokenType::Multiply:
-        case TokenType::Divide:
-        case TokenType::Modulo:
-        case TokenType::Power:
-        case TokenType::Sqrt:
-        case TokenType::Sin:
-        case TokenType::Cos:
-        case TokenType::Tan:
-        case TokenType::Asin:
-        case TokenType::Acos:
-        case TokenType::Atan:
-        case TokenType::Csc:
-        case TokenType::Sec:
-        case TokenType::Cot:
-        case TokenType::Log:
-        case TokenType::Log10:
-        case TokenType::LeftParen:
-            m_tokens.pop_back();
-            continue;
-        default:
-            break;
+            case TokenType::Add:
+            case TokenType::Subtract:
+            case TokenType::Multiply:
+            case TokenType::Divide:
+            case TokenType::Modulo:
+            case TokenType::Power:
+            case TokenType::Sqrt:
+            case TokenType::Sin:
+            case TokenType::Cos:
+            case TokenType::Tan:
+            case TokenType::Asin:
+            case TokenType::Acos:
+            case TokenType::Atan:
+            case TokenType::Csc:
+            case TokenType::Sec:
+            case TokenType::Cot:
+            case TokenType::Log:
+            case TokenType::Log10:
+            case TokenType::LeftParen: m_tokens.pop_back(); continue;
+            default: break;
         }
         break;
     }
@@ -200,8 +204,10 @@ void Calculator::completeTokens() {
     // the parser rejects them.
     int depth = 0;
     for (const Token &t : m_tokens) {
-        if (t.get_token() == TokenType::LeftParen) depth++;
-        else if (t.get_token() == TokenType::RightParen && depth > 0) depth--;
+        if (t.get_token() == TokenType::LeftParen)
+            depth++;
+        else if (t.get_token() == TokenType::RightParen && depth > 0)
+            depth--;
     }
     for (; depth > 0; depth--) { m_tokens.push_back(Token(TokenType::RightParen, ")")); }
 }
@@ -293,7 +299,7 @@ double Calculator::parsePower() {
     return base;
 }
 
-// Handles atomic units (Numbers) and parenthesized sub-expressions, including leading unary signs
+// Handles leading unary signs and postfix factorials
 double Calculator::parseFactor() {
     bool negative = false;
 
@@ -306,16 +312,29 @@ double Calculator::parseFactor() {
         m_parser_pos++;
     }
 
+    double value = parseAtom();
+
+    // Postfix factorial binds tighter than the sign: -3! == -(3!)
+    while (m_parser_pos < m_tokens.size() && m_tokens[m_parser_pos].get_token() == TokenType::Factorial) {
+        m_parser_pos++;
+        value = factorial(value);
+    }
+
+    return negative ? -value : value;
+}
+
+// Handles atomic units: functions, parenthesized sub-expressions, numbers, and constants
+double Calculator::parseAtom() {
     if (m_parser_pos >= m_tokens.size()) { throw std::runtime_error("Unexpected end of expression"); }
 
     Token token = m_tokens[m_parser_pos];
 
     // Handle functions: sqrt, sin, cos, tan, ln, log10
     TokenType t_type = token.get_token();
-    if (t_type == TokenType::Sqrt || t_type == TokenType::Sin || t_type == TokenType::Cos || t_type == TokenType::Tan
-        || t_type == TokenType::Asin || t_type == TokenType::Acos || t_type == TokenType::Atan
-        || t_type == TokenType::Csc || t_type == TokenType::Sec || t_type == TokenType::Cot
-        || t_type == TokenType::Log || t_type == TokenType::Log10) {
+    if (t_type == TokenType::Sqrt || t_type == TokenType::Sin || t_type == TokenType::Cos || t_type == TokenType::Tan ||
+        t_type == TokenType::Asin || t_type == TokenType::Acos || t_type == TokenType::Atan ||
+        t_type == TokenType::Csc || t_type == TokenType::Sec || t_type == TokenType::Cot || t_type == TokenType::Log ||
+        t_type == TokenType::Log10) {
         std::string func_name = token.get_value();
         m_parser_pos++; // Consume function token
 
@@ -331,37 +350,31 @@ double Calculator::parseFactor() {
         }
         m_parser_pos++; // Consume ')'
 
-        double val = 0.0;
         if (t_type == TokenType::Sqrt) {
             if (result < 0.0) { throw std::runtime_error("Square root of negative number"); }
-            val = std::sqrt(result);
-        }
-
-        else if (t_type == TokenType::Sin)
-            val = std::sin(result);
+            return std::sqrt(result);
+        } else if (t_type == TokenType::Sin)
+            return std::sin(result);
         else if (t_type == TokenType::Cos)
-            val = std::cos(result);
+            return std::cos(result);
         else if (t_type == TokenType::Tan)
-            val = std::tan(result);
+            return std::tan(result);
         else if (t_type == TokenType::Asin)
-            val = std::asin(result);
+            return std::asin(result);
         else if (t_type == TokenType::Acos)
-            val = std::acos(result);
+            return std::acos(result);
         else if (t_type == TokenType::Atan)
-            val = std::atan(result);
+            return std::atan(result);
         else if (t_type == TokenType::Csc)
-            val = 1 / std::sin(result);
+            return 1 / std::sin(result);
         else if (t_type == TokenType::Sec)
-            val = 1 / std::cos(result);
+            return 1 / std::cos(result);
         else if (t_type == TokenType::Cot)
-            val = 1 / std::tan(result);
-
+            return 1 / std::tan(result);
         else if (t_type == TokenType::Log)
-            val = std::log(result);
-        else if (t_type == TokenType::Log10)
-            val = std::log10(result);
-
-        return negative ? -val : val;
+            return std::log(result);
+        else
+            return std::log10(result);
     }
 
     // Handle parentheses: ( expression )
@@ -373,24 +386,23 @@ double Calculator::parseFactor() {
             throw std::runtime_error("Mismatched parentheses: expected ')'");
         }
         m_parser_pos++; // Consume ')'
-        return negative ? -result : result;
+        return result;
     }
 
     // Handle regular numbers
     if (token.get_token() == TokenType::Number) {
         m_parser_pos++;
-        double value = std::stod(token.get_value());
-        return negative ? -value : value;
+        return std::stod(token.get_value());
     }
 
     if (token.get_token() == TokenType::Pi) {
         m_parser_pos++;
-        return negative ? -M_PI : M_PI;
+        return M_PI;
     }
 
     if (token.get_token() == TokenType::E) {
         m_parser_pos++;
-        return negative ? -M_E : M_E;
+        return M_E;
     }
 
     throw std::runtime_error("Unexpected token in expression");

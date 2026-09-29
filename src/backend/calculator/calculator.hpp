@@ -17,6 +17,7 @@ enum class TokenType {
     Divide,
     Modulo,
     Power,
+    Factorial,
     Sqrt,
     Sin,
     Cos,
@@ -82,6 +83,7 @@ private:
     double parseTerm();
     double parsePower();
     double parseFactor();
+    double parseAtom();
 
     double m_answer = 0.0;
     std::string m_equation;
