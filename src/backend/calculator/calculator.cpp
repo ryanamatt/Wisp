@@ -19,6 +19,12 @@ bool startsImplicitFactor(TokenType type) {
     case TokenType::Sin:
     case TokenType::Cos:
     case TokenType::Tan:
+    case TokenType::Asin:
+    case TokenType::Acos:
+    case TokenType::Atan:
+    case TokenType::Csc:
+    case TokenType::Sec:
+    case TokenType::Cot:
     case TokenType::Log:
     case TokenType::Log10:
         return true;
@@ -121,6 +127,19 @@ Token Calculator::make_identifier(int &current_pos) {
         return Token(TokenType::Cos, ident_str);
     else if (ident_str == "tan")
         return Token(TokenType::Tan, ident_str);
+    else if (ident_str == "asin")
+        return Token(TokenType::Asin, ident_str);
+    else if (ident_str == "acos")
+        return Token(TokenType::Acos, ident_str);
+    else if (ident_str == "atan")
+        return Token(TokenType::Atan, ident_str);
+    else if (ident_str == "csc")
+        return Token(TokenType::Csc, ident_str);
+    else if (ident_str == "sec")
+        return Token(TokenType::Sec, ident_str);
+    else if (ident_str == "cot")
+        return Token(TokenType::Cot, ident_str);
+    
 
     else if (ident_str == "ln")
         return Token(TokenType::Log, ident_str);
@@ -157,6 +176,12 @@ void Calculator::completeTokens() {
         case TokenType::Sin:
         case TokenType::Cos:
         case TokenType::Tan:
+        case TokenType::Asin:
+        case TokenType::Acos:
+        case TokenType::Atan:
+        case TokenType::Csc:
+        case TokenType::Sec:
+        case TokenType::Cot:
         case TokenType::Log:
         case TokenType::Log10:
         case TokenType::LeftParen:
@@ -288,6 +313,8 @@ double Calculator::parseFactor() {
     // Handle functions: sqrt, sin, cos, tan, ln, log10
     TokenType t_type = token.get_token();
     if (t_type == TokenType::Sqrt || t_type == TokenType::Sin || t_type == TokenType::Cos || t_type == TokenType::Tan
+        || t_type == TokenType::Asin || t_type == TokenType::Acos || t_type == TokenType::Atan
+        || t_type == TokenType::Csc || t_type == TokenType::Sec || t_type == TokenType::Cot
         || t_type == TokenType::Log || t_type == TokenType::Log10) {
         std::string func_name = token.get_value();
         m_parser_pos++; // Consume function token
@@ -316,6 +343,18 @@ double Calculator::parseFactor() {
             val = std::cos(result);
         else if (t_type == TokenType::Tan)
             val = std::tan(result);
+        else if (t_type == TokenType::Asin)
+            val = std::asin(result);
+        else if (t_type == TokenType::Acos)
+            val = std::acos(result);
+        else if (t_type == TokenType::Atan)
+            val = std::atan(result);
+        else if (t_type == TokenType::Csc)
+            val = 1 / std::sin(result);
+        else if (t_type == TokenType::Sec)
+            val = 1 / std::cos(result);
+        else if (t_type == TokenType::Cot)
+            val = 1 / std::tan(result);
 
         else if (t_type == TokenType::Log)
             val = std::log(result);
