@@ -67,6 +67,8 @@ private:
     Token make_number(int &current_pos);
     Token make_identifier(int &current_pos);
 
+    void completeTokens();
+
     double runParser();
     double parseExpression();
     double parseTerm();

@@ -45,8 +45,7 @@ Scope {
         if (mode !== "calculator") return;
 
         const expr = runnerText.slice(1);
-        // Ignore empty input and input with no digits at all.
-        if (!/\d/.test(expr)) return;
+        if (expr.trim() === "") return;
 
         if (Calculator.solve(expr)) {
             // Answer has no change signal, so read it right after solve().

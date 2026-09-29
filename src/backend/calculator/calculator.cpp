@@ -6,6 +6,26 @@
 #include <stdexcept>
 #include <unordered_map>
 
+namespace {
+// True if this token can begin a factor that may be implicitly multiplied,
+// e.g. the "(3)" in "2(3)", the "pi" in "2pi", or the "sin" in "2sin(x)".
+bool startsImplicitFactor(TokenType type) {
+    switch (type) {
+    case TokenType::Number:
+    case TokenType::LeftParen:
+    case TokenType::Pi:
+    case TokenType::E:
+    case TokenType::Sqrt:
+    case TokenType::Sin:
+    case TokenType::Cos:
+    case TokenType::Tan:
+        return true;
+    default:
+        return false;
+    }
+}
+} // namespace
+
 bool Calculator::solve(QString equation) {
     m_equation = equation.toStdString();
     m_tokens.clear();
@@ -15,6 +35,7 @@ bool Calculator::solve(QString equation) {
     // inside the try. An exception escaping a Q_INVOKABLE would crash the shell.
     try {
         runLexer();
+        completeTokens();
 
         double result = runParser();
         if (!std::isfinite(result)) { throw std::runtime_error("Result is not finite"); }
@@ -102,6 +123,47 @@ Token Calculator::make_identifier(int &current_pos) {
     throw std::runtime_error("Unknown function or identifier: " + ident_str);
 }
 
+// Makes a half-typed expression solvable so the answer can be previewed while
+// typing (like Desmos): "2(3" becomes "2(3)", and "2+" becomes "2".
+void Calculator::completeTokens() {
+    if (m_tokens.empty()) return;
+
+    // Drop anything dangling at the end that cannot finish an expression:
+    // binary operators, function names, and an opening paren with nothing in it.
+    while (!m_tokens.empty()) {
+        switch (m_tokens.back().get_token()) {
+        case TokenType::Add:
+        case TokenType::Subtract:
+        case TokenType::Multiply:
+        case TokenType::Divide:
+        case TokenType::Modulo:
+        case TokenType::Power:
+        case TokenType::Sqrt:
+        case TokenType::Sin:
+        case TokenType::Cos:
+        case TokenType::Tan:
+        case TokenType::LeftParen:
+            m_tokens.pop_back();
+            continue;
+        default:
+            break;
+        }
+        break;
+    }
+
+    // Nothing usable was typed yet, e.g. just "(" or "sin(".
+    if (m_tokens.empty()) { throw std::runtime_error("Incomplete expression"); }
+
+    // Close any parentheses that are still open. Extra ')' are left alone so
+    // the parser rejects them.
+    int depth = 0;
+    for (const Token &t : m_tokens) {
+        if (t.get_token() == TokenType::LeftParen) depth++;
+        else if (t.get_token() == TokenType::RightParen && depth > 0) depth--;
+    }
+    for (; depth > 0; depth--) { m_tokens.push_back(Token(TokenType::RightParen, ")")); }
+}
+
 // --- Parser Implementation ---
 
 double Calculator::runParser() {
@@ -162,6 +224,11 @@ double Calculator::parseTerm() {
             double divisor = parsePower();
             if (divisor == 0.0) { throw std::runtime_error("Division by zero"); }
             result = std::fmod(result, divisor);
+        }
+
+        // Implicit multiplication: 2(3), (2)(3), 2pi, 2sin(x)
+        else if (startsImplicitFactor(type)) {
+            result *= parsePower();
         }
 
         else {
