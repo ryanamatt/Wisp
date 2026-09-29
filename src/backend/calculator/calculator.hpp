@@ -21,6 +21,8 @@ enum class TokenType {
     Sin,
     Cos,
     Tan,
+    Log,
+    Log10,
     LeftParen,
     RightParen,
     Pi,

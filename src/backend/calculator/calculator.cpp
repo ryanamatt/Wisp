@@ -19,6 +19,8 @@ bool startsImplicitFactor(TokenType type) {
     case TokenType::Sin:
     case TokenType::Cos:
     case TokenType::Tan:
+    case TokenType::Log:
+    case TokenType::Log10:
         return true;
     default:
         return false;
@@ -56,13 +58,13 @@ void Calculator::runLexer() {
     while (current_pos < (int)m_equation.size()) {
         char ch = m_equation[current_pos];
 
-        if (std::isspace(ch))
+        if (std::isspace((unsigned char)ch))
             current_pos++;
 
-        else if (std::isdigit(ch) || ch == '.')
+        else if (std::isdigit((unsigned char)ch) || ch == '.')
             m_tokens.push_back(this->make_number(current_pos));
 
-        else if (std::isalpha(ch))
+        else if (std::isalpha((unsigned char)ch))
             m_tokens.push_back(this->make_identifier(current_pos));
 
         else if (symbol_map.find(ch) != symbol_map.end()) {
@@ -80,7 +82,7 @@ Token Calculator::make_number(int &current_pos) {
     int dot_count = 0;
 
     while (current_pos < (int)m_equation.size() &&
-           (std::isdigit(m_equation[current_pos]) || m_equation[current_pos] == '.')) {
+           (std::isdigit((unsigned char)m_equation[current_pos]) || m_equation[current_pos] == '.')) {
         if (m_equation[current_pos] == '.') {
             dot_count++;
             if (dot_count > 1) { throw std::runtime_error("Multiple decimal points in number"); }
@@ -98,20 +100,33 @@ Token Calculator::make_number(int &current_pos) {
 Token Calculator::make_identifier(int &current_pos) {
     std::string ident_str;
 
-    while (current_pos < (int)m_equation.size() && std::isalpha(m_equation[current_pos])) {
-        ident_str += std::tolower(m_equation[current_pos]);
+    while (current_pos < (int)m_equation.size() && std::isalpha((unsigned char)m_equation[current_pos])) {
+        ident_str += (char)std::tolower((unsigned char)m_equation[current_pos]);
         current_pos++;
     }
 
-    if (ident_str == "sqrt") {
-        return Token(TokenType::Sqrt, ident_str);
-    } else if (ident_str == "sin") {
-        return Token(TokenType::Sin, ident_str);
-    } else if (ident_str == "cos") {
-        return Token(TokenType::Cos, ident_str);
-    } else if (ident_str == "tan") {
-        return Token(TokenType::Tan, ident_str);
+    // The loop above only reads letters, so "log10" would be split into "log"
+    // and "10". If we just read "log" and a "10" follows, glue them together.
+    if (ident_str == "log" && current_pos + 1 < (int)m_equation.size() && m_equation[current_pos] == '1' &&
+        m_equation[current_pos + 1] == '0') {
+        ident_str += "10";
+        current_pos += 2;
     }
+
+    if (ident_str == "sqrt")
+        return Token(TokenType::Sqrt, ident_str);
+    else if (ident_str == "sin")
+        return Token(TokenType::Sin, ident_str);
+    else if (ident_str == "cos")
+        return Token(TokenType::Cos, ident_str);
+    else if (ident_str == "tan")
+        return Token(TokenType::Tan, ident_str);
+
+    else if (ident_str == "ln")
+        return Token(TokenType::Log, ident_str);
+
+    else if (ident_str == "log10" || ident_str == "log")
+        return Token(TokenType::Log10, "log10");
 
     else if (ident_str == "pi") {
         return Token(TokenType::Pi, ident_str);
@@ -142,6 +157,8 @@ void Calculator::completeTokens() {
         case TokenType::Sin:
         case TokenType::Cos:
         case TokenType::Tan:
+        case TokenType::Log:
+        case TokenType::Log10:
         case TokenType::LeftParen:
             m_tokens.pop_back();
             continue;
@@ -268,9 +285,10 @@ double Calculator::parseFactor() {
 
     Token token = m_tokens[m_parser_pos];
 
-    // Handle functions: sqrt, sin, cos, tan
+    // Handle functions: sqrt, sin, cos, tan, ln, log10
     TokenType t_type = token.get_token();
-    if (t_type == TokenType::Sqrt || t_type == TokenType::Sin || t_type == TokenType::Cos || t_type == TokenType::Tan) {
+    if (t_type == TokenType::Sqrt || t_type == TokenType::Sin || t_type == TokenType::Cos || t_type == TokenType::Tan
+        || t_type == TokenType::Log || t_type == TokenType::Log10) {
         std::string func_name = token.get_value();
         m_parser_pos++; // Consume function token
 
@@ -299,6 +317,11 @@ double Calculator::parseFactor() {
         else if (t_type == TokenType::Tan)
             val = std::tan(result);
 
+        else if (t_type == TokenType::Log)
+            val = std::log(result);
+        else if (t_type == TokenType::Log10)
+            val = std::log10(result);
+
         return negative ? -val : val;
     }
 
@@ -323,12 +346,12 @@ double Calculator::parseFactor() {
 
     if (token.get_token() == TokenType::Pi) {
         m_parser_pos++;
-        return M_PI;
+        return negative ? -M_PI : M_PI;
     }
 
     if (token.get_token() == TokenType::E) {
         m_parser_pos++;
-        return M_E;
+        return negative ? -M_E : M_E;
     }
 
     throw std::runtime_error("Unexpected token in expression");
