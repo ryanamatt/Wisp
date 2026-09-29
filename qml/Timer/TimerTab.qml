@@ -1,4 +1,4 @@
-// qml/Screenshot/VideoTab.qml
+// qml/Timer/TimerTab.qml
 
 import Quickshell
 import Quickshell.Io
@@ -7,9 +7,17 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
 import "../Config"
+import Wisp.Time
 
 Item {
     id: timerTab
+
+    Connections {
+        target: Timer
+        function onTimerFinished() {
+            console.log("TIMER FINISHED")
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -40,11 +48,28 @@ Item {
 
                 property bool isEditing: false
 
+                // The duration can only be changed while nothing is counting down.
+                readonly property bool canEdit: CountdownTimer.idle || CountdownTimer.finished
+
+                function commitEdit() {
+                    if (!isEditing) return;
+                    // On invalid input the previous duration is kept.
+                    CountdownTimer.setDurationText(timerInput.text);
+                    isEditing = false;
+                }
+
+                function cancelEdit() {
+                    isEditing = false;
+                }
+
+                // Never leave the editor open if the timer starts underneath it.
+                onCanEditChanged: if (!canEdit) cancelEdit()
+
                 Text {
                     id: timerText
                     anchors.centerIn: parent
-                    text: "00:00"
-                    color: Colors.colors.accent
+                    text: CountdownTimer.remainingText
+                    color: CountdownTimer.finished ? Colors.colors.accentAlt : Colors.colors.accent
                     font.bold: true
                     font.family: Config.font
                     font.pixelSize: timerTab.width * 0.2
@@ -54,7 +79,6 @@ Item {
                 TextInput {
                     id: timerInput
                     anchors.centerIn: parent
-                    text: timerText.text
                     color: Colors.colors.accent
                     font.bold: true
                     font.family: Config.font
@@ -62,22 +86,26 @@ Item {
                     visible: timerContainer.isEditing
                     focus: timerContainer.isEditing
                     selectByMouse: true
-                    
-                    onEditingFinished: {
-                        timerText.text = text;
-                        timerContainer.isEditing = false;
+
+                    // Enter, or focus leaving the field, applies the edit.
+                    onEditingFinished: timerContainer.commitEdit()
+
+                    // Escape cancels the edit instead of closing the window.
+                    Keys.onEscapePressed: (event) => {
+                        timerContainer.cancelEdit();
+                        event.accepted = true;
                     }
                 }
 
                 MouseArea {
                     anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: !timerContainer.isEditing
+                    cursorShape: timerContainer.canEdit ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    enabled: !timerContainer.isEditing && timerContainer.canEdit
                     onClicked: {
+                        timerInput.text = CountdownTimer.totalText;
                         timerContainer.isEditing = true;
                         timerInput.forceActiveFocus();
                         timerInput.selectAll();
-                        console.log("Clicked Timer Text to Edit");
                     }
                 }
             }
@@ -88,17 +116,22 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 20
 
+                // Start / Pause / Resume / Restart
                 Rectangle {
                     id: pauseButton
-                    implicitWidth: pauseText.implicitWidth + 28
+                    implicitWidth: 84
                     implicitHeight: 32
                     radius: 8
                     color: Colors.colors.accent
+                    opacity: CountdownTimer.totalMs > 0 ? 1.0 : 0.4
 
                     Text {
                         id: pauseText
                         anchors.centerIn: parent
-                        text: "Pause"
+                        text: CountdownTimer.running ? "Pause"
+                            : CountdownTimer.paused ? "Resume"
+                            : CountdownTimer.finished ? "Restart"
+                            : "Start"
                         font.family: Config.font
                         font.pixelSize: 12
                         font.bold: true
@@ -108,16 +141,22 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: console.log("Clicked Pause Button")
+                        enabled: CountdownTimer.totalMs > 0
+                        onClicked: {
+                            if (timerContainer.isEditing) timerContainer.commitEdit();
+                            CountdownTimer.toggle();
+                        }
                     }
                 }
 
+                // Stop (resets to the configured duration)
                 Rectangle {
                     id: stopButton
-                    implicitWidth: pauseText.implicitWidth + 28
+                    implicitWidth: 84
                     implicitHeight: 32
                     radius: 8
                     color: Colors.colors.accent
+                    opacity: CountdownTimer.idle ? 0.4 : 1.0
 
                     Text {
                         id: stopText
@@ -132,7 +171,8 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: console.log("Clicked Stop Button")
+                        enabled: !CountdownTimer.idle
+                        onClicked: CountdownTimer.stop()
                     }
                 }
             }
