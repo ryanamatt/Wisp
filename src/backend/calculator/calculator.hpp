@@ -22,7 +22,9 @@ enum class TokenType {
     Cos,
     Tan,
     LeftParen,
-    RightParen
+    RightParen,
+    Pi,
+    E,
 };
 
 class Token {

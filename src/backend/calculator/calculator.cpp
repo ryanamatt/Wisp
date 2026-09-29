@@ -92,6 +92,13 @@ Token Calculator::make_identifier(int &current_pos) {
         return Token(TokenType::Tan, ident_str);
     }
 
+    else if (ident_str == "pi") {
+        return Token(TokenType::Pi, ident_str);
+    }
+    else if (ident_str == "e") {
+        return Token(TokenType::E, ident_str);
+    }
+
     throw std::runtime_error("Unknown function or identifier: " + ident_str);
 }
 
@@ -245,6 +252,16 @@ double Calculator::parseFactor() {
         m_parser_pos++;
         double value = std::stod(token.get_value());
         return negative ? -value : value;
+    }
+
+    if (token.get_token() == TokenType::Pi) {
+        m_parser_pos++;
+        return M_PI;
+    }
+
+    if (token.get_token() == TokenType::E) {
+        m_parser_pos++;
+        return M_E;
     }
 
     throw std::runtime_error("Unexpected token in expression");
