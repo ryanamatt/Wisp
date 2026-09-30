@@ -32,6 +32,7 @@ Scope {
         const first = runnerText.charAt(0);
         if (first === ">") return "command";
         if (first === "=") return "calculator";
+        if (first === ":") return "symbol"
         return "none";
     }
 
