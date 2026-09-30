@@ -5,6 +5,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../../Config"
 
 Singleton {
     id: root
@@ -36,11 +37,11 @@ Singleton {
         razerProbe.running = true
         headsetProbe.running = true
         bluetoothProbe.running = true
+        checkNotify()
     }
 
     // Battery percentages don't change fast, so a slow poll is enough to
-    // stay current while the popup sits closed. Only one timer runs now,
-    // no matter how many monitors have a bar.
+    // stay current while the popup sits closed.
     Timer {
         interval: 15000
         running: true
@@ -76,7 +77,8 @@ Singleton {
                     name: "Laptop Battery",
                     percent: pct,
                     icon: root.systemIcon,
-                    charging: status === "Charging"
+                    charging: status === "Charging",
+                    sentLowNotif: false
                 }]
             }
         }
@@ -146,7 +148,8 @@ Singleton {
                     name: d.name,
                     percent: d.charge,
                     icon: root.razerIcon,
-                    charging: d.charging
+                    charging: d.charging,
+                    sentLowNotif: false
                 }))
         } catch (e) {
             return []
@@ -178,7 +181,8 @@ Singleton {
                             name: dev.device,
                             percent: dev.battery.level,
                             icon: root.headsetIcon,
-                            charging: dev.battery.status === "BATTERY_CHARGING"
+                            charging: dev.battery.status === "BATTERY_CHARGING",
+                            sentLowNotif: false
                         }))
                 } catch (e) {
                     root.headsetList = []
@@ -207,10 +211,51 @@ Singleton {
                         name: parts[0],
                         percent: parseInt(parts[1], 10),
                         icon: root.bluetoothIcon,
-                        charging: false
+                        charging: false,
+                        sentLowNotif: false
                     }
                 }).filter(d => !isNaN(d.percent))
             }
         }
+    }
+
+    function checkNotify() {
+        let updateList = (list) => {
+            return list.map(dev => {
+                let sentLowNotif = dev.sentLowNotif || false;
+
+                if (!dev.charging && !sentLowNotif && dev.percent <= Config.batteryWarnPerc) {
+                    sentLowNotif = true;
+                    sendNotification(dev.name, dev.percent);
+                } else if (dev.charging && sentLowNotif && dev.percent > Config.batteryWarnPerc) {
+                    sentLowNotif = false;
+                }
+
+                return {
+                    name: dev.name,
+                    percent: dev.percent,
+                    icon: dev.icon,
+                    charging: dev.charging,
+                    sentLowNotif: sentLowNotif
+                };
+            });
+        }
+
+        root.systemBatteryList = updateList(root.systemBatteryList);
+        root.razerList = updateList(root.razerList);
+        root.headsetList = updateList(root.headsetList);
+        root.bluetoothList = updateList(root.bluetoothList);
+
+    }
+
+    function sendNotification(batteryName, batteryPercent) {
+        let description = batteryName + " at " + batteryPercent + "%"
+        let com = ["notify-send", "Low Battery", description]
+        sendBatteryNotification.command = com
+        sendBatteryNotification.running = true
+    }
+
+    Process {
+        id: sendBatteryNotification
     }
 }

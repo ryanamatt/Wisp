@@ -6,6 +6,13 @@
     "wallpaper": {
         "directory": "~/Pictures/wallpapers"
     },
+    "packages": {
+        "notifyOnStartUp": true,
+        "notifyEveryDay": true
+    },
+    "battery": {
+        "warnPercentage": 30
+    },
     "appLauncher": {
         "apps": [
             { "name": "Chrome", "command": ["google-chrome-stable"], "icon": "google-chrome" },

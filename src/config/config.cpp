@@ -95,6 +95,14 @@ void readBool(const nlohmann::json &j, const char *key, const std::string &label
         wisp::log::warning("config", label + " must be a boolean, ignoring");
 }
 
+void readInt(const nlohmann::json &j, const char *key, const std::string &label, int &out) {
+    if (!j.contains(key)) return;
+    if (j[key].is_number_integer())
+        out = j[key].get<int>();
+    else
+        wisp::log::warning("config", label + " must be an int, ignoring");
+}
+
 void exportEnv(const Config &cfg) {
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
@@ -103,6 +111,7 @@ void exportEnv(const Config &cfg) {
     setenv(wisp::env::kWallpaperDir, cfg.wallpaperDir.c_str(), 1);
     setenv(wisp::env::kPackagesNotifyOnStartUp, cfg.packagesNotifyOnStartUp ? "true" : "false", 1);
     setenv(wisp::env::kPackagesNotifyEveryDay, cfg.packagesNotifyEveryDay ? "true" : "false", 1);
+    setenv(wisp::env::kBatteryWarnPerc, std::to_string(cfg.batteryWarnPerc).c_str(), 1);
 }
 
 } // namespace
@@ -186,6 +195,11 @@ Config load(const std::string &path) {
         readBool(packages, "notifyEveryDay", "packages.notifyEveryDay", cfg.packagesNotifyEveryDay);
     }
 
+    if (j.contains("battery") && j["battery"].is_object()) {
+        const auto &battery = j["battery"];
+        readInt(battery, "warnPercentage", "battery.warnPercentage", cfg.batteryWarnPerc); // <-- Updated key name
+    }
+ 
     if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
 
     exportEnv(cfg);
