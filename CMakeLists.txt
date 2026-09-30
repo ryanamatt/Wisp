@@ -16,13 +16,23 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(WISP_SHARE_DIR "/usr/share/wisp" CACHE PATH "Fixed install location for wisp's QML tree")
 
 # Helper function to define standard Wisp QML modules
+# Any extra arguments are additional source basenames in the same directory.
 function(add_wisp_qml_module target_name uri_name module_dir source_name)
+    set(extra_sources "")
+    foreach(extra IN LISTS ARGN)
+        list(APPEND extra_sources
+            src/${module_dir}/${extra}.hpp
+            src/${module_dir}/${extra}.cpp
+        )
+    endforeach()
+
     qt_add_qml_module(${target_name}
         URI Wisp.${uri_name}
         OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/${uri_name}
         SOURCES
             src/${module_dir}/${source_name}.hpp
             src/${module_dir}/${source_name}.cpp
+            ${extra_sources}
     )
 
     target_include_directories(${target_name} PRIVATE
@@ -37,7 +47,7 @@ function(add_wisp_qml_module target_name uri_name module_dir source_name)
 endfunction()
 
 # --- wisptime QML module ---
-add_wisp_qml_module(wisptime Time backend/time time)
+add_wisp_qml_module(wisptime Time backend/time time countdownTimer stopwatch)
 
 # --- wispSystem QML module ---
 add_wisp_qml_module(wispsystem System backend/systemMonitor systemMonitor)
