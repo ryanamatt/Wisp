@@ -15,7 +15,7 @@ BarWidgetContainer {
     required property var screen
 
     // ----- Cycling through accessories -----
-    readonly property var accessories: popup.accessories
+    readonly property var accessories: BatterySingleton.accessories
     property int cycleIndex: 0
     readonly property var currentAccessory: accessories.length > 0
         ? accessories[cycleIndex % accessories.length]
@@ -107,7 +107,7 @@ BarWidgetContainer {
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
-            popup.refreshAll()
+            BatterySingleton.refreshAll()
             popup.forceActiveFocus()
             activateFocusGrab()
         } else {
