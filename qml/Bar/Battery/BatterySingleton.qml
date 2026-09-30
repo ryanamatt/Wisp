@@ -144,6 +144,7 @@ Singleton {
 
             return devices
                 .filter(d => d.charge !== null && !isNaN(d.charge))
+                .filter(d => d.charge > 0 || d.charging)
                 .map(d => ({
                     name: d.name,
                     percent: d.charge,
