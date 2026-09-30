@@ -38,13 +38,17 @@ Singleton {
     property bool packagesNotifyEveryDay: envBool("WISP_PACKAGES_NOTIFY_EVERY_DAY", false)
     property bool pendingPackagesNotifyEveryDay: packagesNotifyEveryDay
 
+    property int batteryWarnPerc: parseInt(Quickshell.env("WISP_BATTERY_WARN_PERC")) || 30
+    property int pendingBatteryWarnPerc: batteryWarnPerc
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
                                   pendingWallpaperDirectory !== wallpaperDirectory ||
                                   pendingFont !== font ||
                                   pendingPackagesNotifyOnStartUp !== packagesNotifyOnStartUp ||
-                                  pendingPackagesNotifyEveryDay !== packagesNotifyEveryDay
+                                  pendingPackagesNotifyEveryDay !== packagesNotifyEveryDay ||
+                                  pendingBatteryWarnPerc !== batteryWarnPerc
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -71,6 +75,10 @@ Singleton {
         pendingPackagesNotifyEveryDay = enabled
     }
 
+    function stageBatteryWarnPerc(enabled) {
+        pendingBatteryWarnPerc = enabled
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
@@ -78,6 +86,7 @@ Singleton {
         pendingFont = font
         pendingPackagesNotifyOnStartUp = packagesNotifyOnStartUp
         pendingPackagesNotifyEveryDay = packagesNotifyEveryDay
+        pendingBatteryWarnPerc = batteryWarnPerc
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -93,6 +102,7 @@ Singleton {
         font = pendingFont
         packagesNotifyOnStartUp = pendingPackagesNotifyOnStartUp
         packagesNotifyEveryDay = pendingPackagesNotifyEveryDay
+        batteryWarnPerc = pendingBatteryWarnPerc
 
         try {
             const raw = configFile.text()
@@ -111,6 +121,9 @@ Singleton {
             if (!parsed.packages || typeof parsed.packages !== "object") parsed.packages = {}
             parsed.packages.notifyOnStartUp = packagesNotifyOnStartUp
             parsed.packages.notifyEveryDay = packagesNotifyEveryDay
+
+            if (!parsed.battery || typeof parsed.battery !== "object") parsed.battery = {}
+            parsed.battery.warnPercentage = batteryWarnPerc
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {

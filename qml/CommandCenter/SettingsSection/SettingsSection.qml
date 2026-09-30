@@ -74,6 +74,13 @@ ColumnLayout {
 
             SettingsSubSection {
                 Layout.fillWidth: true
+                sectionLabel: "Battery"
+
+                BatteryWarnPercSetting { Layout.fillWidth: true }
+            }
+
+            SettingsSubSection {
+                Layout.fillWidth: true
                 sectionLabel: "Package Notifications"
 
                 NotifyOnStartUpSetting { Layout.fillWidth: true }

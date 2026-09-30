@@ -16,6 +16,7 @@ inline constexpr const char *kDefaultFont = "Noto Sans";
 inline constexpr const char *kDefaultWallpaperSubdir = "Pictures/wallpapers"; // Relative to $HOME
 inline constexpr bool kDefaultPackagesNotifyOnStartUp = false;
 inline constexpr bool kDefaultPackagesNotifyEveryDay = false;
+inline constexpr const int kDefaultBatteryWarnPerc = 30;
 
 // One entry in the app launcher's grid.
 struct AppEntry {
@@ -36,6 +37,7 @@ struct Config {
     std::string wallpaperDir;
     bool packagesNotifyOnStartUp = kDefaultPackagesNotifyOnStartUp;
     bool packagesNotifyEveryDay = kDefaultPackagesNotifyEveryDay;
+    int batteryWarnPerc = kDefaultBatteryWarnPerc;
 };
 
 // Resolves the default config file location:
