@@ -32,6 +32,7 @@ Scope {
         const first = runnerText.charAt(0);
         if (first === ">") return "command";
         if (first === "=") return "calculator";
+        if (first === ":") return "symbol"
         return "none";
     }
 
@@ -39,6 +40,9 @@ Scope {
     property bool calcSolvable: false
     property string calcExpression: ""
     property real calcAnswer: 0
+
+    // Bottom corners square off as either popup opens.
+    readonly property real popupCorners: Math.max(calcPopup.cornerProgress, symbolPopup.cornerProgress)
 
     function updateCalc() {
         calcSolvable = false;
@@ -80,6 +84,7 @@ Scope {
                 runnerScope.runnerText = ""
                 runnerScope.calcSolvable = false
                 calcPopup.snapClosed()
+                symbolPopup.snapClosed()
             }
         }
 
@@ -94,9 +99,9 @@ Scope {
                 anchors.fill: parent
 
                 radius: rect.width / 5
-                // Bottom corners square off as the calculator popup opens.
-                bottomLeftRadius: rect.height / 2 * (1 - calcPopup.cornerProgress)
-                bottomRightRadius: rect.height / 2 * (1 - calcPopup.cornerProgress)
+                // Bottom corners square off as a popup opens.
+                bottomLeftRadius: rect.height / 2 * (1 - runnerScope.popupCorners)
+                bottomRightRadius: rect.height / 2 * (1 - runnerScope.popupCorners)
 
                 color: Colors.colors.backgroundAlt
                 border.color: Colors.colors.background
@@ -162,6 +167,20 @@ Scope {
                                 runnerScope.updateCalc()
                             }
 
+                            // Symbol mode: the text field keeps focus, so
+                            // forward navigation keys to the popup.
+                            Keys.onPressed: event => {
+                                if (runnerScope.mode !== "symbol") return;
+                                switch (event.key) {
+                                case Qt.Key_Down:    symbolPopup.move(0, 1);  event.accepted = true; break;
+                                case Qt.Key_Up:      symbolPopup.move(0, -1); event.accepted = true; break;
+                                case Qt.Key_Tab:     symbolPopup.move(1, 0);  event.accepted = true; break;
+                                case Qt.Key_Backtab: symbolPopup.move(-1, 0); event.accepted = true; break;
+                                case Qt.Key_Return:
+                                case Qt.Key_Enter:   symbolPopup.activate();  event.accepted = true; break;
+                                }
+                            }
+
                         }
                         
                     }
@@ -182,6 +201,17 @@ Scope {
         open: runner.visible && runnerScope.calcSolvable
         expression: runnerScope.calcExpression
         answer: runnerScope.calcAnswer
+    }
+
+    RunnerSymbolPopup {
+        id: symbolPopup
+        screen: runnerScope.targetScreen
+        runnerWidth: runnerScope.runnerWidth
+        runnerHeight: runnerScope.runnerHeight
+        runnerTopMargin: runner.margins.top
+        open: runner.visible && runnerScope.mode === "symbol"
+        query: runnerScope.mode === "symbol" ? runnerScope.runnerText.slice(1) : ""
+        onSymbolCopied: IpcState.runner.close()
     }
 
 }

@@ -10,7 +10,7 @@ import "../Config"
 Rectangle {
     id: root
 
-    // "none" | "command" | "calculator"
+    // "none" | "command" | "calculator" | "symbol"
     property string mode: "none"
 
     // The mode currently drawn. It lags behind `mode` by half of the switch
@@ -19,8 +19,9 @@ Rectangle {
 
     readonly property color modeColor: {
         switch (shownMode) {
-        case "command":    return Colors.colors.success;
+        case "command":    return Colors.colors.green;
         case "calculator": return Colors.colors.orange;
+        case "symbol":     return Colors.colors.purple
         default:           return Colors.colors.foregroundSubtle;
         }
     }
@@ -152,6 +153,76 @@ Rectangle {
                 loops: Animation.Infinite
                 NumberAnimation { target: equalsBars; property: "spacing"; to: 6; duration: 700; easing.type: Easing.InOutSine }
                 NumberAnimation { target: equalsBars; property: "spacing"; to: 3; duration: 700; easing.type: Easing.InOutSine }
+            }
+        }
+
+        // ---- Symbol & Emoji: a twinkling sparkle with an orbiting speck ----
+        Item {
+            id: symbolSparkle
+            anchors.centerIn: parent
+            visible: root.shownMode === "symbol"
+            width: 20
+            height: 20
+
+            // The four-point star. Every 1.4s it twirls a quarter turn while
+            // pinching in and popping back out, like a glint of light.
+            Item {
+                id: sparkleBody
+                anchors.fill: parent
+
+                Rectangle { anchors.centerIn: parent; width: 3; height: 16; radius: 1.5; color: root.modeColor }
+                Rectangle { anchors.centerIn: parent; width: 16; height: 3; radius: 1.5; color: root.modeColor }
+                Rectangle { anchors.centerIn: parent; width: 2; height: 10; radius: 1; rotation: 45; color: root.modeColor; opacity: 0.6 }
+                Rectangle { anchors.centerIn: parent; width: 2; height: 10; radius: 1; rotation: -45; color: root.modeColor; opacity: 0.6 }
+            }
+
+            SequentialAnimation {
+                running: symbolSparkle.visible
+                loops: Animation.Infinite
+
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: sparkleBody; property: "rotation"
+                        from: 0; to: 90; duration: 700; easing.type: Easing.InOutCubic
+                    }
+                    SequentialAnimation {
+                        NumberAnimation { target: sparkleBody; property: "scale"; to: 0.65; duration: 350; easing.type: Easing.InQuad }
+                        NumberAnimation { target: sparkleBody; property: "scale"; to: 1.0; duration: 350; easing.type: Easing.OutBack; easing.overshoot: 2.5 }
+                    }
+                }
+                PauseAnimation { duration: 700 }
+            }
+
+            // A tiny speck that circles the sparkle and twinkles as it goes.
+            Item {
+                id: orbit
+                anchors.centerIn: parent
+                width: 26
+                height: 26
+
+                Rectangle {
+                    id: speck
+                    x: (parent.width - width) / 2
+                    y: 0
+                    width: 3
+                    height: 3
+                    radius: 1.5
+                    color: root.modeColor
+
+                    SequentialAnimation {
+                        running: symbolSparkle.visible
+                        loops: Animation.Infinite
+                        NumberAnimation { target: speck; property: "opacity"; to: 0.25; duration: 400; easing.type: Easing.InOutSine }
+                        NumberAnimation { target: speck; property: "opacity"; to: 1.0; duration: 400; easing.type: Easing.InOutSine }
+                    }
+                }
+
+                NumberAnimation on rotation {
+                    running: symbolSparkle.visible
+                    from: 0; to: 360
+                    duration: 2800
+                    loops: Animation.Infinite
+                }
             }
         }
     }
