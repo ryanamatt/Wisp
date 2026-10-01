@@ -26,6 +26,7 @@ void printUsage(const char *argv0) {
                  "  open <target>       Open a widget/popup, e.g. `wisp open themeSwitcher`\n"
                  "  close <target>      Close a widget/popup, e.g. `wisp close calendar`\n"
                  "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
+                 "  lock                Lock the screen\n"
                  "\n"
                  "Options:\n"
                  "  -d                  Disown: return control to the shell immediately\n"
@@ -149,6 +150,12 @@ ParsedArgs parse(int argc, char *argv[]) {
                     }
                 }
             }
+            continue;
+        }
+        if (arg == "lock") {
+            parsed.command = Command::Ipc;
+            parsed.ipcTarget = "lock";
+            parsed.ipcAction = "lock";
             continue;
         }
         if (arg == "open" || arg == "close" || arg == "toggle") {

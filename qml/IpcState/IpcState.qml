@@ -24,4 +24,6 @@ Singleton {
     property WindowState screenshot: WindowState { ipcName: "screenshot" }
     property WindowState runner: WindowState { ipcName: "runner" }
     property WindowState timer: WindowState { ipcName: "timer" }
+
+    property LockState lockScreen: LockState { ipcName: "lock" }
 }
