@@ -176,7 +176,7 @@ Scope {
                 source: screenshot
                 blurEnabled: true
                 blur: 1.0
-                blurMax: 50
+                blurMax: 100
                 visible: screenshot.status === Image.Ready
             }
 
@@ -291,7 +291,7 @@ Scope {
                             anchors.rightMargin: 16
                             verticalAlignment: TextInput.AlignVCenter
                             echoMode: TextInput.Password
-                            passwordCharacter: "*"
+                            passwordCharacter: "∗"
                             color: Colors.colors.foreground
                             selectionColor: Colors.colors.selected
                             selectedTextColor: Colors.colors.foreground
