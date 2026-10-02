@@ -9,6 +9,7 @@ import "CommandCenter"
 import "Screenshot"
 import "Runner"
 import "Timer"
+import "LockScreen"
 import "OSD"
 
 Scope {
@@ -27,6 +28,8 @@ Scope {
     Runner {}
 
     Timer {}
+
+    LockScreen {}
 
     OSDBrightness {}
     OSDVolume {}

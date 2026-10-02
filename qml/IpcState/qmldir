@@ -1,3 +1,4 @@
 singleton IpcState IpcState.qml
 PopupState PopupState.qml
 WindowState WindowState.qml
+LockState LockState.qml
