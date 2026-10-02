@@ -58,6 +58,9 @@ add_wisp_qml_module(wispbrightness Brightness backend/brightness brightness)
 # --- wispAudio QML module ---
 add_wisp_qml_module(wispaudio Audio backend/audio audio)
 
+# --- wispBattery QML module ---
+add_wisp_qml_module(wispbattery Battery backend/battery battery)
+
 # --- wispCalendar QML module ---
 add_wisp_qml_module(wispcalendar Calendar backend/calendar calendar)
 
