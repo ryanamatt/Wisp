@@ -5,6 +5,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Wisp.Battery
 import Wisp.Time
 
 Singleton {
@@ -103,6 +104,7 @@ Singleton {
         packagesNotifyOnStartUp = pendingPackagesNotifyOnStartUp
         packagesNotifyEveryDay = pendingPackagesNotifyEveryDay
         batteryWarnPerc = pendingBatteryWarnPerc
+        Battery.warnPercent = batteryWarnPerc
 
         try {
             const raw = configFile.text()

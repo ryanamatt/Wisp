@@ -8,6 +8,7 @@ import "../../IpcState"
 import "../../Colors"
 import "../../Config"
 import "../../Icons"
+import Wisp.Battery
 
 BarWidgetContainer {
     id: batteryWidget
@@ -15,7 +16,7 @@ BarWidgetContainer {
     required property var screen
 
     // ----- Cycling through accessories -----
-    readonly property var accessories: BatterySingleton.accessories
+    readonly property var accessories: Battery.accessories
     property int cycleIndex: 0
     readonly property var currentAccessory: accessories.length > 0
         ? accessories[cycleIndex % accessories.length]
@@ -107,7 +108,7 @@ BarWidgetContainer {
 
     onIsOpenHereChanged: {
         if (isOpenHere) {
-            BatterySingleton.refreshAll()
+            Battery.refreshAll()
             popup.forceActiveFocus()
             activateFocusGrab()
         } else {

@@ -7,6 +7,7 @@ import "../../Components"
 import "../../Colors"
 import "../../Config"
 import "../../Icons"
+import Wisp.Battery
 
 BarPopup {
     id: batteryPopup
@@ -15,7 +16,7 @@ BarPopup {
 
     Keys.onEscapePressed: batteryPopup.requestClose()
 
-    readonly property var accessories: BatterySingleton.accessories
+    readonly property var accessories: Battery.accessories
 
     ColumnLayout {
         anchors.left: parent.left
