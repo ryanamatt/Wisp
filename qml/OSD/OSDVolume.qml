@@ -1,13 +1,19 @@
 // qml/OSD/OSDVolume.qml
 
+import QtQuick
 import "../Icons"
 import Wisp.Audio
 
 OSDBase {
+    id: root
+    
     readonly property bool muted: Audio.sinkMuted
     readonly property int volumePercent: Math.round(Audio.sinkVolume * 100)
 
-    whenVisible: OSDSingleton.isVolumeOSDVisible
+    Connections {
+        target: Audio
+        function onSinkChanged() { root.show() }
+    }
 
     icon: {
         if (muted || volumePercent === 0)
