@@ -12,6 +12,7 @@ import "../Config"
 Scope {
     id: osdScope
 
+    property int duration: 1000
     property bool whenVisible: false
     property string icon: ""
     property bool showBar: true
@@ -25,6 +26,22 @@ Scope {
                 return Quickshell.screens[i];
         }
         return Quickshell.screens[0];
+    }
+
+    property bool _ready: false
+    Component.onCompleted: Qt.callLater(() => _ready = true)
+
+    function show() {
+        if (!_ready) return
+        whenVisible = true
+        hideTimer.restart()
+    }
+
+    Timer {
+        id: hideTimer
+        interval: osdScope.duration
+        repeat: false
+        onTriggered: osdScope.whenVisible = false
     }
 
     PanelWindow {
