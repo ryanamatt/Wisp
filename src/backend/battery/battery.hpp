@@ -7,6 +7,7 @@
 #include <QQmlEngine>
 #include <QSet>
 #include <QString>
+#include <QStringList>
 #include <QTimer>
 #include <QVariantList>
 #include <QVariantMap>
@@ -30,6 +31,16 @@ class Battery : public QObject {
     // Percentage at or below which a "Low Battery" notification is sent.
     Q_PROPERTY(int warnPercent READ warnPercent WRITE setWarnPercent NOTIFY warnPercentChanged)
 
+    // ----- Power profiles (powerprofilesctl) -----
+    Q_PROPERTY(bool hasPowerProfiles READ hasPowerProfiles NOTIFY powerProfileChanged)
+    // "power-saver", "balanced" or "performance". Empty until the first read succeeds.
+    Q_PROPERTY(QString powerProfile READ powerProfile NOTIFY powerProfileChanged)
+    // Profiles this machine supports (performance is missing on some hardware). Empty if unknown.
+    Q_PROPERTY(QStringList availableProfiles READ availableProfiles NOTIFY availableProfilesChanged)
+
+    // When true, the laptop battery dropping to warnPercent switches to power-saver (once per low episode).
+    Q_PROPERTY(bool autoPowerSaver READ autoPowerSaver WRITE setAutoPowerSaver NOTIFY autoPowerSaverChanged)
+
 public:
     explicit Battery(QObject *parent = nullptr);
 
@@ -46,16 +57,36 @@ public:
         return m_warnPercent;
     }
 
+    bool hasPowerProfiles() const {
+        return !m_powerProfile.isEmpty();
+    }
+    QString powerProfile() const {
+        return m_powerProfile;
+    }
+    QStringList availableProfiles() const {
+        return m_availableProfiles;
+    }
+    bool autoPowerSaver() const {
+        return m_autoPowerSaver;
+    }
+
     void setWarnPercent(int percent);
+    void setAutoPowerSaver(bool enabled);
 
 public slots:
     // Kicks off every probe. Safe to call while probes are still running (those are skipped).
     void refreshAll();
 
+    // Accepts "power-saver", "balanced" or "performance"; anything else is ignored.
+    void setPowerProfile(const QString &profile);
+
 signals:
     void accessoriesChanged();
     void laptopBatteryChanged();
     void warnPercentChanged();
+    void powerProfileChanged();
+    void availableProfilesChanged();
+    void autoPowerSaverChanged();
 
 private:
     static constexpr int kPollMs = 15000;
@@ -75,6 +106,11 @@ private:
     void onRazerFinished();
     void onHeadsetFinished();
     void onBluetoothFinished();
+    void onProfileGetFinished();
+    void onProfileListFinished();
+
+    // Switches to power-saver the first time the laptop battery goes low, if enabled.
+    void checkAutoSwitch();
 
     static std::vector<Device> parseRazerList(const QString &text);
 
@@ -89,6 +125,8 @@ private:
     QProcess m_razerProbe;
     QProcess m_headsetProbe;
     QProcess m_bluetoothProbe;
+    QProcess m_profileGetProbe;
+    QProcess m_profileListProbe;
 
     std::vector<Device> m_system;
     std::vector<Device> m_razer;
@@ -103,4 +141,16 @@ private:
     QVariantMap m_laptopBattery;
 
     int m_warnPercent = kDefaultWarnPercent;
+
+    QString m_powerProfile;
+    QStringList m_availableProfiles;
+    bool m_autoPowerSaver = false;
+
+    // True once auto-switch has fired for the current low-battery episode, so a manual switch back to
+    // balanced/performance isn't immediately overridden.
+    bool m_autoSwitched = false;
+
+    // `powerprofilesctl set` runs in flight. While any are pending, `get` results are stale and ignored.
+    int m_pendingProfileSets = 0;
+    bool m_profileRefetch = false;
 };

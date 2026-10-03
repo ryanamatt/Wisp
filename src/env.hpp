@@ -16,6 +16,7 @@ inline constexpr const char *kWallpaperDir = "WISP_WALLPAPER_DIR";
 inline constexpr const char *kPackagesNotifyOnStartUp = "WISP_PACKAGES_NOTIFY_ON_STARTUP";
 inline constexpr const char *kPackagesNotifyEveryDay = "WISP_PACKAGES_NOTIFY_EVERY_DAY";
 inline constexpr const char *kBatteryWarnPerc = "WISP_BATTERY_WARN_PERC";
+inline constexpr const char *kBatteryAutoPowerSaver = "WISP_BATTERY_AUTO_POWER_SAVER";
 
 // Other
 inline constexpr const char *kShareDir = "WISP_SHARE_DIR";

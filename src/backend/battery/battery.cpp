@@ -8,6 +8,8 @@
 #include <QRegularExpression>
 #include <algorithm>
 
+#include "env.hpp"
+
 namespace {
 
 constexpr const char *kSystemIcon = "laptop";
@@ -35,17 +37,32 @@ constexpr const char *kBluetoothScript =
     "if [ -n \"$batt\" ] && [ -n \"$name\" ]; then echo \"$name|$batt\"; fi; "
     "done";
 
+constexpr const char *kProfileGetScript = "powerprofilesctl get 2>/dev/null";
+constexpr const char *kProfileListScript = "powerprofilesctl list 2>/dev/null";
+
+constexpr const char *kPowerSaver = "power-saver";
+
+const QStringList &knownProfiles() {
+    static const QStringList profiles = {"power-saver", "balanced", "performance"};
+    return profiles;
+}
+
 } // namespace
 
 Battery::Battery(QObject *parent) : QObject(parent) {
-    // Same default as Config.qml: WISP_BATTERY_WARN_PERC, falling back to 30 when unset or invalid.
-    const int envWarn = qEnvironmentVariableIntValue("WISP_BATTERY_WARN_PERC");
+    // Same defaults as Config.qml: WISP_BATTERY_WARN_PERC falls back to 30 when unset or invalid.
+    const int envWarn = qEnvironmentVariableIntValue(wisp::env::kBatteryWarnPerc);
     m_warnPercent = envWarn > 0 ? envWarn : kDefaultWarnPercent;
+
+    const QString envAuto = qEnvironmentVariable(wisp::env::kBatteryAutoPowerSaver);
+    m_autoPowerSaver = envAuto == "true" || envAuto == "1";
 
     connect(&m_systemProbe, &QProcess::finished, this, &Battery::onSystemFinished);
     connect(&m_razerProbe, &QProcess::finished, this, &Battery::onRazerFinished);
     connect(&m_headsetProbe, &QProcess::finished, this, &Battery::onHeadsetFinished);
     connect(&m_bluetoothProbe, &QProcess::finished, this, &Battery::onBluetoothFinished);
+    connect(&m_profileGetProbe, &QProcess::finished, this, &Battery::onProfileGetFinished);
+    connect(&m_profileListProbe, &QProcess::finished, this, &Battery::onProfileListFinished);
 
     // finished() isn't emitted when bash itself can't start, so treat that as "no devices".
     connect(&m_systemProbe, &QProcess::errorOccurred, this, [this](QProcess::ProcessError e) {
@@ -76,11 +93,23 @@ void Battery::setWarnPercent(int percent) {
     rebuild();
 }
 
+void Battery::setAutoPowerSaver(bool enabled) {
+    if (enabled == m_autoPowerSaver) return;
+    m_autoPowerSaver = enabled;
+    emit autoPowerSaverChanged();
+    checkAutoSwitch();
+}
+
 void Battery::refreshAll() {
     startProbe(&m_systemProbe, kSystemScript);
     startProbe(&m_razerProbe, kRazerScript);
     startProbe(&m_headsetProbe, kHeadsetScript);
     startProbe(&m_bluetoothProbe, kBluetoothScript);
+
+    // The profile can be changed by other tools, so re-read it every refresh. The supported list is static, so
+    // only keep asking until we've got one.
+    startProbe(&m_profileGetProbe, kProfileGetScript);
+    if (m_availableProfiles.isEmpty()) startProbe(&m_profileListProbe, kProfileListScript);
 }
 
 void Battery::startProbe(QProcess *proc, const QString &script) {
@@ -238,6 +267,102 @@ void Battery::onBluetoothFinished() {
     rebuild();
 }
 
+// ----- Power profiles -----
+
+void Battery::onProfileGetFinished() {
+    // A set is in flight, so this read may predate it. The set's completion triggers a fresh read.
+    if (m_pendingProfileSets > 0) return;
+
+    if (m_profileRefetch) {
+        m_profileRefetch = false;
+        startProbe(&m_profileGetProbe, kProfileGetScript);
+        return;
+    }
+
+    const QString profile = QString::fromUtf8(m_profileGetProbe.readAllStandardOutput()).trimmed();
+    if (profile != m_powerProfile) {
+        m_powerProfile = profile;
+        emit powerProfileChanged();
+    }
+
+    checkAutoSwitch();
+}
+
+void Battery::onProfileListFinished() {
+    // Profile names sit at the start of a line, optionally marked with "*" for the active one, e.g.
+    //   "* balanced:"
+    //   "  power-saver:"
+    // Their indented detail lines have values after the colon, so requiring end-of-line skips them.
+    static const QRegularExpression re(R"(^\s*\*?\s*([a-z-]+):\s*$)", QRegularExpression::MultilineOption);
+
+    const QString text = QString::fromUtf8(m_profileListProbe.readAllStandardOutput());
+
+    QStringList profiles;
+    auto it = re.globalMatch(text);
+    while (it.hasNext()) {
+        const QString name = it.next().captured(1);
+        if (knownProfiles().contains(name) && !profiles.contains(name)) profiles.append(name);
+    }
+
+    if (profiles != m_availableProfiles) {
+        m_availableProfiles = profiles;
+        emit availableProfilesChanged();
+    }
+}
+
+void Battery::setPowerProfile(const QString &profile) {
+    if (!knownProfiles().contains(profile)) return;
+    if (profile == m_powerProfile) return;
+
+    // Update immediately so the UI responds; the read after the set corrects it if the set failed.
+    m_powerProfile = profile;
+    emit powerProfileChanged();
+
+    auto *proc = new QProcess(this);
+    ++m_pendingProfileSets;
+
+    auto done = [this, proc]() {
+        proc->deleteLater();
+        if (--m_pendingProfileSets > 0) return;
+
+        if (m_profileGetProbe.state() != QProcess::NotRunning) {
+            m_profileRefetch = true; // the running read may predate the set
+        } else {
+            startProbe(&m_profileGetProbe, kProfileGetScript);
+        }
+    };
+
+    connect(proc, &QProcess::finished, this, done);
+    connect(proc, &QProcess::errorOccurred, this, [done](QProcess::ProcessError e) {
+        if (e == QProcess::FailedToStart) done();
+    });
+
+    proc->start("powerprofilesctl", {"set", profile});
+}
+
+void Battery::checkAutoSwitch() {
+    if (!m_autoPowerSaver || m_system.empty()) {
+        m_autoSwitched = false;
+        return;
+    }
+
+    // Wait for the first profile read so we don't "switch" to what is already active.
+    if (m_powerProfile.isEmpty()) return;
+
+    const Device &laptop = m_system.front();
+    const bool low = !laptop.charging && laptop.percent <= m_warnPercent;
+
+    if (!low) {
+        m_autoSwitched = false;
+        return;
+    }
+
+    if (m_autoSwitched) return;
+    m_autoSwitched = true;
+
+    if (m_powerProfile != kPowerSaver) setPowerProfile(kPowerSaver);
+}
+
 // ----- Publishing -----
 
 QVariantMap Battery::toMap(const Device &dev) const {
@@ -304,4 +429,6 @@ void Battery::rebuild() {
         m_laptopBattery = laptop;
         emit laptopBatteryChanged();
     }
+
+    checkAutoSwitch();
 }

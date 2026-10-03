@@ -13,15 +13,20 @@ Anything in the list is not in a released build and once it is will be removed f
 	- [x] Add more colors to colors.json
 	- Use Matugen to try to match wallpaper to nearest accent color
 - [ ] Custom Command Runner
-- [ ] Calculator (Preferabbly Graphing)
+	- [x] Calculator Mode
+	- [x] Symbol/Emoji Picker Mode
+	- [ ] Run Actual Commands
+
+- [ ] Calculator Window (Preferabbly Graphing)
+	- Distinct from Command Runner cause it is graphing
 - [ ] Add an Arcade to play Games
 - [ ] Custom Notification Listener
-- [ ] Some sort of Timer, Stopwatch
+- [x] Some sort of Timer, Stopwatch
 - [ ] A Scratch pad Widget
 - [ ] Global Key Binds
 - [ ] A Stack that remembers Hyprland Workspaces. 
 	- This would be nice to use in the Workspace Switcher so it auto goes to previous workspace.
-- [ ] Send Notifications more effectively
+- [x] Send Notifications more effectively
 	- When Battery gets too low
 	- Like notify on startup if there are packages to update. (could be config toggled)
 - [ ] Have a Wallpaper Cycle to change wallpapers on a timer
@@ -37,12 +42,10 @@ Anything in the list is not in a released build and once it is will be removed f
 - [ ] A Game Mode Toggle
 - [ ] Video Recording via Screenshot Window
 	- Video Tab just says Coming Soon so actually implementing this
-- [ ] Emoji & Symbol Picker
 - [ ] Auto App Discovery for App Launcher
 	- Keep Config but they go ahead of auto discover
 	- Toggleable Setting
 	- Read .desktop files
 - [ ] GUI to View Log File
 	- Possibly in Command Center
-- [ ] Custom Lock Screen
-- [ ] Custom 
+- [x] Custom Lock Screen

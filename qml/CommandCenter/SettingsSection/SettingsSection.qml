@@ -77,6 +77,7 @@ ColumnLayout {
                 sectionLabel: "Battery"
 
                 BatteryWarnPercSetting { Layout.fillWidth: true }
+                BatteryAutoPowerSaverSetting { Layout.fillWidth: true }
             }
 
             SettingsSubSection {
