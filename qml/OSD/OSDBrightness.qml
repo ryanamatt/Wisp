@@ -9,11 +9,7 @@ OSDBase {
 
     Connections {
         target: Brightness
-        function onBrightnessChanged() {
-            if (!root._ready) return
-            root.isBrightnessOSDVisible = true
-            brightnessOSDVisibleTimer.restart()
-        }
+        function onBrightnessChanged() { root.show() }
     }
 
     icon: Icons.getIcon("brightness")
