@@ -18,10 +18,15 @@ BarPopup {
 
     readonly property var accessories: Battery.accessories
 
+    // Order matters: it is the left-to-right order of the toggle.
+    readonly property var profiles: [
+        { id: "power-saver", label: "Power Saver" },
+        { id: "balanced", label: "Balanced" },
+        { id: "performance", label: "Performance" }
+    ]
+
     ColumnLayout {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
+        anchors.fill: parent
         anchors.margins: 12
         spacing: 10
 
@@ -113,6 +118,117 @@ BarPopup {
             color: Colors.colors.foregroundMuted
             font.family: Config.font
             font.pixelSize: 12
+        }
+
+        // Pushes the power profile section to the bottom of the popup.
+        Item {
+            Layout.fillHeight: true
+        }
+
+        // ----- Power profile -----
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 8
+            visible: Battery.hasPowerProfiles
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Colors.colors.border
+            }
+
+            Text {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter 
+                text: "Power Profile"
+                color: Colors.colors.foregroundMuted
+                font.family: Config.font
+                font.pixelSize: 11
+            }
+
+            Rectangle {
+                id: profileSwitch
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
+                radius: height / 2
+                color: Colors.colors.surfaceAlt
+                border.width: 1
+                border.color: Colors.colors.border
+
+                readonly property int inset: 3
+                readonly property real cellWidth: (width - inset * 2) / batteryPopup.profiles.length
+                readonly property int currentIndex: {
+                    for (let i = 0; i < batteryPopup.profiles.length; i++) {
+                        if (batteryPopup.profiles[i].id === Battery.powerProfile)
+                            return i
+                    }
+                    return -1
+                }
+
+                // Sliding highlight behind the selected option.
+                Rectangle {
+                    visible: profileSwitch.currentIndex >= 0
+                    x: profileSwitch.inset + Math.max(0, profileSwitch.currentIndex) * profileSwitch.cellWidth
+                    y: profileSwitch.inset
+                    width: profileSwitch.cellWidth
+                    height: profileSwitch.height - profileSwitch.inset * 2
+                    radius: height / 2
+                    color: Colors.colors.accent
+
+                    Behavior on x {
+                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                    }
+                }
+
+                Repeater {
+                    model: batteryPopup.profiles
+
+                    delegate: Item {
+                        id: cell
+                        required property var modelData
+                        required property int index
+
+                        readonly property bool selected: cell.index === profileSwitch.currentIndex
+                        // If the supported list couldn't be read, don't lock anything out.
+                        readonly property bool supported: Battery.availableProfiles.length === 0
+                            || Battery.availableProfiles.indexOf(cell.modelData.id) >= 0
+
+                        x: profileSwitch.inset + cell.index * profileSwitch.cellWidth
+                        y: profileSwitch.inset
+                        width: profileSwitch.cellWidth
+                        height: profileSwitch.height - profileSwitch.inset * 2
+                        opacity: cell.supported ? 1.0 : 0.4
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: height / 2
+                            color: Colors.colors.hover
+                            visible: cellMouse.containsMouse && !cell.selected && cell.supported
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            width: parent.width - 8
+                            horizontalAlignment: Text.AlignHCenter
+                            text: cell.modelData.label
+                            elide: Text.ElideRight
+                            color: cell.selected ? Colors.colors.onAccent : Colors.colors.foregroundMuted
+                            font.family: Config.font
+                            font.pixelSize: 11
+                            font.bold: cell.selected
+                        }
+
+                        MouseArea {
+                            id: cellMouse
+                            anchors.fill: parent
+                            enabled: cell.supported
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Battery.setPowerProfile(cell.modelData.id)
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ inline constexpr const char *kDefaultWallpaperSubdir = "Pictures/wallpapers"; //
 inline constexpr bool kDefaultPackagesNotifyOnStartUp = false;
 inline constexpr bool kDefaultPackagesNotifyEveryDay = false;
 inline constexpr const int kDefaultBatteryWarnPerc = 30;
+inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
 
 // One entry in the app launcher's grid.
 struct AppEntry {
@@ -38,6 +39,7 @@ struct Config {
     bool packagesNotifyOnStartUp = kDefaultPackagesNotifyOnStartUp;
     bool packagesNotifyEveryDay = kDefaultPackagesNotifyEveryDay;
     int batteryWarnPerc = kDefaultBatteryWarnPerc;
+    bool batteryAutoPowerSaver = kDefaultBatteryAutoPowerSaver;
 };
 
 // Resolves the default config file location:

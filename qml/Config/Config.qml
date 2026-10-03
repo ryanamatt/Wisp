@@ -42,6 +42,9 @@ Singleton {
     property int batteryWarnPerc: parseInt(Quickshell.env("WISP_BATTERY_WARN_PERC")) || 30
     property int pendingBatteryWarnPerc: batteryWarnPerc
 
+    property bool batteryAutoPowerSaver: envBool("WISP_BATTERY_AUTO_POWER_SAVER", false)
+    property bool pendingBatteryAutoPowerSaver: batteryAutoPowerSaver
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
@@ -49,7 +52,8 @@ Singleton {
                                   pendingFont !== font ||
                                   pendingPackagesNotifyOnStartUp !== packagesNotifyOnStartUp ||
                                   pendingPackagesNotifyEveryDay !== packagesNotifyEveryDay ||
-                                  pendingBatteryWarnPerc !== batteryWarnPerc
+                                  pendingBatteryWarnPerc !== batteryWarnPerc ||
+                                  pendingBatteryAutoPowerSaver !== batteryAutoPowerSaver
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -80,6 +84,10 @@ Singleton {
         pendingBatteryWarnPerc = enabled
     }
 
+    function stageBatteryAutoPowerSaver(enabled) {
+        pendingBatteryAutoPowerSaver = enabled
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
@@ -88,6 +96,7 @@ Singleton {
         pendingPackagesNotifyOnStartUp = packagesNotifyOnStartUp
         pendingPackagesNotifyEveryDay = packagesNotifyEveryDay
         pendingBatteryWarnPerc = batteryWarnPerc
+        pendingBatteryAutoPowerSaver = batteryAutoPowerSaver
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -105,6 +114,8 @@ Singleton {
         packagesNotifyEveryDay = pendingPackagesNotifyEveryDay
         batteryWarnPerc = pendingBatteryWarnPerc
         Battery.warnPercent = batteryWarnPerc
+        batteryAutoPowerSaver = pendingBatteryAutoPowerSaver
+        Battery.autoPowerSaver = batteryAutoPowerSaver
 
         try {
             const raw = configFile.text()
@@ -126,6 +137,7 @@ Singleton {
 
             if (!parsed.battery || typeof parsed.battery !== "object") parsed.battery = {}
             parsed.battery.warnPercentage = batteryWarnPerc
+            parsed.battery.autoPowerSaver = batteryAutoPowerSaver
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {

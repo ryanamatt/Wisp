@@ -112,6 +112,7 @@ void exportEnv(const Config &cfg) {
     setenv(wisp::env::kPackagesNotifyOnStartUp, cfg.packagesNotifyOnStartUp ? "true" : "false", 1);
     setenv(wisp::env::kPackagesNotifyEveryDay, cfg.packagesNotifyEveryDay ? "true" : "false", 1);
     setenv(wisp::env::kBatteryWarnPerc, std::to_string(cfg.batteryWarnPerc).c_str(), 1);
+    setenv(wisp::env::kBatteryAutoPowerSaver, cfg.batteryAutoPowerSaver ? "true" : "false", 1);
 }
 
 } // namespace
@@ -198,6 +199,7 @@ Config load(const std::string &path) {
     if (j.contains("battery") && j["battery"].is_object()) {
         const auto &battery = j["battery"];
         readInt(battery, "warnPercentage", "battery.warnPercentage", cfg.batteryWarnPerc); // <-- Updated key name
+        readBool(battery, "autoPowerSaver", "battery.autoPowerSaver", cfg.batteryAutoPowerSaver);
     }
  
     if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
