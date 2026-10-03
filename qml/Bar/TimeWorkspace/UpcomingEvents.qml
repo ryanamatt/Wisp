@@ -47,6 +47,7 @@ ColumnLayout {
         visible: Calendar.error.length > 0
         Layout.fillWidth: true
         text: Calendar.error
+        textFormat: Text.PlainText
         color: Colors.colors.error
         wrapMode: Text.WordWrap
         font.pixelSize: 11
@@ -92,6 +93,7 @@ ColumnLayout {
                     Text {
                         Layout.fillWidth: true
                         text: modelData.title
+                        textFormat: Text.PlainText
                         color: Colors.colors.foreground
                         font.pixelSize: 12
                         font.family: Config.font
