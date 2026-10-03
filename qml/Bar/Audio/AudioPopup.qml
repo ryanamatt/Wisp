@@ -268,6 +268,7 @@ BarPopup {
                         anchors.centerIn: parent
                         visible: artImage.status !== Image.Ready
                         text: "Unknown"
+                        textFormat: Text.PlainText
                         font.family: Config.font
                         font.pixelSize: 20
                         color: Colors.colors.foregroundMuted
@@ -281,6 +282,7 @@ BarPopup {
                     Text {
                         Layout.fillWidth: true
                         text: audioPopup.hasPlayer ? (audioPopup.activePlayer.trackTitle || "Unknown Title") : ""
+                        textFormat: Text.PlainText
                         color: Colors.colors.foreground
                         font.family: Config.font
                         font.pixelSize: 13
@@ -291,6 +293,7 @@ BarPopup {
                     Text {
                         Layout.fillWidth: true
                         text: audioPopup.hasPlayer ? (audioPopup.activePlayer.trackArtist || "Unknown Artist") : ""
+                        textFormat: Text.PlainText
                         color: Colors.colors.foregroundMuted
                         font.family: Config.font
                         font.pixelSize: 11
@@ -321,6 +324,7 @@ BarPopup {
 
                 Text {
                     text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.position) : "0:00"
+                    textFormat: Text.PlainText
                     color: Colors.colors.foregroundMuted
                     font.family: Config.font
                     font.pixelSize: 10
@@ -383,6 +387,7 @@ BarPopup {
 
                 Text {
                     text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.length) : "0:00"
+                    textFormat: Text.PlainText
                     color: Colors.colors.foregroundMuted
                     font.family: Config.font
                     font.pixelSize: 10
@@ -396,6 +401,7 @@ BarPopup {
             Layout.bottomMargin: 4
             visible: !audioPopup.hasPlayer
             text: "Nothing playing"
+            textFormat: Text.PlainText
             horizontalAlignment: Text.AlignHCenter
             color: Colors.colors.foregroundMuted
             font.family: Config.font
