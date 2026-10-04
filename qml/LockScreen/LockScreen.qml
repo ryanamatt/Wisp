@@ -176,7 +176,7 @@ Scope {
                 source: screenshot
                 blurEnabled: true
                 blur: 1.0
-                blurMax: 100
+                blurMax: 120
                 visible: screenshot.status === Image.Ready
             }
 
