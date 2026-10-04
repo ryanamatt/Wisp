@@ -1,12 +1,18 @@
 // qml/OSD/OSDMic.qml
 
+import QtQuick
 import "../Icons"
 import Wisp.Audio
 
 OSDBase {
+    id: root
+    
     readonly property bool muted: Audio.sourceMuted
 
-    whenVisible: OSDSingleton.isMicOSDVisible
+    Connections {
+        target: Audio
+        function onSourceChanged() { root.show() }
+    }
 
     icon: muted ? Icons.getIcon("audio/micOff") : Icons.getIcon("audio/mic")
 
