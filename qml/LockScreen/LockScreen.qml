@@ -345,29 +345,38 @@ Scope {
 
             } // Top Column Layout
 
-            // Laptop battery indicator, top of the screen. Hidden on machines
-            // without a laptop battery. Mirrors the bar widget: bolt while
-            // charging, laptop icon, then the percentage.
-            Item {
+            // Laptop battery pill, top of the screen. Hidden on machines without
+            // a laptop battery. Mirrors the bar widget: bolt while charging,
+            // laptop icon, then the percentage.
+            Rectangle {
                 id: batteryBox
                 visible: Battery.hasLaptopBattery
 
                 // Horizontal position as a fraction of screen width (0.33 is
                 // roughly a third in). The box is centered on that point.
-                readonly property real xFraction: 1 / 3
+                readonly property real xFraction: 1 / 2
                 readonly property bool charging: !!Battery.laptopBattery.charging
                 readonly property int percent: Battery.laptopBattery.percent !== undefined
                     ? Battery.laptopBattery.percent
                     : 0
                 readonly property real iconSize: Math.round(lockSurface.screenW * 0.014)
 
+                // Pill styling matches the password box.
+                readonly property real padX: Math.round(iconSize * 0.9)
+                readonly property real padY: Math.round(iconSize * 0.45)
+
                 x: Math.round(lockSurface.screenW * xFraction - width / 2)
                 y: Math.round(lockSurface.screenW * 0.03)
-                width: batteryRow.implicitWidth
-                height: batteryRow.implicitHeight
+                width: batteryRow.implicitWidth + padX * 2
+                height: batteryRow.implicitHeight + padY * 2
+                radius: height / 2
+                color: Colors.colors.surfaceInput
+                border.width: 2
+                border.color: Colors.colors.border
 
                 RowLayout {
                     id: batteryRow
+                    anchors.centerIn: parent
                     spacing: Math.round(batteryBox.iconSize * 0.3)
 
                     Image {
