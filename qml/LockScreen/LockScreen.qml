@@ -10,6 +10,8 @@ import QtQuick.Layouts
 import "../Colors"
 import "../Config"
 import "../IpcState"
+import "../Icons"
+import Wisp.Battery
 import Wisp.Time
 
 Scope {
@@ -38,6 +40,7 @@ Scope {
         if (lockActive || capturing)
             return
         capturing = true
+        Battery.refreshAll()
         const cmds = Quickshell.screens.map(
             s => "grim -o '" + s.name + "' '" + shotPath(s.name) + "' &")
         capture.command = ["sh", "-c", cmds.join(" ") + " wait"]
@@ -341,6 +344,61 @@ Scope {
                 }
 
             } // Top Column Layout
+
+            // Laptop battery indicator, top of the screen. Hidden on machines
+            // without a laptop battery. Mirrors the bar widget: bolt while
+            // charging, laptop icon, then the percentage.
+            Item {
+                id: batteryBox
+                visible: Battery.hasLaptopBattery
+
+                // Horizontal position as a fraction of screen width (0.33 is
+                // roughly a third in). The box is centered on that point.
+                readonly property real xFraction: 1 / 3
+                readonly property bool charging: !!Battery.laptopBattery.charging
+                readonly property int percent: Battery.laptopBattery.percent !== undefined
+                    ? Battery.laptopBattery.percent
+                    : 0
+                readonly property real iconSize: Math.round(lockSurface.screenW * 0.014)
+
+                x: Math.round(lockSurface.screenW * xFraction - width / 2)
+                y: Math.round(lockSurface.screenW * 0.03)
+                width: batteryRow.implicitWidth
+                height: batteryRow.implicitHeight
+
+                RowLayout {
+                    id: batteryRow
+                    spacing: Math.round(batteryBox.iconSize * 0.3)
+
+                    Image {
+                        visible: batteryBox.charging
+                        Layout.preferredWidth: batteryBox.iconSize
+                        Layout.preferredHeight: batteryBox.iconSize
+                        fillMode: Image.PreserveAspectFit
+                        source: Icons.getIcon("electricBolt")
+                        sourceSize.width: width
+                        sourceSize.height: height
+                    }
+
+                    Image {
+                        Layout.preferredWidth: batteryBox.iconSize
+                        Layout.preferredHeight: batteryBox.iconSize
+                        fillMode: Image.PreserveAspectFit
+                        source: Icons.getIcon("laptop")
+                        sourceSize.width: width
+                        sourceSize.height: height
+                    }
+
+                    Text {
+                        text: batteryBox.percent + "%"
+                        color: batteryBox.percent <= 20 && !batteryBox.charging
+                            ? Colors.colors.error
+                            : Colors.colors.accent
+                        font.pixelSize: Math.round(batteryBox.iconSize * 0.95)
+                        font.family: Config.font
+                    }
+                }
+            }
 
             Rectangle {
                 id: sloganBox
