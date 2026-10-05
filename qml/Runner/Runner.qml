@@ -59,6 +59,16 @@ Scope {
         }
     }
 
+    // Command mode: hand everything after the ">" to bash and close.
+    // execDetached keeps the process alive after the Runner goes away.
+    function runCommand() {
+        const cmd = runnerText.slice(1).trim();
+        if (cmd === "") return;
+
+        Quickshell.execDetached(["bash", "-c", cmd]);
+        IpcState.runner.close();
+    }
+
     PanelWindow {
         id: runner
         focusable: true
@@ -146,6 +156,7 @@ Scope {
                             Layout.fillWidth: true
                             implicitHeight: root.height / 3
                             leftPadding: 15
+                            rightPadding: leftPadding
 
                             text: runnerScope.runnerText
                             selectByMouse: true
@@ -167,9 +178,17 @@ Scope {
                                 runnerScope.updateCalc()
                             }
 
-                            // Symbol mode: the text field keeps focus, so
-                            // forward navigation keys to the popup.
+                            // The text field keeps focus, so forward keys to
+                            // whichever mode is active.
                             Keys.onPressed: event => {
+                                if (runnerScope.mode === "command") {
+                                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                        runnerScope.runCommand();
+                                        event.accepted = true;
+                                    }
+                                    return;
+                                }
+
                                 if (runnerScope.mode !== "symbol") return;
                                 switch (event.key) {
                                 case Qt.Key_Down:    symbolPopup.move(0, 1);  event.accepted = true; break;
