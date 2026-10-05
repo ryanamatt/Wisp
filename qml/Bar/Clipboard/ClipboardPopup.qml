@@ -80,9 +80,6 @@ BarPopup {
 
                 Image {
                     source: Icons.getIcon("search")
-                    sourceSize.width: width * Screen.devicePixelRatio
-                    sourceSize.height: height * Screen.devicePixelRatio
-
                     Layout.preferredWidth: innerLayout.width * 0.075
                     Layout.preferredHeight: width
                 }
@@ -118,8 +115,6 @@ BarPopup {
                     source: Icons.getIcon("close")
                     visible: searchInput.length > 0
                     fillMode: Image.PreserveAspectCrop
-                    sourceSize.width: width * Screen.devicePixelRatio
-                    sourceSize.height: height * Screen.devicePixelRatio
 
                     Layout.preferredWidth: innerLayout.width * 0.075
                     Layout.preferredHeight: width
