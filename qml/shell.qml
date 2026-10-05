@@ -31,9 +31,5 @@ Scope {
 
     LockScreen {}
 
-    OSDBrightness {}
-    OSDVolume {}
-    OSDMic {}
-    OSDCapsLock {}
-    OSDNumLock {}
+    OSDManager {}
 }
