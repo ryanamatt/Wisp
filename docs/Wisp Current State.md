@@ -65,6 +65,8 @@ Devices covered:
 
 **Popup (`battery`):** hovering over the widget opens a list of all connected devices and their battery levels.
 
+Also at the pottom of the popup is a switch of power profiles using powerprofilesctl. 
+
 ### Brightness
 
 **In the bar:** a brightness icon with the current backlight percentage. If the device has no backlight, the widget shows a moon icon instead. Backlight readings come from the C++ `brightness` backend module.
@@ -210,6 +212,8 @@ There are three OSDs:
 * **Volume:** appears when the volume changes
 * **Brightness:** appears when the brightness changes
 * **Mic:** appears when the microphone is muted or unmuted
+* **CapsLock** appears when Capslock is toggled on/off.
+* **NumLock** appears when NumLock is toggled on/off.
 
 ---
 
@@ -258,6 +262,44 @@ A window that brings up a rolodex of all the workspaces that contain a window. I
 Each workspace item shows the workspace number, or the first character of the name if the workspace is not a number, followed by icons of what is open on that workspace.
 
 ---
+
+## Timer
+
+A small window with two tabs: Timer and Stopwatch.
+
+### Timer Tab
+
+A text box to write the time. Buttons to pause/play and stop button.
+A notification is sent upon completion of the Timer. Works without the Timer Window being open.
+
+### Stop Tab
+
+A stopwatch Tab. Buttons to pause/play, stop and to lap. A list of laps done.
+
+## Runner
+
+A Small Window that appears towards the top of the screen underneath the bar. There are Several modes
+that the Runner can be in with each being denoted by a the first character typed into the text field.
+These modes are None, Command ('>'), Calculator ('=') and Symbols (':').
+
+### Command Mode
+
+Shells whatever is written after pressing enter to Bash. 
+
+### Calculator Mode
+
+This is a mini calculator where a small popu shows the awnser.
+Contains basic math operations denoted via: +, -, *, /, %, ^ (power).
+Also contains trig functions, sqrt, log10, ln. 
+
+## Symbols Mode
+
+Search for symbols or emojis by writing after ':'. Click a symbol/emoji and it copies to clipboard.
+
+## Lock Screen
+
+A Custom Lock Screen. Shows the time with data, user, language and a password field. Password field
+has 0% opacity till first character is typed then goes to 100% opacity. 
 
 ## CLI
 

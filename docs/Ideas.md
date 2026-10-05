@@ -36,7 +36,7 @@ Anything in the list is not in a released build and once it is will be removed f
 - [ ] Get Lyrics for Songs for the Media Player
 	- No concept of how to introduce this visually right now
 - [ ] Weather Popup for the Weather Widget
-- [ ] Power Profiles in the Battery Popup
+- [x] Power Profiles in the Brightness Popup
 	- Allow the user to switch profiles like performance, balanced, power save
 	- Could auto do this if like battery power is low (Possible Configurable)
 - [ ] A Game Mode Toggle
