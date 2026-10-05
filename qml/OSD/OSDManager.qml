@@ -14,7 +14,7 @@ Scope {
 
     property int duration: 1000
     property bool whenVisible: false
-    property var current: null   // the OSDBase source currently displayed
+    property var current: null
 
     property var targetScreen: {
         let focusedName = Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "";
