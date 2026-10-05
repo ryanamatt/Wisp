@@ -34,4 +34,6 @@ Scope {
     OSDBrightness {}
     OSDVolume {}
     OSDMic {}
+    OSDCapsLock {}
+    OSDNumLock {}
 }
