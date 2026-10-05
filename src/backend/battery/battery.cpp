@@ -19,11 +19,10 @@ constexpr const char *kBluetoothIcon = "bluetooth";
 
 constexpr const char *kLaptopName = "Laptop Battery";
 
-constexpr const char *kSystemScript =
-    "for b in /sys/class/power_supply/BAT*; do "
-    "if [ -f $b/capacity ]; then "
-    "echo $(cat $b/capacity 2>/dev/null),$(cat $b/status 2>/dev/null); "
-    "break; fi; done";
+constexpr const char *kSystemScript = "for b in /sys/class/power_supply/BAT*; do "
+                                      "if [ -f $b/capacity ]; then "
+                                      "echo $(cat $b/capacity 2>/dev/null),$(cat $b/status 2>/dev/null); "
+                                      "break; fi; done";
 
 constexpr const char *kRazerScript = "razer-cli -l 2>/dev/null";
 
@@ -148,7 +147,8 @@ std::vector<Battery::Device> Battery::parseRazerList(const QString &text) {
     };
 
     static const QRegularExpression chargeRe(R"(charge:\s*(\d+))");
-    static const QRegularExpression chargingRe(R"(charging:\s*(true|false))", QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression chargingRe(R"(charging:\s*(true|false))",
+                                               QRegularExpression::CaseInsensitiveOption);
 
     std::vector<Raw> raws;
     int current = -1;

@@ -201,7 +201,7 @@ Config load(const std::string &path) {
         readInt(battery, "warnPercentage", "battery.warnPercentage", cfg.batteryWarnPerc); // <-- Updated key name
         readBool(battery, "autoPowerSaver", "battery.autoPowerSaver", cfg.batteryAutoPowerSaver);
     }
- 
+
     if (auto apps = parseApps(j)) { cfg.apps = std::move(*apps); }
 
     exportEnv(cfg);

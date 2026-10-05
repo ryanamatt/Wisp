@@ -44,8 +44,8 @@ QString Stopwatch::elapsedText() const {
 QVariantList Stopwatch::laps() const {
     qint64 best = -1, worst = -1;
     if (m_laps.size() >= 2) {
-        const auto [mn, mx] = std::minmax_element(
-            m_laps.begin(), m_laps.end(), [](const Lap &a, const Lap &b) { return a.lapMs < b.lapMs; });
+        const auto [mn, mx] = std::minmax_element(m_laps.begin(), m_laps.end(),
+                                                  [](const Lap &a, const Lap &b) { return a.lapMs < b.lapMs; });
         best = mn->lapMs;
         worst = mx->lapMs;
     }
@@ -122,8 +122,10 @@ void Stopwatch::resume() {
 }
 
 void Stopwatch::toggle() {
-    if (m_state == Running) pause();
-    else start(); // start() handles both Idle and Paused
+    if (m_state == Running)
+        pause();
+    else
+        start(); // start() handles both Idle and Paused
 }
 
 void Stopwatch::lap() {
