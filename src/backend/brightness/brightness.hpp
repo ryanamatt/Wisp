@@ -13,7 +13,7 @@ class Brightness : public QObject {
     QML_ELEMENT
     QML_SINGLETON
 
-    // --- Backlight ---
+    // ----- Backlight -----
     Q_PROPERTY(bool hasBacklight READ hasBacklight NOTIFY brightnessChanged)
     Q_PROPERTY(int brightnessPercent READ brightnessPercent NOTIFY brightnessChanged)
     Q_PROPERTY(qreal brightnessValue READ brightnessValue NOTIFY brightnessChanged)
@@ -30,6 +30,14 @@ class Brightness : public QObject {
     Q_PROPERTY(qreal keyboardValue READ keyboardValue NOTIFY keyboardBacklightChanged)
     Q_PROPERTY(int keyboardBacklightValue READ keyboardBacklightValue NOTIFY keyboardBacklightChanged)
     Q_PROPERTY(int maxKeyboardBacklightValue READ maxKeyboardBacklightValue NOTIFY keyboardBacklightChanged)
+
+    // ----- Caps Lock -----
+    Q_PROPERTY(bool hasCapsLock READ hasCapsLock NOTIFY capsLockChanged)
+    Q_PROPERTY(bool capsLockActive READ capsLockActive NOTIFY capsLockChanged)
+
+    // ----- Num Lock ----
+    Q_PROPERTY(bool hasNumLock READ hasNumLock NOTIFY numLockChanged)
+    Q_PROPERTY(bool numLockActive READ numLockActive NOTIFY numLockChanged)
 
 public:
     explicit Brightness(QObject *parent = nullptr);
@@ -69,6 +77,21 @@ public:
         return m_keyboardMaxRaw;
     }
 
+    bool hasCapsLock() const {
+        return m_hasCapsLock;
+    }
+    bool capsLockActive() const {
+        return m_capsLockActive;
+    }
+
+    bool hasNumLock() const {
+        return m_hasNumLock;
+    }
+
+    bool numLockActive() const {
+        return m_numLockActive;
+    }
+
 public slots:
     void refreshBrightness();
     // V is beteen 0..1, inclusive
@@ -80,16 +103,24 @@ public slots:
     void refreshKeyboardBacklight();
     void updateKeyboardBacklightValue(qreal v);
 
+    void refreshCapsLock();
+
+    void refreshNumLock();
+
 signals:
     void brightnessChanged();
     void nightlightChanged();
     void keyboardBacklightChanged();
+    void capsLockChanged();
+    void numLockChanged();
 
 private slots:
     void onBacklightFileChanged(const QString &path);
     void writeBrightness();
     void applyNightlight();
     void writeKeyboardBacklight();
+    void onCapsLockFileChanged(const QString &path);
+    void onNumLockFileChanged(const QString &path);
 
 private:
     static constexpr int kMinKelvin = 2500;
@@ -97,6 +128,8 @@ private:
 
     void detectBacklightDevice();
     void detectKeyboardBacklightDevice();
+    void detectCapsLockDevice();
+    void detectNumLockDevice();
 
     // --- Backlight ---
     bool m_hasBacklight = false;
@@ -118,4 +151,18 @@ private:
     int m_keyboardMaxRaw = 0;
     qreal m_keyboardValue = 0.5;
     QTimer m_keyboardWriteDebounce;
+
+    // --- Caps Lock ---
+    bool m_hasCapsLock = false;
+    QString m_capsLockPath; // e.g. /sys/class/leds/input20::capslock
+    bool m_capsLockActive = false;
+    QTimer m_capsLockPollTimer;
+    QFileSystemWatcher m_capsLockWatcher;
+
+    // --- Caps Lock ---
+    bool m_hasNumLock = false;
+    QString m_numLockPath; // e.g. /sys/class/leds/input20::numlock
+    bool m_numLockActive = false;
+    QTimer m_numLockPollTimer;
+    QFileSystemWatcher m_numLockWatcher;
 };

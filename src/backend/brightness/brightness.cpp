@@ -47,6 +47,8 @@ Brightness::Brightness(QObject *parent) : QObject(parent) {
     m_brightnessWriteDebounce.setInterval(kDebounceMs);
     connect(&m_brightnessWriteDebounce, &QTimer::timeout, this, &Brightness::writeBrightness);
 
+    connect(&m_backlightWatcher, &QFileSystemWatcher::fileChanged, this, &Brightness::onBacklightFileChanged);
+
     m_nightlightWriteDebounce.setSingleShot(true);
     m_nightlightWriteDebounce.setInterval(kDebounceMs);
     connect(&m_nightlightWriteDebounce, &QTimer::timeout, this, &Brightness::applyNightlight);
@@ -55,10 +57,18 @@ Brightness::Brightness(QObject *parent) : QObject(parent) {
     m_keyboardWriteDebounce.setInterval(kDebounceMs);
     connect(&m_keyboardWriteDebounce, &QTimer::timeout, this, &Brightness::writeKeyboardBacklight);
 
-    connect(&m_backlightWatcher, &QFileSystemWatcher::fileChanged, this, &Brightness::onBacklightFileChanged);
+    m_capsLockPollTimer.setInterval(200); // Check every 200ms
+    connect(&m_capsLockPollTimer, &QTimer::timeout, this, &Brightness::refreshCapsLock);
+    m_capsLockPollTimer.start();
+
+    m_numLockPollTimer.setInterval(200); // Check every 200ms
+    connect(&m_numLockPollTimer, &QTimer::timeout, this, &Brightness::refreshNumLock);
+    m_numLockPollTimer.start();
 
     refreshBrightness();
     refreshKeyboardBacklight();
+    refreshCapsLock();
+    refreshNumLock();
 }
 
 void Brightness::detectBacklightDevice() {
@@ -214,4 +224,104 @@ void Brightness::updateKeyboardBacklightValue(qreal v) {
 void Brightness::writeKeyboardBacklight() {
     if (!m_hasKeyboardBacklight) return;
     writeIntFile(m_keyboardPath + "/brightness", keyboardBacklightValue());
+}
+
+void Brightness::detectCapsLockDevice() {
+    m_hasCapsLock = false;
+    m_capsLockPath.clear();
+
+    if (!std::filesystem::exists(kLedsRoot)) return;
+
+    for (const auto &entry : std::filesystem::directory_iterator(kLedsRoot)) {
+        QString name = QString::fromStdString(entry.path().filename().string());
+        if (!name.contains("capslock", Qt::CaseInsensitive)) continue;
+
+        QString devicePath = QString::fromStdString(entry.path().string());
+        int val = 0;
+        if (!readIntFile(devicePath + "/brightness", &val)) continue;
+
+        m_capsLockPath = devicePath;
+        m_hasCapsLock = true;
+        break;
+    }
+}
+
+void Brightness::refreshCapsLock() {
+    const bool hadCapsLockBefore = m_hasCapsLock;
+    const bool previousActive = m_capsLockActive;
+
+    if (!m_hasCapsLock) detectCapsLockDevice();
+    if (!m_hasCapsLock) {
+        if (hadCapsLockBefore) emit capsLockChanged();
+        return;
+    }
+
+    int raw = 0;
+    if (!readIntFile(m_capsLockPath + "/brightness", &raw)) {
+        m_hasCapsLock = false;
+        emit capsLockChanged();
+        return;
+    }
+
+    m_capsLockActive = (raw > 0);
+
+    const QString brightnessFile = m_capsLockPath + "/brightness";
+    if (!m_capsLockWatcher.files().contains(brightnessFile)) { m_capsLockWatcher.addPath(brightnessFile); }
+
+    if (!hadCapsLockBefore || m_capsLockActive != previousActive) { emit capsLockChanged(); }
+}
+
+void Brightness::onCapsLockFileChanged(const QString &path) {
+    if (!m_capsLockWatcher.files().contains(path)) { m_capsLockWatcher.addPath(path); }
+    refreshCapsLock();
+}
+
+void Brightness::detectNumLockDevice() {
+    m_hasNumLock = false;
+    m_numLockPath.clear();
+
+    if (!std::filesystem::exists(kLedsRoot)) return;
+
+    for (const auto &entry : std::filesystem::directory_iterator(kLedsRoot)) {
+        QString name = QString::fromStdString(entry.path().filename().string());
+        if (!name.contains("numlock", Qt::CaseInsensitive)) continue;
+
+        QString devicePath = QString::fromStdString(entry.path().string());
+        int val = 0;
+        if (!readIntFile(devicePath + "/brightness", &val)) continue;
+
+        m_numLockPath = devicePath;
+        m_hasNumLock = true;
+        break;
+    }
+}
+
+void Brightness::refreshNumLock() {
+    const bool hadNumLockBefore = m_hasNumLock;
+    const bool previousActive = m_numLockActive;
+
+    if (!m_hasNumLock) detectNumLockDevice();
+    if (!m_hasNumLock) {
+        if (hadNumLockBefore) emit numLockChanged();
+        return;
+    }
+
+    int raw = 0;
+    if (!readIntFile(m_numLockPath + "/brightness", &raw)) {
+        m_hasNumLock = false;
+        emit numLockChanged();
+        return;
+    }
+
+    m_numLockActive = (raw > 0);
+
+    const QString brightnessFile = m_numLockPath + "/brightness";
+    if (!m_numLockWatcher.files().contains(brightnessFile)) { m_numLockWatcher.addPath(brightnessFile); }
+
+    if (!hadNumLockBefore || m_numLockActive != previousActive) { emit numLockChanged(); }
+}
+
+void Brightness::onNumLockFileChanged(const QString &path) {
+    if (!m_numLockWatcher.files().contains(path)) { m_numLockWatcher.addPath(path); }
+    refreshCapsLock();
 }
