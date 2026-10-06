@@ -37,7 +37,7 @@ BarPopup {
             label: "Lock",
             glyph: "lock",
             colorKey: "accent",
-            command: ["hyprlock"]
+            command: [Quickshell.env("WISP_SHARE_DIR") + "/scripts/wisp_safe_lock.sh"]
         },
         {
             id: "sleep",
