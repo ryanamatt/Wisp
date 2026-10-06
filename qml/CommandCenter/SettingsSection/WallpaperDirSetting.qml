@@ -19,6 +19,7 @@ ColumnLayout {
         id: wallpaperDirTextField
         settingText: "Wallpaper Directory"
         textFieldText: Config.pendingWallpaperDirectory
+        modified: Config.pendingWallpaperDirectory !== Config.wallpaperDirectory
         textFieldPlaceholder: "~/Pictures/wallpapers"
 
         onEditingFinished: (text) => Config.stageWallpaperDirectory(text)

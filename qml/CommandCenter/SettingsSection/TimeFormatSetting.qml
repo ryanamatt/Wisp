@@ -27,6 +27,7 @@ ColumnLayout {
         id: timeFormatRow
         settingText: "Time Format"
         pendingValue: Config.pendingTimeFormat
+        modified: Config.pendingTimeFormat !== Config.timeFormat
         presets: root.presets
         onActivated: (value) => Config.stageTimeFormat(value)
     }

@@ -18,6 +18,7 @@ ColumnLayout {
     property string settingText: ""
     property string pendingValue: ""
     property var presets: []
+    property bool modified: false
 
     // Shared metrics
     readonly property int labelWidth: 160
@@ -143,6 +144,11 @@ ColumnLayout {
                     boundsBehavior: Flickable.StopAtBounds
                 }
             }
+        }
+
+        UnsavedIndicator {
+            active: root.modified
+            Layout.alignment: Qt.AlignVCenter
         }
     }
 

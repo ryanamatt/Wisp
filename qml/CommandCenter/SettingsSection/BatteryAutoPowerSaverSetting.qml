@@ -18,6 +18,7 @@ ColumnLayout {
         description: "Switch to the Power Saver profile when the laptop battery drops to "
             + Config.pendingBatteryWarnPerc + "% and isn't charging."
         checked: Config.pendingBatteryAutoPowerSaver
+        modified: Config.pendingBatteryAutoPowerSaver !== Config.batteryAutoPowerSaver
         onToggled: (value) => Config.stageBatteryAutoPowerSaver(value)
     }
 }

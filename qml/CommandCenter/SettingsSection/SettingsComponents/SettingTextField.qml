@@ -13,6 +13,7 @@ ColumnLayout {
     property string settingText: ""
     property string textFieldText: ""
     property var textFieldPlaceholder: ""
+    property bool modified: false
 
     signal editingFinished(string text)
     signal accepted(string text)
@@ -67,6 +68,11 @@ ColumnLayout {
             onEditingFinished: root.editingFinished(text)
             onAccepted: root.accepted(text)
 
+        }
+
+        UnsavedIndicator {
+            active: root.modified
+            Layout.alignment: Qt.AlignVCenter
         }
     }
 }
