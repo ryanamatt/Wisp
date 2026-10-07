@@ -16,6 +16,7 @@ ColumnLayout {
     property string settingText: ""
     property string description: ""
     property bool checked: false
+    property bool modified: false
 
     // Shared metrics (kept in step with SettingComboBox so rows line up)
     readonly property int labelWidth: 160
@@ -78,6 +79,11 @@ ColumnLayout {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: root.toggled(!root.checked)
             }
+        }
+
+        UnsavedIndicator {
+            active: root.modified
+            Layout.alignment: Qt.AlignVCenter
         }
     }
 

@@ -17,6 +17,7 @@ ColumnLayout {
         settingText: "On Startup"
         description: "Send a notification if package updates are available shortly after Wisp starts."
         checked: Config.pendingPackagesNotifyOnStartUp
+        modified: Config.pendingPackagesNotifyOnStartUp !== Config.packagesNotifyOnStartUp
         onToggled: (value) => Config.stagePackagesNotifyOnStartUp(value)
     }
 }

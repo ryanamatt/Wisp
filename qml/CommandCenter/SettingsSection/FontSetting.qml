@@ -19,6 +19,7 @@ ColumnLayout {
         id: fontTextField
         settingText: "Wisp Font"
         textFieldText: Config.pendingFont
+        modified: Config.pendingFont !== Config.font
         textFieldPlaceholder: "Noto Sans Mono"
 
         onEditingFinished: (text) => Config.stageFont(text)

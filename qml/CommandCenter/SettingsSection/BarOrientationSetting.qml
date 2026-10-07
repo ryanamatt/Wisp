@@ -21,6 +21,7 @@ ColumnLayout {
     SettingComboBox {
         settingText: "Bar Orientation"
         pendingValue: Config.pendingBarOrientation
+        modified: Config.pendingBarOrientation !== Config.barOrientation
         presets: root.presets
         onActivated: (value) => Config.stageBarOrientation(value)
     }

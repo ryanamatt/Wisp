@@ -19,6 +19,7 @@ ColumnLayout {
         id: fontTextField
         settingText: "Warn At"
         textFieldText: Config.pendingBatteryWarnPerc
+        modified: Config.pendingBatteryWarnPerc !== Config.batteryWarnPerc
         textFieldPlaceholder: "30"
 
         onEditingFinished: (text) => Config.stageBatteryWarnPerc(parseInt(text, 10))
