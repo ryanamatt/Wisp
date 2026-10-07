@@ -4,7 +4,10 @@
 </div>
 
 <div align="center">
-<text>Wisp is a Shell for Arch + Hyprland.</text>
+<text>Wisp is a Shell for Arch + Hyprland. This is a personal Desktop Shell tailored to my
+system. I do not plan on supporting any system that is not my own.
+Feel free to fork or take in compliance with the MIT License.
+</text>
 </div>
 
 
