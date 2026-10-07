@@ -11,7 +11,8 @@
         "notifyEveryDay": true
     },
     "battery": {
-        "warnPercentage": 30
+        "warnPercentage": 30,
+        "autoPowerSaver": true
     },
     "appLauncher": {
         "apps": [
