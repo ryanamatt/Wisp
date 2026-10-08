@@ -1,6 +1,7 @@
 {
     "bar": {
-        "timeFormat": "ddd MMM d hh:mm:ss AP"
+        "timeFormat": "ddd MMM d hh:mm:ss AP",
+        "orientation": "top"
     },
     "font": "Noto Sans Mono",
     "wallpaper": {
