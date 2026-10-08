@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+WALLPAPER_DIR="${WISP_WALLPAPER_DIR:-$HOME/Pictures/wallpapers}"
 
 WISP_SHARE_DIR="${WISP_SHARE_DIR:-/usr/share/wisp}"
 if [[ -f "$WISP_SHARE_DIR/config/matugen/config.toml" ]]; then
@@ -16,7 +16,7 @@ fi
 WISP_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/wisp"
 mkdir -p "$WISP_STATE_DIR"
 
-input_arg="$1"
+input_arg="${1:-}"
 wallpaper=""
 
 c_green() { printf '\033[1;32m%s\033[0m\n' "$*"; }
