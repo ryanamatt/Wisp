@@ -211,6 +211,7 @@ Scope {
                             color: Colors.colors.accent
                             font.pixelSize: Math.min(timeBox.width, timeBox.height)
                             font.family: Config.font
+                            font.bold: true
                         }
                     }
 
@@ -228,6 +229,7 @@ Scope {
                             color: Colors.colors.accent
                             font.pixelSize: Math.min(timeBox.width, timeBox.height)
                             font.family: Config.font
+                            font.bold: true
                         }
                     }
 
@@ -246,6 +248,7 @@ Scope {
                             color: Colors.colors.accent
                             font.pixelSize: Math.min(langBox.width, langBox.height) / 3
                             font.family: Config.font
+                            font.bold: true
                         }
                     }
 
@@ -425,6 +428,7 @@ Scope {
                     color: Colors.colors.accentAlt
                     font.pixelSize: Math.min(sloganBox.width, sloganBox.height) * 0.4
                     font.family: Config.font
+                    font.bold: true
                 }
             }
         }
