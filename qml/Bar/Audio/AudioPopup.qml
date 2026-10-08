@@ -224,10 +224,11 @@ BarPopup {
                         asynchronous: true
                         visible: status === Image.Ready
 
-                        onArtUrlChanged: {
-                            retries = 0
-                            verified = false
-                            checkArt()
+                        onStatusChanged: {
+                            if (status === Image.Error && retries < 3 && artUrl.toString() !== "") {
+                                retries++
+                                retryTimer.restart()
+                            }
                         }
 
                         function checkArt() {
@@ -237,6 +238,8 @@ BarPopup {
 
                             if (url.indexOf("file://") !== 0) {
                                 // Remote or embedded art has nothing to check on disk.
+                                // Force a fresh load on retry.
+                                verified = false
                                 verified = true
                                 return
                             }
