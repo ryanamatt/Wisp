@@ -32,6 +32,10 @@ function update_wallpaper() {
 }
 
 apply_razer_colors() {
+    if ! command -v razer-cli >/dev/null 2>&1; then
+        return # If razer-cli not there just return
+    fi
+
     local json_file="$HOME/.config/wisp/colors.json"
 
     if [[ ! -f "$json_file" ]]; then
@@ -39,14 +43,22 @@ apply_razer_colors() {
         return
     fi
 
+    if ! command -v jq >/dev/null 2>&1; then
+        c_yellow "razer-cli or jq not installed, skipping Razer lighting"
+        return
+    fi
+
     local color
-    color=$(jq -r '.accent' "$json_file" | sed 's/#//')
+    color=$(jq -r '.accent // empty' "$json_file" 2>/dev/null | sed 's/#//' || true)
+
+    if [[ ! "$color" =~ ^[0-9A-Fa-f]{6}$ ]]; then
+        c_yellow "Invalid or missing accent color in $json_file, skipping Razer lighting"
+        return
+    fi
 
     c_blue "Apply Razer lighting: #$color"
 
-    if command -v razer-cli >/dev/null 2>&1; then
-        razer-cli -c "$color"
-    fi
+    razer-cli -c "$color"
 }
 
 if [ -z "$input_arg" ]; then
