@@ -59,7 +59,7 @@ if [ -f "$WALLPAPER_DIR/$input_arg" ]; then
     update_wallpaper "$wallpaper"
 
 else
-    resolved_path=$(realpath "$input_arg" 2>/dev/null)
+    resolved_path=$(realpath -- "$input_arg" 2>/dev/null || true)
     if [ -f "$resolved_path" ]; then
         wallpaper="$resolved_path"
         update_wallpaper "$wallpaper"
