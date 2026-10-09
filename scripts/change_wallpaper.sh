@@ -39,8 +39,18 @@ apply_razer_colors() {
         return
     fi
 
+    if ! command -v razer-cli >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+        c_yellow "razer-cli or jq not installed, skipping Razer lighting"
+        return
+    fi
+
     local color
-    color=$(jq -r '.accent' "$json_file" | sed 's/#//')
+    color=$(jq -r '.accent // empty' "$json_file" 2>/dev/null | sed 's/#//' || true)
+
+    if [[ ! "$color" =~ ^[0-9A-Fa-f]{6}$ ]]; then
+        c_yellow "Invalid or missing accent color in $json_file, skipping Razer lighting"
+        return
+    fi
 
     c_blue "Apply Razer lighting: #$color"
 
