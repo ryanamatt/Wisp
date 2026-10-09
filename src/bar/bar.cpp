@@ -41,6 +41,7 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
 
     setenv("QS_NO_RELOAD_POPUP", "1", 1);
     setenv("QT_MESSAGE_PATTERN", "%{category}: %{message} (%{file}:%{line} %{function})", 1);
+    setenv("QT_LOGGING_RULES", "qt.qpa.wayland.textinput.warning=false", 1);
 
     if (pid == 0) {
         // Child: become quickshell.
