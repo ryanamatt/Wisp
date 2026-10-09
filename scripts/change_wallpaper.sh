@@ -32,6 +32,10 @@ function update_wallpaper() {
 }
 
 apply_razer_colors() {
+    if ! command -v razer-cli >/dev/null 2>&1; then
+        return # If razer-cli not there just return
+    fi
+
     local json_file="$HOME/.config/wisp/colors.json"
 
     if [[ ! -f "$json_file" ]]; then
@@ -39,7 +43,7 @@ apply_razer_colors() {
         return
     fi
 
-    if ! command -v razer-cli >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+    if ! command -v jq >/dev/null 2>&1; then
         c_yellow "razer-cli or jq not installed, skipping Razer lighting"
         return
     fi
@@ -54,9 +58,7 @@ apply_razer_colors() {
 
     c_blue "Apply Razer lighting: #$color"
 
-    if command -v razer-cli >/dev/null 2>&1; then
-        razer-cli -c "$color"
-    fi
+    razer-cli -c "$color"
 }
 
 if [ -z "$input_arg" ]; then
