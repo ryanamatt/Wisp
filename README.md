@@ -79,9 +79,11 @@ wisp [command] [options]
 | `run` | Launch the bar |
 | `kill` | Stop a running wisp instance |
 | `reload` | Restart the quickshell process of a running wisp instance |
+| `log` [head|tail|clear] [n] | Show the Log File | 
 | `open <target>` | Open a widget/popup |
 | `close <target>` | Close a widget/popup |
 | `toggle <target>` | Toggle a widget/popup |
+| `lock` | Lock the Screen |
 
 ### Examples
 
