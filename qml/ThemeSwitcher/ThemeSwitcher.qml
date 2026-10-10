@@ -52,7 +52,7 @@ PanelWindow {
             onRead: data => {
                 if (data.trim() !== "") {
                     window.wallpapers.push(data.trim())
-                    wallpaperModel.append({ filePath: data.trim() })
+                    wallpaperModel.append({ filePath: data.trim(), isRandom: false })
                 }
             }
         }
