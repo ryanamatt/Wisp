@@ -13,6 +13,7 @@ PanelWindow {
     id: window
     
     property var wallpapers: []
+    property var pendingCommand: null
     property int focusedIndex: 0
 
     anchors { top: true; bottom: true; left: true; right: true }
@@ -22,10 +23,26 @@ PanelWindow {
     // Starts closed by default, opens only when IPC command triggers it
     visible: IpcState.themeSwitcher.isOpen
 
+    function applyWallpaper(cmd) {
+        if (wallpaperProcess.running) {
+            pendingCommand = cmd
+            return
+        }
+        wallpaperProcess.command = cmd
+        wallpaperProcess.running = true
+    }
+
     // Process to run the wallpaper change script
     Process {
         id: wallpaperProcess
         command: []
+        onRunningChanged: {
+            if (!running && window.pendingCommand) {
+                command = window.pendingCommand
+                window.pendingCommand = null
+                running = true
+            }
+        }
     }
 
     Process {
@@ -87,8 +104,7 @@ PanelWindow {
 
                 let shareDir = Quickshell.env("WISP_SHARE_DIR") || "/usr/share/wisp"
                 let scriptPath = shareDir + "/scripts/change_wallpaper.sh"
-                wallpaperProcess.command = ["bash", scriptPath, path]
-                wallpaperProcess.running = true
+                window.applyWallpaper(["bash", scriptPath, path])
                 IpcState.themeSwitcher.close()
             }
         }
