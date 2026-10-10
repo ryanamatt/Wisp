@@ -112,7 +112,10 @@ Every widget below can be controlled with `wisp open <target>`, `wisp close <tar
 | `battery` | Battery widget |
 | `themeSwitcher` | Theme/wallpaper switcher |
 | `workspaceSwitcher` | Workspace switcher |
+| `screenshot` | A Screenshot Window | 
 | `commandCenter` | Command Center |
+| `timer` | A Timer / Stopwatch Window | 
+| `runner` | Runner |
 
 ## Configuration
 
