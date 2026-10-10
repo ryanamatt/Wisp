@@ -125,6 +125,7 @@ ParsedArgs parse(int argc, char *argv[]) {
         }
         if (arg == "log") {
             parsed.command = Command::Log;
+            parsed.logCommand = LogCommand::Tail;
             if (i + 1 < args.size()) {
                 std::string logArg = args[++i];
                 if (logArg == "head")
