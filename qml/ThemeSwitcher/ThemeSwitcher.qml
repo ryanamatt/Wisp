@@ -47,7 +47,9 @@ PanelWindow {
 
     Process {
         id: listWallpapersProcess
-        command: ["bash", "-c", "find " + Config.wallpaperDirectory + " -maxdepth 1 -type f \\( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' -o -name '*.webp' -o -name '*.gif' \\) | sort"]
+        command: ["bash", "-c",
+            "find \"$1\" -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \\) | sort",
+            "_", Config.wallpaperDirectory]
         stdout: SplitParser {
             onRead: data => {
                 if (data.trim() !== "") {
