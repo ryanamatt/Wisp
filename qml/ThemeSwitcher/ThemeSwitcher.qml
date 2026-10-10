@@ -200,6 +200,7 @@ PanelWindow {
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 cache: true
+                                sourceSize.height: 400
                                 visible: !isRandom
                             }
 
