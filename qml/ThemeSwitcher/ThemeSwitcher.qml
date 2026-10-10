@@ -85,7 +85,8 @@ PanelWindow {
                     path = entry.filePath
                 }
 
-                let scriptPath = Quickshell.env("WISP_SHARE_DIR") + "/scripts/change_wallpaper.sh"
+                let shareDir = Quickshell.env("WISP_SHARE_DIR") || "/usr/share/wisp"
+                let scriptPath = shareDir + "/scripts/change_wallpaper.sh"
                 wallpaperProcess.command = ["bash", scriptPath, path]
                 wallpaperProcess.running = true
                 IpcState.themeSwitcher.close()
