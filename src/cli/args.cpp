@@ -142,7 +142,10 @@ ParsedArgs parse(int argc, char *argv[]) {
                 if (i + 1 < args.size()) {
                     std::string logNumArg = args[++i];
                     try {
-                        parsed.logNum = std::stoi(logNumArg);
+                        size_t consumed = 0;
+                        int n = std::stoi(logNumArg, &consumed);
+                        if (consumed != logNumArg.size() || n < 0) throw std::invalid_argument(logNumArg);
+                        parsed.logNum = n;
                     } catch (const std::exception &e) {
                         std::cerr << "wisp: invalid number for log count '" << logNumArg << "'\n";
                         parsed.earlyExit = 1;
