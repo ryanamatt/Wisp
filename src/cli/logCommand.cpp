@@ -56,10 +56,11 @@ int runLogCommand(LogCommand logCommand, int logNum) {
     size_t start = 0;
     size_t end = lines.size();
 
+    const size_t count = logNum < 0 ? 0 : static_cast<size_t>(logNum);
     if (logCommand == LogCommand::Head)
-        end = std::min(size_t(logNum), lines.size());
+        end = std::min(count, lines.size());
     else if (logCommand == LogCommand::Tail) {
-        if (lines.size() > logNum) start = lines.size() - logNum;
+        if (lines.size() > count) start = lines.size() - count;
     }
 
     for (size_t i = start; i < end; ++i) {
