@@ -95,12 +95,19 @@ void readBool(const nlohmann::json &j, const char *key, const std::string &label
         wisp::log::warning("config", label + " must be a boolean, ignoring");
 }
 
-void readInt(const nlohmann::json &j, const char *key, const std::string &label, int &out) {
+void readInt(const nlohmann::json &j, const char *key, const std::string &label, int &out, int min, int max) {
     if (!j.contains(key)) return;
-    if (j[key].is_number_integer())
-        out = j[key].get<int>();
-    else
+    if (!j[key].is_number_integer()) {
         wisp::log::warning("config", label + " must be an int, ignoring");
+       return;
+    }
+    const double value = j[key].get<double>();
+    if (value < min || value > max) {
+        wisp::log::warning("config", label + " must be between " + std::to_string(min) + " and " +
+                                         std::to_string(max) + ", ignoring");
+        return;
+    }
+    out = static_cast<int>(value);
 }
 
 void exportEnv(const Config &cfg) {
@@ -198,7 +205,7 @@ Config load(const std::string &path) {
 
     if (j.contains("battery") && j["battery"].is_object()) {
         const auto &battery = j["battery"];
-        readInt(battery, "warnPercentage", "battery.warnPercentage", cfg.batteryWarnPerc); // <-- Updated key name
+        readInt(battery, "warnPercentage", "battery.warnPercentage", cfg.batteryWarnPerc, 0, 100);
         readBool(battery, "autoPowerSaver", "battery.autoPowerSaver", cfg.batteryAutoPowerSaver);
     }
 
