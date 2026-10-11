@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <filesystem>
 
 #include "config/config.hpp"
 #include "version.hpp"
@@ -13,6 +14,17 @@
 #endif
 
 namespace wisp::cli {
+
+namespace {
+
+std::string absolutePath(const std::string &p) {
+    if (p.empty()) return p;
+    std::error_code ec;
+    auto abs = std::filesystem::absolute(p, ec);
+    return ec ? p : abs.lexically_normal().string();
+}
+
+} // namespace
 
 void printUsage(const char *argv0) {
     std::cout << "Usage: " << argv0
@@ -90,7 +102,7 @@ ParsedArgs parse(int argc, char *argv[]) {
                 parsed.earlyExit = 1;
                 return parsed;
             }
-            parsed.qmlDir = args[++i];
+            parsed.qmlDir = absolutePath(args[++i]);
             continue;
         }
         if (arg == "-c") {
@@ -99,7 +111,7 @@ ParsedArgs parse(int argc, char *argv[]) {
                 parsed.earlyExit = 1;
                 return parsed;
             }
-            parsed.configPath = args[++i];
+            parsed.configPath = absolutePath(args[++i]);
             continue;
         }
         if (arg == "-m") {
@@ -108,7 +120,7 @@ ParsedArgs parse(int argc, char *argv[]) {
                 parsed.earlyExit = 1;
                 return parsed;
             }
-            parsed.modulePath = args[++i];
+            parsed.modulePath = absolutePath(args[++i]);
             continue;
         }
         if (arg == "run") {
