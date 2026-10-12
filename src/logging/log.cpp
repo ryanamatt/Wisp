@@ -11,6 +11,7 @@
 #include <iostream>
 #include <mutex>
 #include <sstream>
+#include <sys/stat.h>
 
 namespace wisp::log {
 
@@ -26,6 +27,9 @@ std::ofstream g_file;
 std::filesystem::path g_path;
 bool g_writable = false;
 bool g_initialized = false;
+// Identity of the file to open so a rotation by another process (e.g.g quickshell) can be detected
+dev_t g_dev = 0;
+ino_t g_ino = 0;
 
 std::filesystem::path stateDir() {
     if (const char *xdgState = std::getenv("XDG_STATE_HOME"); xdgState && *xdgState) {
@@ -35,6 +39,27 @@ std::filesystem::path stateDir() {
         return std::filesystem::path(home) / ".local" / "state" / "wisp";
     }
     return std::filesystem::temp_directory_path() / "wisp";
+}
+
+// Caller must hold a mutex
+void openLogFile() {
+    if (g_file.is_open()) g_file.close();
+    g_file.clear();
+    g_file.open(g_path, std::ios::app);
+    g_writable = g_file.is_open();
+
+    struct stat st{};
+    if (g_writable && stat(g_path.c_str(), &st) == 0) {
+        g_dev = st.st_dev;
+        g_ino = st.st_ino;
+    }
+}
+
+// Caller must hold g_mutex. Reopens log if it was rotated or deleted
+void reopenIfRotated() {
+    struct stat st{};
+    if (stat(g_path.c_str(), &st) == 0 && st.st_dev == g_dev && st.st_ino == g_ino) return;
+    openLogFile();
 }
 
 void rotateIfOversized(const std::filesystem::path &path) {
@@ -64,8 +89,7 @@ void ensureInitialized() {
 
     rotateIfOversized(g_path);
 
-    g_file.open(g_path, std::ios::app);
-    g_writable = g_file.is_open();
+    openLogFile();
 
     if (!g_writable) { std::cerr << "wisp: could not open log file " << g_path << ", logging to terminal only\n"; }
 }
@@ -119,6 +143,7 @@ const char *colorForLabel(const std::string &label) {
 void write(Level level, const std::string &category, const std::string &message) {
     std::lock_guard<std::mutex> lock(g_mutex);
     ensureInitialized();
+    reopenIfRotated();
 
     const std::string tag = category.empty() ? "wisp" : category;
     const std::string plainLine = "[" + timestamp() + "] [" + levelLabel(level) + "] [" + tag + "] " + message;
