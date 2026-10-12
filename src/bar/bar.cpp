@@ -64,6 +64,12 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
     return pid;
 }
 
+// Waits for `pid` to exit, retrying if a signal intterupts the wait.
+void reapChild(pid_t pid) {
+    int status = 0;
+    while (waitpid(pid, &status, 0) == -1 && errno == EINTR) {}
+}
+
 } // namespace
 
 // Runs the bar by launching quickshell as a supervised child process.
@@ -134,36 +140,38 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
 
     int exitCode = 0;
     for (;;) {
-        int status = 0;
-        pid_t waited = waitpid(child, &status, 0);
+        // Check flags before blocking so a signla that landed while busy (for ex mid-reload)
+        // is not lost
+        if (wisp::process::gotTermSignal()) {
+            wisp::log::info("stop signal received, shutting down");
+            kill(child, SIGTERM);
+            reapChild(child);
+            break;
+        }
+        if (wisp::process::gotReloadSignal()) {
+            wisp::process::clearReloadSignal();
+            wisp::log::info("reload requested, restarting quickshell");
 
-        if (waited == -1) {
-            if (errno != EINTR) break;
+            wisp::config::load(configPath);
+            wisp::log::info("reloaded config from " + configPath);
 
-            if (wisp::process::gotTermSignal()) {
-                wisp::log::info("stop signal received, shutting down");
-                kill(child, SIGTERM);
-                waitpid(child, &status, 0);
+            kill(child, SIGTERM);
+            reapChild(child);
+            child = spawnQuickshell(qmlDir);
+            if (child < 0) {
+                wisp::log::error("failed to respawn quickshell during reload");
+                exitCode = 1;
                 break;
             }
-            if (wisp::process::gotReloadSignal()) {
-                wisp::process::clearReloadSignal();
-                wisp::log::info("reload requested, restarting quickshell");
-
-                wisp::config::load(configPath);
-                wisp::log::info("reloaded config from " + configPath);
-
-                kill(child, SIGTERM);
-                waitpid(child, &status, 0);
-                child = spawnQuickshell(qmlDir);
-                if (child < 0) {
-                    wisp::log::error("failed to respawn quickshell during reload");
-                    exitCode = 1;
-                    break;
-                }
-                wisp::log::info("quickshell restarted (pid " + std::to_string(child) + ")");
-            }
+            wisp::log::info("quickshell restarted (pid " + std::to_string(child) + ")");
             continue;
+        }
+
+        int status = 0;
+        pid_t waited = waitpid(child, &status, 0);
+        if (waited == -1) {
+            if (errno == EINTR) continue;
+            break;
         }
 
         // quickshell exited on its own (crash, `Qt.quit()`, etc.) -
