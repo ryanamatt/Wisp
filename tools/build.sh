@@ -16,7 +16,7 @@ JOBS="$(nproc)"
 
 configure_if_needed() {
     if [[ ! -f "$BUILD_DIR/CMakeCache.txt" ]]; then
-        cmake -B "$BUILD_DIR"
+        cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B "$BUILD_DIR"
     fi
 }
 
