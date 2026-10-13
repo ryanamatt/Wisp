@@ -6,10 +6,24 @@
 #include <csignal>
 #include <cstring>
 #include <iostream>
+#include <unistd.h>
 
 #include "process/pidfile.hpp"
 
 namespace wisp::process {
+
+namespace {
+
+// Polls until `pid` no longer exists or `timeoutMs` elapses
+bool waitForExit(pid_t pid, int timeoutMs) {
+    for (int waited =0; waited < timeoutMs; waited += 50) {
+        if (kill(pid, 0) != 0 && errno == ESRCH) return true;
+        usleep(50 * 1000);
+    }
+    return false;
+}
+
+} // namespace
 
 int killInstance() {
     auto pid = wisp::process::findRunningWispPid();
@@ -23,7 +37,12 @@ int killInstance() {
         return 1;
     }
 
-    std::cout << "wisp: sent stop signal to running instance (pid " << *pid << ")\n";
+    if (!waitForExit(*pid, 5000)) {
+        std::cerr << "wisp: pid " << *pid << " did not exit within 5 seconds \n";
+        return 1;
+    }
+
+    std::cout << "wisp: stopped running instance (pid " << *pid << ")\n";
     return 0;
 }
 
