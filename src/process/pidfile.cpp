@@ -3,10 +3,10 @@
 #include "process/pidfile.hpp"
 
 #include <cctype>
-#include <csignal>
 #include <cstdlib>
 #include <dirent.h>
 #include <fstream>
+#include <signal.h>
 #include <string>
 #include <unistd.h>
 
@@ -34,6 +34,7 @@ std::optional<pid_t> scanProcForWisp() {
     if (!proc) return std::nullopt;
 
     const pid_t self = getpid();
+    const pid_t parent = getppid();
     std::optional<pid_t> found;
 
     while (dirent *entry = readdir(proc)) {
@@ -42,6 +43,10 @@ std::optional<pid_t> scanProcForWisp() {
 
         pid_t candidate = std::atoi(name.c_str());
         if (candidate == self) continue;
+        // Also skip the parent: with `-d` it is the pre-fork copy of this process,
+        // which may still be exiting or waitng
+        if (candidate == self || candidate == parent) continue;
+
         if (isProcessNamedWisp(candidate)) {
             found = candidate;
             break;

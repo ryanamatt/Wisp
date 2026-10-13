@@ -29,7 +29,7 @@ list_targets() {
 # No argument: full clean rebuild
 if [[ $# -eq 0 ]]; then
     rm -rf "$BUILD_DIR"
-    cmake -B "$BUILD_DIR"
+    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B "$BUILD_DIR"
     cmake --build "$BUILD_DIR" --parallel "$JOBS"
     exit 0
 fi
