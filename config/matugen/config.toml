@@ -46,3 +46,9 @@ post_hook = 'hyprctl reload'
 input_path = '~/Projects/wisp/config/matugen/templates/swaync_theme_colors.css'
 output_path = '~/.config/swaync/colors/theme_colors.css'
 post_hook = 'swaync-client --reload-css'
+
+[templates.neovim]
+input_path = '~/Projects/wisp/config/matugen/templates/nvim-palette.lua'
+output_path = '~/.config/nvim/lua/matugen_palette.lua'
+# Re-applies the colorscheme in every running Neovim instance
+post_hook = '''for s in "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/nvim.*.0; do nvim --server "$s" --remote-expr "execute('colorscheme matugen')" >/dev/null 2>&1; done'''
