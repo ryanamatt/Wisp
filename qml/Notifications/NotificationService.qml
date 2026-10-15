@@ -7,7 +7,7 @@ import Quickshell.Io
 import Quickshell.Services.Notifications
 import QtQuick
 
-// Owns the org.freedesktop.Notifications DBus name (replaces swaync).
+// Owns the org.freedesktop.Notifications DBus name.
 // Every notification is tracked, so `model` doubles as the history shown in
 // the notification center. `toasts` is the subset currently shown as popups.
 Singleton {
