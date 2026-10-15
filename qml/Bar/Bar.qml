@@ -134,6 +134,7 @@ Variants {
 
             // ~2.63% (50px)
             NotificationsWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (50 / 1900)
             }
         }
