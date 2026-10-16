@@ -2,9 +2,9 @@
 
 #include "cli/args.hpp"
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
-#include <filesystem>
 
 #include "config/config.hpp"
 #include "version.hpp"

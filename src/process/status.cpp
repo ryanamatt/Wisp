@@ -9,8 +9,8 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <unistd.h>
+#include <vector>
 
 #include "config/config.hpp"
 #include "process/pidfile.hpp"
@@ -42,9 +42,7 @@ std::optional<long long> processUptimeSeconds(pid_t pid) {
     unsigned long long startTicks = 0;
     try {
         startTicks = std::stoull(token);
-    } catch (...) {
-        return std::nullopt;
-    }
+    } catch (...) { return std::nullopt; }
 
     long ticksPerSec = sysconf(_SC_CLK_TCK);
     if (ticksPerSec <= 0) return std::nullopt;

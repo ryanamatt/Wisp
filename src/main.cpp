@@ -5,8 +5,8 @@
 #include "cli/logCommand.hpp"
 #include "ipc/ipc.hpp"
 #include "process/control.hpp"
-#include "process/supervisor.hpp"
 #include "process/status.hpp"
+#include "process/supervisor.hpp"
 
 int main(int argc, char *argv[]) {
     wisp::cli::ParsedArgs parsed = wisp::cli::parse(argc, argv);
