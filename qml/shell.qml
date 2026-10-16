@@ -2,6 +2,7 @@
 
 import Quickshell
 import "Notifiers"
+import "Notifications"
 import "Bar"
 import "ThemeSwitcher"
 import "WorkspaceSwitcher"
@@ -14,6 +15,8 @@ import "OSD"
 
 Scope {
     PackageNotifier {}
+
+    NotificationToasts {}
 
     Bar {}
 
