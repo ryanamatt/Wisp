@@ -120,6 +120,7 @@ add_executable(wisp
     src/process/pidfile.cpp
     src/process/supervisor.cpp
     src/process/control.cpp
+    src/process/status.cpp
     src/bar/bar.cpp
     src/cli/logCommand.cpp
     src/cli/args.cpp

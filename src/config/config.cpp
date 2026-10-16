@@ -99,12 +99,12 @@ void readInt(const nlohmann::json &j, const char *key, const std::string &label,
     if (!j.contains(key)) return;
     if (!j[key].is_number_integer()) {
         wisp::log::warning("config", label + " must be an int, ignoring");
-       return;
+        return;
     }
     const double value = j[key].get<double>();
     if (value < min || value > max) {
-        wisp::log::warning("config", label + " must be between " + std::to_string(min) + " and " +
-                                         std::to_string(max) + ", ignoring");
+        wisp::log::warning("config", label + " must be between " + std::to_string(min) + " and " + std::to_string(max) +
+                                         ", ignoring");
         return;
     }
     out = static_cast<int>(value);

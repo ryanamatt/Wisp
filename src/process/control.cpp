@@ -16,7 +16,7 @@ namespace {
 
 // Polls until `pid` no longer exists or `timeoutMs` elapses
 bool waitForExit(pid_t pid, int timeoutMs) {
-    for (int waited =0; waited < timeoutMs; waited += 50) {
+    for (int waited = 0; waited < timeoutMs; waited += 50) {
         if (kill(pid, 0) != 0 && errno == ESRCH) return true;
         usleep(50 * 1000);
     }

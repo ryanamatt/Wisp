@@ -2,9 +2,9 @@
 
 #include "cli/args.hpp"
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
-#include <filesystem>
 
 #include "config/config.hpp"
 #include "version.hpp"
@@ -35,6 +35,7 @@ void printUsage(const char *argv0) {
                  "  kill                Stop a running wisp instance\n"
                  "  reload              Restart the quickshell process of a running wisp instance\n"
                  "  log [head|tail|clear] [n] Print or manage log contents (default: tail 15 lines)\n"
+                 "  status              Shows the status of the Wisp Shell\n"
                  "  open <target>       Open a widget/popup, e.g. `wisp open themeSwitcher`\n"
                  "  close <target>      Close a widget/popup, e.g. `wisp close calendar`\n"
                  "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
@@ -133,6 +134,10 @@ ParsedArgs parse(int argc, char *argv[]) {
         }
         if (arg == "reload") {
             parsed.command = Command::Reload;
+            continue;
+        }
+        if (arg == "status") {
+            parsed.command = Command::Status;
             continue;
         }
         if (arg == "log") {

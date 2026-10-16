@@ -5,6 +5,7 @@
 #include "cli/logCommand.hpp"
 #include "ipc/ipc.hpp"
 #include "process/control.hpp"
+#include "process/status.hpp"
 #include "process/supervisor.hpp"
 
 int main(int argc, char *argv[]) {
@@ -17,6 +18,7 @@ int main(int argc, char *argv[]) {
         case wisp::cli::Command::Run: return wisp::bar::runBar(parsed.qmlDir, parsed.configPath, parsed.modulePath);
         case wisp::cli::Command::Kill: return wisp::process::killInstance();
         case wisp::cli::Command::Reload: return wisp::process::reloadInstance();
+        case wisp::cli::Command::Status: return wisp::process::statusInstance();
         case wisp::cli::Command::Log: return wisp::cli::runLogCommand(parsed.logCommand, parsed.logNum);
         case wisp::cli::Command::Ipc: return wisp::ipc::exec(parsed.qmlDir, parsed.ipcTarget, parsed.ipcAction);
         case wisp::cli::Command::None: break;
