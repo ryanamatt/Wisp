@@ -9,7 +9,7 @@
 
 namespace wisp::cli {
 
-enum class Command { None, Run, Kill, Reload, Log, Ipc };
+enum class Command { None, Run, Kill, Reload, Status, Log, Ipc };
 
 struct ParsedArgs {
     Command command = Command::None;
