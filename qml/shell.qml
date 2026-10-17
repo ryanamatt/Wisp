@@ -1,5 +1,7 @@
 // qml/shell.qml
 
+//@ pragma IconTheme breeze
+
 import Quickshell
 import "Notifiers"
 import "Notifications"
