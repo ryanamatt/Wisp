@@ -89,6 +89,9 @@ BarWidgetContainer {
     WidgetPopup {
         id: notifPopupWindow
         widget: notifWidget
+        centered: false
+        alignRight: true
+        cornerRadius: 40
         implicitWidth: 360
         implicitHeight: 460
 

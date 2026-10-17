@@ -18,6 +18,11 @@ PopupWindow {
     // false: popup is left-aligned with the pill, and the corner touching
     // the pill squares off instead, like the app launcher.
     property bool centered: true
+    // Only used when centered is false. false (default): popup is left-aligned
+    // with the pill (for widgets at the left end of the bar). true: popup is
+    // right-aligned with the pill (for widgets at the right end of the bar),
+    // and the top-right corner squares off instead.
+    property bool alignRight: false
     property real cornerRadius: 20
 
     // When the bar sits at the bottom of the screen there's no room below
@@ -25,8 +30,8 @@ PopupWindow {
     readonly property bool barAtBottom: Config.barOrientation === "bottom"
 
     anchor.item: widget
-    anchor.edges: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? 0 : Edges.Left)
-    anchor.gravity: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? Edges.HCenter : Edges.Right)
+    anchor.edges: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? 0 : (alignRight ? Edges.Right : Edges.Left))
+    anchor.gravity: (barAtBottom ? Edges.Top : Edges.Bottom) | (centered ? Edges.HCenter : (alignRight ? Edges.Left : Edges.Right))
     anchor.margins.top: 0
     anchor.margins.bottom: 0
 
@@ -58,11 +63,11 @@ PopupWindow {
 
             // The corner that actually touches the pill squares off so the
             // pill and popup read as one shape. Only relevant when
-            // left-aligned; centered popups don't touch a corner.
-            topLeftRadius: (!root.centered && !root.barAtBottom) ? 0 : root.cornerRadius
-            topRightRadius: root.cornerRadius
-            bottomLeftRadius: (!root.centered && root.barAtBottom) ? 0 : root.cornerRadius
-            bottomRightRadius: root.cornerRadius
+            // left or right aligned; centered popups don't touch a corner.
+            topLeftRadius: (!root.centered && !root.alignRight && !root.barAtBottom) ? 0 : root.cornerRadius
+            topRightRadius: (!root.centered && root.alignRight && !root.barAtBottom) ? 0 : root.cornerRadius
+            bottomLeftRadius: (!root.centered && !root.alignRight && root.barAtBottom) ? 0 : root.cornerRadius
+            bottomRightRadius: (!root.centered && root.alignRight && root.barAtBottom) ? 0 : root.cornerRadius
 
             color: Colors.colors.backgroundAlt
             border.color: Colors.colors.background
