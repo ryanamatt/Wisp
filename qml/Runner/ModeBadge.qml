@@ -10,7 +10,7 @@ import "../Config"
 Rectangle {
     id: root
 
-    // "none" | "command" | "calculator" | "symbol"
+    // "none" | "app" | "command" | "calculator" | "symbol"
     property string mode: "none"
 
     // The mode currently drawn. It lags behind `mode` by half of the switch
@@ -19,6 +19,7 @@ Rectangle {
 
     readonly property color modeColor: {
         switch (shownMode) {
+        case "app":        return Colors.colors.accent;
         case "command":    return Colors.colors.green;
         case "calculator": return Colors.colors.orange;
         case "symbol":     return Colors.colors.purple
@@ -100,6 +101,46 @@ Rectangle {
                 ParallelAnimation {
                     NumberAnimation { target: wispDot; property: "scale"; to: 1.0; duration: 900; easing.type: Easing.InOutSine }
                     NumberAnimation { target: wispDot; property: "opacity"; to: 1.0; duration: 900; easing.type: Easing.InOutSine }
+                }
+            }
+        }
+
+        // ---- App: a 2x2 tile grid with a ripple running through it ----
+        Grid {
+            id: appTiles
+            anchors.centerIn: parent
+            visible: root.shownMode === "app"
+            columns: 2
+            spacing: 3
+
+            Repeater {
+                model: 4
+
+                Rectangle {
+                    id: tile
+                    required property int index
+
+                    width: 8
+                    height: 8
+                    radius: 2.5
+                    color: root.modeColor
+                    transformOrigin: Item.Center
+
+                    // Tiles pulse in reading order, all on the same 1s loop.
+                    SequentialAnimation {
+                        running: appTiles.visible
+                        loops: Animation.Infinite
+                        PauseAnimation { duration: tile.index * 140 }
+                        ParallelAnimation {
+                            NumberAnimation { target: tile; property: "opacity"; to: 0.35; duration: 160; easing.type: Easing.InOutSine }
+                            NumberAnimation { target: tile; property: "scale"; to: 0.7; duration: 160; easing.type: Easing.InOutSine }
+                        }
+                        ParallelAnimation {
+                            NumberAnimation { target: tile; property: "opacity"; to: 1.0; duration: 220; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: tile; property: "scale"; to: 1.0; duration: 220; easing.type: Easing.OutBack }
+                        }
+                        PauseAnimation { duration: (3 - tile.index) * 140 + 200 }
+                    }
                 }
             }
         }
