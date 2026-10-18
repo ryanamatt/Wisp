@@ -27,14 +27,20 @@ Scope {
     property string runnerText: ""
 
     // Current mode, decided by the first character of the text field.
-    // "none" | "command" | "calculator"
+    // "none" (empty) | "app" (plain text) | "command" | "calculator" | "symbol"
     readonly property string mode: {
         const first = runnerText.charAt(0);
         if (first === ">") return "command";
         if (first === "=") return "calculator";
-        if (first === ":") return "symbol"
-        return "none";
+        if (first === ":") return "symbol";
+        if (runnerText.trim() === "") return "none";
+        return "app";
     }
+
+    // The app list is the default view. Set showRecentsWhenEmpty to false to
+    // keep the Runner as a bare bar until something is typed.
+    readonly property bool showRecentsWhenEmpty: true
+    readonly property bool appsOpen: mode === "app" || (mode === "none" && showRecentsWhenEmpty)
 
     // Calculator state that feeds RunnerCalcPopup.
     property bool calcSolvable: false
@@ -42,7 +48,7 @@ Scope {
     property real calcAnswer: 0
 
     // Bottom corners square off as either popup opens.
-    readonly property real popupCorners: Math.max(calcPopup.cornerProgress, symbolPopup.cornerProgress)
+    readonly property real popupCorners: Math.max(calcPopup.cornerProgress, symbolPopup.cornerProgress, appPopup.cornerProgress)
 
     function updateCalc() {
         calcSolvable = false;
@@ -95,6 +101,7 @@ Scope {
                 runnerScope.calcSolvable = false
                 calcPopup.snapClosed()
                 symbolPopup.snapClosed()
+                appPopup.snapClosed()
             }
         }
 
@@ -181,22 +188,38 @@ Scope {
                             // The text field keeps focus, so forward keys to
                             // whichever mode is active.
                             Keys.onPressed: event => {
-                                if (runnerScope.mode === "command") {
+                                switch (runnerScope.mode) {
+                                case "command":
                                     if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                                         runnerScope.runCommand();
                                         event.accepted = true;
                                     }
-                                    return;
-                                }
+                                    break;
 
-                                if (runnerScope.mode !== "symbol") return;
-                                switch (event.key) {
-                                case Qt.Key_Down:    symbolPopup.move(0, 1);  event.accepted = true; break;
-                                case Qt.Key_Up:      symbolPopup.move(0, -1); event.accepted = true; break;
-                                case Qt.Key_Tab:     symbolPopup.move(1, 0);  event.accepted = true; break;
-                                case Qt.Key_Backtab: symbolPopup.move(-1, 0); event.accepted = true; break;
-                                case Qt.Key_Return:
-                                case Qt.Key_Enter:   symbolPopup.activate();  event.accepted = true; break;
+                                case "symbol":
+                                    switch (event.key) {
+                                    case Qt.Key_Down:    symbolPopup.move(0, 1);  event.accepted = true; break;
+                                    case Qt.Key_Up:      symbolPopup.move(0, -1); event.accepted = true; break;
+                                    case Qt.Key_Tab:     symbolPopup.move(1, 0);  event.accepted = true; break;
+                                    case Qt.Key_Backtab: symbolPopup.move(-1, 0); event.accepted = true; break;
+                                    case Qt.Key_Return:
+                                    case Qt.Key_Enter:   symbolPopup.activate();  event.accepted = true; break;
+                                    }
+                                    break;
+
+                                case "app":
+                                case "none":
+                                    switch (event.key) {
+                                    case Qt.Key_Down:
+                                    case Qt.Key_Tab:      appPopup.move(1);                event.accepted = true; break;
+                                    case Qt.Key_Up:
+                                    case Qt.Key_Backtab:  appPopup.move(-1);               event.accepted = true; break;
+                                    case Qt.Key_PageDown: appPopup.move(appPopup.pageSize);  event.accepted = true; break;
+                                    case Qt.Key_PageUp:   appPopup.move(-appPopup.pageSize); event.accepted = true; break;
+                                    case Qt.Key_Return:
+                                    case Qt.Key_Enter:    appPopup.activate();             event.accepted = true; break;
+                                    }
+                                    break;
                                 }
                             }
 
@@ -220,6 +243,17 @@ Scope {
         open: runner.visible && runnerScope.calcSolvable
         expression: runnerScope.calcExpression
         answer: runnerScope.calcAnswer
+    }
+
+    RunnerAppPopup {
+        id: appPopup
+        screen: runnerScope.targetScreen
+        runnerWidth: runnerScope.runnerWidth
+        runnerHeight: runnerScope.runnerHeight
+        runnerTopMargin: runner.margins.top
+        open: runner.visible && runnerScope.appsOpen
+        query: runnerScope.appsOpen ? runnerScope.runnerText : ""
+        onAppLaunched: IpcState.runner.close()
     }
 
     RunnerSymbolPopup {
