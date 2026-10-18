@@ -159,6 +159,18 @@ Scope {
 
             readonly property real screenW: screen ? screen.width : 0
 
+            // Scale unit: 1.0 at 1920px wide. All sizes below are written
+            // as "pixels at 1080p" and scale with the monitor.
+            readonly property real u: screenW > 0 ? screenW / 1920 : 1
+
+            // Used to fade the content in when the lock appears.
+            property bool shown: false
+            Component.onCompleted: shown = true
+
+            // Glassy edge shared by the pills and the password box.
+            readonly property color glassBorder: Qt.alpha(Colors.colors.foreground, 0.2)
+            readonly property color glassFill: Qt.alpha(Colors.colors.surfaceInput, 0.6)
+
             // Desktop screenshot taken just before locking. Hidden because it
             // is only the source for the blur below.
             Image {
@@ -180,28 +192,43 @@ Scope {
                 blurEnabled: true
                 blur: 1.0
                 blurMax: 120
+                // Slightly richer and darker so the blur looks deliberate
+                // rather than washed out.
+                saturation: 0.15
+                brightness: -0.05
                 visible: screenshot.status === Image.Ready
             }
 
-            // Dim layer so the text stays readable over bright wallpapers.
+            // Theme tinted vignette: darker at the top and bottom edges where
+            // the battery pill and slogan sit, lighter through the middle.
             Rectangle {
                 anchors.fill: parent
-                color: Qt.rgba(0, 0, 0, 0.35)
                 visible: screenshot.status === Image.Ready
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Qt.alpha(Colors.colors.background, 0.55) }
+                    GradientStop { position: 0.5; color: Qt.alpha(Colors.colors.background, 0.35) }
+                    GradientStop { position: 1.0; color: Qt.alpha(Colors.colors.background, 0.65) }
+                }
             }
 
             ColumnLayout {
                 anchors.centerIn: parent
-                spacing: Math.round(screenW / 25)
+                spacing: Math.round(64 * lockSurface.u)
+
+                opacity: lockSurface.shown ? 1 : 0
+                Behavior on opacity {
+                    NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
+                }
 
                 ColumnLayout {
-                    spacing: Math.round(screenW * 0.001)
+                    Layout.alignment: Qt.AlignHCenter
+                    spacing: Math.round(6 * lockSurface.u)
 
                     Rectangle {
                         id: timeBox
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: Math.round(lockSurface.screenW * 0.17)
-                        Layout.preferredHeight: Math.round(Layout.preferredWidth * 0.15)
+                        Layout.preferredWidth: timeText.implicitWidth
+                        Layout.preferredHeight: timeText.implicitHeight
                         color: "transparent"
 
                         Text {
@@ -209,103 +236,124 @@ Scope {
                             anchors.centerIn: parent
                             text: Time.time
                             color: Colors.colors.accent
-                            font.pixelSize: Math.min(timeBox.width, timeBox.height)
+                            font.pixelSize: Math.max(1, Math.round(120 * lockSurface.u))
                             font.family: Config.font
-                            font.bold: true
+                            font.weight: Font.Light
+                            font.letterSpacing: -Math.round(3 * lockSurface.u)
                         }
                     }
 
                     Rectangle {
                         id: userBox
-                        Layout.preferredWidth: Math.round(lockSurface.screenW * 0.17)
-                        Layout.preferredHeight: Math.round(Layout.preferredWidth * 0.15)
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: userText.implicitWidth
+                        Layout.preferredHeight: userText.implicitHeight
                         color: "transparent"
-                        radius: width / 5
 
                         Text {
                             id: userText
                             anchors.centerIn: parent
                             text: Quickshell.env("USER")
                             color: Colors.colors.accent
-                            font.pixelSize: Math.min(timeBox.width, timeBox.height)
+                            font.pixelSize: Math.max(1, Math.round(30 * lockSurface.u))
                             font.family: Config.font
-                            font.bold: true
+                            font.weight: Font.Medium
+                            font.capitalization: Font.Capitalize
+                            font.letterSpacing: Math.round(1 * lockSurface.u)
                         }
                     }
 
                     Rectangle {
                         id: langBox
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: Math.round(lockSurface.screenW * 0.17)
-                        Layout.preferredHeight: Math.round(Layout.preferredWidth * 0.15)
-                        color: "transparent"
-                        radius: width / 5
+                        Layout.topMargin: Math.round(6 * lockSurface.u)
+                        Layout.preferredWidth: langText.implicitWidth + Math.round(28 * lockSurface.u)
+                        Layout.preferredHeight: langText.implicitHeight + Math.round(12 * lockSurface.u)
+                        radius: height / 2
+                        color: Qt.alpha(Colors.colors.surfaceInput, 0.45)
+                        border.width: 1
+                        border.color: lockSurface.glassBorder
 
                         Text {
                             id: langText
                             anchors.centerIn: parent
                             text: Quickshell.env("LANG").slice(0, 2)
-                            color: Colors.colors.accent
-                            font.pixelSize: Math.min(langBox.width, langBox.height) / 3
+                            color: Colors.colors.foregroundMuted
+                            font.pixelSize: Math.max(1, Math.round(15 * lockSurface.u))
                             font.family: Config.font
-                            font.bold: true
+                            font.weight: Font.DemiBold
+                            font.capitalization: Font.AllUppercase
+                            font.letterSpacing: Math.round(2 * lockSurface.u)
                         }
                     }
 
                 }
 
                 ColumnLayout {
+                    Layout.alignment: Qt.AlignHCenter
                     spacing: 0
 
                     Rectangle {
                         id: passwordBox
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: Math.round(lockSurface.screenW * 0.17)
-                        Layout.preferredHeight: Math.round(Layout.preferredWidth * 0.15)
-                        radius: height * 0.25
-                        color: Colors.colors.surfaceInput
-                        border.width: 2
+                        Layout.preferredWidth: Math.round(380 * lockSurface.u)
+                        Layout.preferredHeight: Math.round(54 * lockSurface.u)
+                        radius: height / 2
+                        // Frosted glass, tinted red while an error is showing.
+                        color: root.failed
+                            ? Qt.alpha(Colors.colors.error, 0.14)
+                            : lockSurface.glassFill
+                        border.width: root.failed ? 2 : 1
                         border.color: root.failed
                             ? Colors.colors.error
                             : input.activeFocus
                                 ? Colors.colors.borderActive
-                                : Colors.colors.border
+                                : lockSurface.glassBorder
 
                         // Use opacity rather than visible so the TextInput keeps
                         // keyboard focus while the box is hidden.
                         opacity: root.passwordVisible ? 1 : 0
+                        scale: root.passwordVisible ? 1 : 0.96
                         Behavior on opacity { NumberAnimation { duration: 200 } }
-
+                        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                        Behavior on color { ColorAnimation { duration: 150 } }
                         Behavior on border.color { ColorAnimation { duration: 120 } }
 
                         Text {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
+                            anchors.leftMargin: passwordBox.height / 2
+                            anchors.rightMargin: passwordBox.height / 2
+                            horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             visible: input.text.length === 0
                             text: pam.active ? "Checking..." : "Password"
                             color: Colors.colors.foregroundSubtle
-                            font.pixelSize: 16
+                            font.pixelSize: Math.max(1, Math.round(17 * lockSurface.u))
                             font.family: Config.font
+                            font.letterSpacing: Math.round(1 * lockSurface.u)
                         }
 
                         TextInput {
                             id: input
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
+                            anchors.leftMargin: passwordBox.height / 2
+                            anchors.rightMargin: passwordBox.height / 2
+                            horizontalAlignment: TextInput.AlignHCenter
                             verticalAlignment: TextInput.AlignVCenter
                             echoMode: TextInput.Password
-                            passwordCharacter: "∗"
+                            passwordCharacter: "•"
                             color: Colors.colors.foreground
                             selectionColor: Colors.colors.selected
                             selectedTextColor: Colors.colors.foreground
-                            font.pixelSize: 16
+                            font.pixelSize: Math.max(1, Math.round(20 * lockSurface.u))
                             font.family: Config.font
+                            font.letterSpacing: Math.round(4 * lockSurface.u)
                             clip: true
                             focus: true
                             enabled: !pam.active
+                            // Dim the dots while the password is being checked.
+                            opacity: pam.active ? 0.5 : 1
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
 
                             onTextEdited: {
                                 root.failed = false
@@ -336,11 +384,13 @@ Scope {
 
                     Text {
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.topMargin: 12
+                        Layout.topMargin: Math.round(14 * lockSurface.u)
                         text: "Incorrect password"
                         color: Colors.colors.error
-                        font.pixelSize: 14
+                        font.pixelSize: Math.max(1, Math.round(15 * lockSurface.u))
                         font.family: Config.font
+                        font.weight: Font.Medium
+                        font.letterSpacing: Math.round(0.5 * lockSurface.u)
                         opacity: root.failed ? 1 : 0
                         Behavior on opacity { NumberAnimation { duration: 120 } }
                     }
@@ -362,25 +412,31 @@ Scope {
                 readonly property int percent: Battery.laptopBattery.percent !== undefined
                     ? Battery.laptopBattery.percent
                     : 0
-                readonly property real iconSize: Math.round(lockSurface.screenW * 0.014)
+                readonly property bool low: percent <= 20 && !charging
+                readonly property real iconSize: Math.round(22 * lockSurface.u)
 
                 // Pill styling matches the password box.
                 readonly property real padX: Math.round(iconSize * 0.9)
-                readonly property real padY: Math.round(iconSize * 0.45)
+                readonly property real padY: Math.round(iconSize * 0.5)
 
                 x: Math.round(lockSurface.screenW * xFraction - width / 2)
-                y: Math.round(lockSurface.screenW * 0.03)
+                y: Math.round(56 * lockSurface.u)
                 width: batteryRow.implicitWidth + padX * 2
                 height: batteryRow.implicitHeight + padY * 2
                 radius: height / 2
-                color: Colors.colors.surfaceInput
-                border.width: 2
-                border.color: Colors.colors.border
+                color: low ? Qt.alpha(Colors.colors.error, 0.14) : lockSurface.glassFill
+                border.width: 1
+                border.color: low ? Qt.alpha(Colors.colors.error, 0.7) : lockSurface.glassBorder
+
+                opacity: lockSurface.shown ? 1 : 0
+                Behavior on opacity {
+                    NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
+                }
 
                 RowLayout {
                     id: batteryRow
                     anchors.centerIn: parent
-                    spacing: Math.round(batteryBox.iconSize * 0.3)
+                    spacing: Math.round(batteryBox.iconSize * 0.35)
 
                     Image {
                         visible: batteryBox.charging
@@ -403,11 +459,14 @@ Scope {
 
                     Text {
                         text: batteryBox.percent + "%"
-                        color: batteryBox.percent <= 20 && !batteryBox.charging
+                        color: batteryBox.low
                             ? Colors.colors.error
-                            : Colors.colors.accent
-                        font.pixelSize: Math.round(batteryBox.iconSize * 0.95)
+                            : batteryBox.charging
+                                ? Colors.colors.success
+                                : Colors.colors.foreground
+                        font.pixelSize: Math.max(1, Math.round(batteryBox.iconSize * 0.85))
                         font.family: Config.font
+                        font.weight: Font.Medium
                     }
                 }
             }
@@ -416,19 +475,26 @@ Scope {
                 id: sloganBox
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: Math.round(lockSurface.screenW * 0.11)
-                width: Math.round(lockSurface.screenW * 0.17)
-                height: Math.round(width * 0.15)
+                anchors.bottomMargin: Math.round(96 * lockSurface.u)
+                width: sloganText.implicitWidth
+                height: sloganText.implicitHeight
                 color: "transparent"
+
+                opacity: lockSurface.shown ? 0.85 : 0
+                Behavior on opacity {
+                    NumberAnimation { duration: 800; easing.type: Easing.OutCubic }
+                }
 
                 Text {
                     id: sloganText
                     anchors.centerIn: parent
                     text: "Keep Following The Strange Light"
                     color: Colors.colors.accentAlt
-                    font.pixelSize: Math.min(sloganBox.width, sloganBox.height) * 0.4
+                    font.pixelSize: Math.max(1, Math.round(16 * lockSurface.u))
                     font.family: Config.font
-                    font.bold: true
+                    font.weight: Font.Medium
+                    font.capitalization: Font.AllUppercase
+                    font.letterSpacing: Math.round(4 * lockSurface.u)
                 }
             }
         }
