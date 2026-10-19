@@ -19,22 +19,10 @@ inline constexpr bool kDefaultPackagesNotifyEveryDay = false;
 inline constexpr const int kDefaultBatteryWarnPerc = 30;
 inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
 
-// One entry in the app launcher's grid.
-struct AppEntry {
-    std::string name;
-    std::vector<std::string> command;
-    std::string icon;
-};
-
-// The launcher's built-in app list, used whenever config.json has no
-// (valid) appLauncher.apps array of its own.
-std::vector<AppEntry> defaultApps();
-
 struct Config {
     std::string timeFormat = kDefaultTimeFormat;
     std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;
-    std::vector<AppEntry> apps = defaultApps();
     std::string wallpaperDir;
     bool packagesNotifyOnStartUp = kDefaultPackagesNotifyOnStartUp;
     bool packagesNotifyEveryDay = kDefaultPackagesNotifyEveryDay;

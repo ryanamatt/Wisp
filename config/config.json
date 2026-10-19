@@ -14,18 +14,5 @@
     "battery": {
         "warnPercentage": 30,
         "autoPowerSaver": true
-    },
-    "appLauncher": {
-        "apps": [
-            { "name": "Chrome", "command": ["google-chrome-stable"], "icon": "google-chrome" },
-            { "name": "Discord", "command": ["discord"], "icon": "discord" },
-            { "name": "Spotify", "command": ["spotify-launcher"], "icon": "spotify-launcher" },
-            { "name": "Obsidian", "command": ["flatpak", "run", "md.obsidian.Obsidian"], "icon": "md.obsidian.Obsidian" },
-            { "name": "VS Code", "command": ["code"], "icon": "vscode" },
-            { "name": "OBS Studio", "command": ["flatpak", "run", "com.obsproject.Studio"], "icon": "com.obsproject.Studio" },
-            { "name": "Steam", "command": ["steam"], "icon": "steam" },
-            { "name": "Dolphin", "command": ["dolphin"], "icon": "org.kde.dolphin" },
-            { "name": "Polychromatic", "command": ["polychromatic-controller"], "icon": "polychromatic" }
-        ]
     }
 }

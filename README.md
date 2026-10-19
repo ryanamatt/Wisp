@@ -102,7 +102,6 @@ Every widget below can be controlled with `wisp open <target>`, `wisp close <tar
 | Target | Controls |
 |---|---|
 | `calendar` | Time / workspace popup (calendar view) |
-| `appLauncher` | App launcher |
 | `powerMenu` | Power menu |
 | `audioPlayer` | Audio widget |
 | `systemMonitor` | System monitor widget |

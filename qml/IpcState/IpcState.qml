@@ -9,7 +9,7 @@ import QtQuick
 Singleton {
 
     property PopupState timeWorkspace: PopupState { ipcName: "calendar" }
-    property PopupState appLauncher: PopupState { ipcName: "appLauncher" }
+    property PopupState actionWidget: PopupState { ipcName: "action" }
     property PopupState powerMenu: PopupState { ipcName: "powerMenu" }
     property PopupState audioWidget: PopupState { ipcName: "audioPlayer" }
     property PopupState systemMonitorWidget: PopupState { ipcName: "systemMonitor" }
