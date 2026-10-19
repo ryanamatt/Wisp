@@ -127,7 +127,7 @@ PanelWindow {
             anchors.centerIn: parent
             width: Math.min(840, parent.width - 80)
             height: Math.min(360, parent.height - 80)
-            radius: 14
+            radius: width / 8
             color: Colors.colors.background
             border.color: Colors.colors.border
             border.width: 2
