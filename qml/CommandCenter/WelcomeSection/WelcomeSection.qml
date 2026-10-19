@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import "../../Colors"
 import "../../Effects"
 import "../../Config"
@@ -29,6 +30,26 @@ ColumnLayout {
         if (hour < 17) return "Good Afternoon"
         if (hour < 21) return "Good Evening"
         return "Good Night"
+    }
+
+    property string currentJoke: ""
+
+    function pickJoke(raw) {
+        const jokes = raw.split("\n")
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+
+        root.currentJoke = jokes.length > 0
+            ? jokes[Math.floor(Math.random() * jokes.length)]
+            : ""
+    }
+
+    FileView {
+        id: jokeFile
+        path: Quickshell.env("HOME") + "/.config/wisp/jokes.txt"
+
+        onLoaded: root.pickJoke(text())
+        onLoadFailed: root.currentJoke = ""
     }
 
     Timer {
@@ -64,6 +85,23 @@ ColumnLayout {
             sourceSize.width: 256
             fillMode: Image.PreserveAspectFit
         }
+    }
+
+    Text {
+        id: jokeText
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+        Layout.leftMargin: 30
+        Layout.rightMargin: 30
+
+        visible: root.currentJoke !== ""
+        text: root.currentJoke
+        wrapMode: Text.WordWrap
+        horizontalAlignment: Text.AlignHCenter
+        font.pixelSize: 15
+        font.italic: true
+        font.family: Config.font
+        color: Colors.colors.foregroundMuted
     }
 
     Item {
