@@ -12,7 +12,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    iconText.text: "T"
+    iconText.text: "A"
 
     isOpenHere: IpcState.actionWidget.isOpenOn(actionWidget.screen)
 
