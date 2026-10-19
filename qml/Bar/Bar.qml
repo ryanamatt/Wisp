@@ -7,7 +7,7 @@ import QtQuick.Layouts
 import "../Colors"
 import "../Config"
 import "TimeWorkspace"
-import "AppLauncher"
+import "Action"
 import "PowerMenu"
 import "Notifications"
 import "Audio"
@@ -46,7 +46,7 @@ Variants {
             // Math Based on a 1920x1080 Monitor
 
             // ~3.95% (75px)
-            AppsWidget { 
+            ActionWidget { 
                 screen: bar.modelData 
                 implicitWidth: rowLayout.width * (75 / 1900)
             }
