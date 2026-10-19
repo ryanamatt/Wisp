@@ -1,4 +1,4 @@
-// qml/bar/AppactionPopup/ActionWidget.qml
+// qml/bar/ActionWidget/ActionWidget.qml
 
 import QtQuick
 import Quickshell

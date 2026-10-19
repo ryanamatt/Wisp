@@ -100,7 +100,7 @@ Singleton {
     }
 
     // Applies every pending setting to the live bar and rewrites
-    // config.json, leaving unrelated keys (font, wallpaper, apps...) as
+    // config.json, leaving unrelated keys (font, wallpaper, ...) as
     // they were.
     function save() {
         if (!dirty) return
