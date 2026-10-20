@@ -8,6 +8,7 @@
 namespace wisp::env {
 
 // Config
+inline constexpr const char *kConfigPath = "WISP_CONFIG_PATH";
 inline constexpr const char *kTimeFormat = "WISP_TIME_FORMAT";
 inline constexpr const char *kBarOrientation = "WISP_BAR_ORIENTATION";
 inline constexpr const char *kFont = "WISP_FONT";

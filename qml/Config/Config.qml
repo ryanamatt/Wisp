@@ -19,7 +19,10 @@ Singleton {
     }
 
     readonly property string home: Quickshell.env("HOME")
-    readonly property string configPath: home + "/.config/wisp/config.json"
+    readonly property string xdgConfigHome: Quickshell.env("XDG_CONFIG_HOME")
+    readonly property string configPath: Quickshell.env("WISP_CONFIG_PATH")
+        || (xdgConfigHome ? xdgConfigHome + "/wisp/config.json"
+            : home + "/.config/wisp/config.json")
 
     property string timeFormat: Quickshell.env("WISP_TIME_FORMAT") || "ddd MMM d hh:mm:ss AP"
     property string pendingTimeFormat: timeFormat
