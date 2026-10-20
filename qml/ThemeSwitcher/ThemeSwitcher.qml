@@ -5,6 +5,7 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Effects
 import "../Colors"
 import "../IpcState"
 import "../Config"
@@ -159,7 +160,7 @@ PanelWindow {
                     Layout.fillHeight: true
                     orientation: ListView.Horizontal
                     model: wallpaperModel
-                    spacing: 15
+                    spacing: 10
                     clip: true
                     focus: true
 
@@ -188,22 +189,48 @@ PanelWindow {
                         readonly property bool isFocused: index === window.focusedIndex
 
                         Rectangle {
+                            id: cardRect
                             anchors.fill: parent
-                            radius: 8
+                            radius: width / 4
                             color: Colors.colors.surface
                             border.color: isFocused ? Colors.colors.accent : Colors.colors.borderSoft
                             border.width: isFocused ? 3 : 1
-                            clip: true
 
-                            Image {
+                            // Container for the masked image
+                            Item {
                                 anchors.fill: parent
                                 anchors.margins: 4
-                                source: filePath ? "file://" + filePath : ""
-                                fillMode: Image.PreserveAspectCrop
-                                asynchronous: true
-                                cache: true
-                                sourceSize.height: 400
                                 visible: !isRandom
+
+                                // The source image (must be hidden so MultiEffect renders it)
+                                Image {
+                                    id: wallpaperImage
+                                    anchors.fill: parent
+                                    source: filePath ? "file://" + filePath : ""
+                                    fillMode: Image.PreserveAspectCrop
+                                    asynchronous: true
+                                    cache: true
+                                    sourceSize.height: 400
+                                    visible: false 
+                                }
+
+                                // The mask source (must be a separate sibling with layer enabled)
+                                Rectangle {
+                                    id: maskRect
+                                    anchors.fill: parent
+                                    radius: cardRect.radius - 4
+                                    color: "white"
+                                    visible: false
+                                    layer.enabled: true 
+                                }
+
+                                // The MultiEffect combining them
+                                MultiEffect {
+                                    anchors.fill: parent
+                                    source: wallpaperImage
+                                    maskEnabled: true
+                                    maskSource: maskRect
+                                }
                             }
 
                             ColumnLayout {
