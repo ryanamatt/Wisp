@@ -21,6 +21,12 @@ Scope {
         return Quickshell.screens[0];
     }
 
+    HyprlandFocusGrab {
+        windows: [runner, appPopup, calcPopup, symbolPopup]
+        active: runner.visible
+        onCleared: IpcState.runner.close()
+    }
+
     readonly property int runnerWidth: 400
     readonly property int runnerHeight: 100
 
@@ -73,6 +79,11 @@ Scope {
 
         Quickshell.execDetached(["bash", "-c", cmd]);
         IpcState.runner.close();
+    }
+
+    onModeChanged: {
+        if (runner.visible)
+            Qt.callLater(() => textField.forceActiveFocus())
     }
 
     PanelWindow {
