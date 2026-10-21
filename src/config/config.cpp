@@ -54,7 +54,7 @@ void readInt(const nlohmann::json &j, const char *key, const std::string &label,
     out = static_cast<int>(value);
 }
 
-void exportEnv(const Config &cfg, const std::string & path) {
+void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kConfigPath, path.c_str(), 1);
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
