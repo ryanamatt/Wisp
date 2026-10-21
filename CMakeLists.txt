@@ -160,3 +160,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/
     DESTINATION ${WISP_SHARE_DIR}/assets
     USE_SOURCE_PERMISSIONS
 )
+
+install(FILES ${CMAKE_SOURCE_DIR}/config/jokes.txt
+    DESTINATION ${WISP_SHARE_DIR}/config
+)
