@@ -13,6 +13,7 @@ ColumnLayout {
     id: root
 
     anchors.fill: parent
+    anchors.margins: 30
     clip: true
     spacing: 120
 
