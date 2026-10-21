@@ -12,7 +12,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    iconText.text: "A"
+    iconImage.source: Icons.getIcon("action")
 
     isOpenHere: IpcState.actionWidget.isOpenOn(actionWidget.screen)
 
@@ -38,8 +38,8 @@ BarWidgetContainer {
         widget: actionWidget
         centered: false
         cornerRadius: 40
-        implicitWidth: 400
-        implicitHeight: 300
+        implicitWidth: 250
+        implicitHeight: 150
 
         ActionPopup {
             id: action
