@@ -580,9 +580,7 @@ void SystemMonitorWorker::updateSystem() {
     getGpuStats();
     getNetworkStats();
 
-    if (!m_lowPower) {
-        getPartitions();
-    }
+    if (!m_lowPower) { getPartitions(); }
 
     emit statsReady(systemStats, partitionsAsVariantList());
 }
@@ -607,7 +605,8 @@ SystemMonitor::SystemMonitor(QObject *parent) : QObject(parent) {
     // Clean up the worker once the thread is done.
     connect(&m_workerThread, &QThread::finished, worker, &QObject::deleteLater);
 
-    connect(this, &SystemMonitor::lowPowerModeRequested, worker, &SystemMonitorWorker::setLowPowerMode, Qt::QueuedConnection);
+    connect(this, &SystemMonitor::lowPowerModeRequested, worker, &SystemMonitorWorker::setLowPowerMode,
+            Qt::QueuedConnection);
 
     m_workerThread.start();
 }

@@ -131,7 +131,9 @@ public:
     explicit SystemMonitor(QObject *parent = nullptr);
     ~SystemMonitor() override;
 
-    bool lowPowerMode() const { return m_lowPowerMode; }
+    bool lowPowerMode() const {
+        return m_lowPowerMode;
+    }
     Q_INVOKABLE void setLowPowerMode(bool enabled);
 
     double cpuTemp() const;
