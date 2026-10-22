@@ -1,0 +1,10 @@
+Why do programmers prefer dark mode? Because light attracts bugs.
+There are 10 types of people in the world: those who understand binary, and those who don't.
+A SQL query walks into a bar, walks up to two tables, and asks: "Can I join you?"
+Why do Java developers wear glasses? Because they don't C#.
+There are two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.
+An optimist says "The glass is half full." A pessimist says "The glass is half empty." A programmer says "The glass is twice as large as necessary."
+[!false] - It's funny because it's true.
+Why was the JavaScript developer sad? Because he didn't Know how to 'null' his feelings and couldn't find his 'this'.
+Real programmers count from 0.
+Debugging: Being the detective in a crime movie where you are also the murderer.

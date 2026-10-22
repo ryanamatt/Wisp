@@ -76,6 +76,16 @@ else
     info "Existing config found at ${CONFIG_DIR}/config.json, leaving it alone"
 fi
 
+if [[ ! -f "${CONFIG_DIR}/jokes.txt" ]]; then
+    if [[ -f "${SCRIPT_DIR}/config/jokes.txt" ]]; then
+        info "Seeding default jokes at ${CONFIG_DIR}/jokes.txt"
+        mkdir -p "${CONFIG_DIR}"
+        cp "${SCRIPT_DIR}/config/jokes.txt" "${CONFIG_DIR}/jokes.txt"
+    fi
+else
+    info "Existing jokes file found at ${CONFIG_DIR}/jokes.txt, leaving it alone"
+fi
+
 case ":${PATH}:" in
     *":${INSTALL_BIN_DIR}:"*)
         ;;
