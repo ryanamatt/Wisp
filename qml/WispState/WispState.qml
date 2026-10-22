@@ -4,6 +4,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Wisp.System
 
 Singleton {
@@ -11,17 +12,17 @@ Singleton {
 
     property bool gameMode: false
 
+    Process {
+        id: hyprGameMode
+        command: ["sh", "-c", "hyprctl repl 'gameMode()'"]
+    }
+
     function toggleGameMode() {
-        if (wispState.gameMode) {
-            wispState.gameMode = false
+        wispState.gameMode = !wispState.gameMode
 
-            SystemMonitor.setLowPowerMode(wispState.gameMode)
-
-            return
-        }
-
-        wispState.gameMode = true
         SystemMonitor.setLowPowerMode(wispState.gameMode)
+        hyprGameMode.running = true
+
     }
 }
 

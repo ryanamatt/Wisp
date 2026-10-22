@@ -12,8 +12,6 @@ import "../../WispState"
 BarPopup {
     id: root
 
-    property bool tempCondition: false
-
     signal requestClose()
     property int currentIndex: 0
 
@@ -33,7 +31,7 @@ BarPopup {
             Image {
                 id: gameModeImage
 
-                source: tempCondition ? Icons.getIcon("gameModeOn") :
+                source: WispState.gameMode ? Icons.getIcon("gameModeOn") :
                     Icons.getIcon("gameModeOff")
                 sourceSize.width: width * Screen.devicePixelRatio
                 sourceSize.height: height * Screen.devicePixelRatio
@@ -47,7 +45,7 @@ BarPopup {
 
                 condition: WispState.gameMode
                 label: "Game Mode"
-                onToggled: (newValue) => WispState.gameMode = newValue
+                onToggled: WispState.toggleGameMode()
             }
 
         }

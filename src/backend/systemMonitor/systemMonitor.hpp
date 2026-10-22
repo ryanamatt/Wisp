@@ -132,7 +132,7 @@ public:
     ~SystemMonitor() override;
 
     bool lowPowerMode() const { return m_lowPowerMode; }
-    void setLowPowerMode(bool enabled);
+    Q_INVOKABLE void setLowPowerMode(bool enabled);
 
     double cpuTemp() const;
     double cpuUsage() const;
