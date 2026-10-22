@@ -7,6 +7,7 @@ import QtQuick.Controls
 import "../../Colors"
 import "../../Components"
 import "../../Icons"
+import "../../WispState"
 
 BarPopup {
     id: root
@@ -44,9 +45,9 @@ BarPopup {
             ToggleButton {
                 id: gameModeButton
 
-                condition: tempCondition
+                condition: WispState.gameMode
                 label: "Game Mode"
-                onToggled: (newValue) => tempCondition = newValue
+                onToggled: (newValue) => WispState.gameMode = newValue
             }
 
         }

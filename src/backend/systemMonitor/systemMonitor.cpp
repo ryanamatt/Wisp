@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <qnamespace.h>
 #include <sstream>
 #include <stdio.h>
 #include <string>
@@ -117,6 +118,12 @@ void SystemMonitorWorker::start() {
     m_timer->setInterval(1000);
     connect(m_timer, &QTimer::timeout, this, &SystemMonitorWorker::updateSystem);
     m_timer->start();
+}
+
+void SystemMonitorWorker::setLowPowerMode(bool enabled) {
+    if (m_lowPower == enabled) return;
+    m_lowPower = enabled;
+    if (m_timer) m_timer->setInterval(enabled ? 5000 : 1000);
 }
 
 void SystemMonitorWorker::getCpuTemp() {
@@ -337,11 +344,16 @@ void SystemMonitorWorker::getNetworkStats() {
         return;
     }
 
+    auto now = std::chrono::steady_clock::now();
     if (m_hasPrevNetSample && rxTotal >= m_prevRxBytes && txTotal >= m_prevTxBytes) {
-        systemStats.netRxBytesPerSec = static_cast<double>(rxTotal - m_prevRxBytes);
-        systemStats.netTxBytesPerSec = static_cast<double>(txTotal - m_prevTxBytes);
+        double elapsed = std::chrono::duration<double>(now - m_prevNetSampleTime).count();
+        if (elapsed > 0.0) {
+            systemStats.netRxBytesPerSec = (rxTotal - m_prevRxBytes) / elapsed;
+            systemStats.netTxBytesPerSec = (txTotal - m_prevTxBytes) / elapsed;
+        }
     }
 
+    m_prevNetSampleTime = now;
     m_prevRxBytes = rxTotal;
     m_prevTxBytes = txTotal;
     m_hasPrevNetSample = true;
@@ -565,9 +577,12 @@ void SystemMonitorWorker::updateSystem() {
     getMemoryUsage();
     getUptime();
     getLoadAverage();
-    getPartitions();
     getGpuStats();
     getNetworkStats();
+
+    if (!m_lowPower) {
+        getPartitions();
+    }
 
     emit statsReady(systemStats, partitionsAsVariantList());
 }
@@ -592,12 +607,21 @@ SystemMonitor::SystemMonitor(QObject *parent) : QObject(parent) {
     // Clean up the worker once the thread is done.
     connect(&m_workerThread, &QThread::finished, worker, &QObject::deleteLater);
 
+    connect(this, &SystemMonitor::lowPowerModeRequested, worker, &SystemMonitorWorker::setLowPowerMode, Qt::QueuedConnection);
+
     m_workerThread.start();
 }
 
 SystemMonitor::~SystemMonitor() {
     m_workerThread.quit();
     m_workerThread.wait();
+}
+
+void SystemMonitor::setLowPowerMode(bool enabled) {
+    if (m_lowPowerMode == enabled) return;
+    m_lowPowerMode = enabled;
+    emit lowPowerModeChanged();
+    emit lowPowerModeRequested(enabled);
 }
 
 double SystemMonitor::cpuTemp() const {
