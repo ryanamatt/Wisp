@@ -27,7 +27,7 @@ BarPopup {
         // ----- Toggle + Clear row -----
         RowLayout {
             id: headerRow
-            Layout.margins: 5
+            Layout.margins: 15
             Layout.fillWidth: true
             Layout.preferredHeight: 22
             spacing: 8
