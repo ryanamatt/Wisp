@@ -68,7 +68,7 @@ Rectangle {
                 spacing: 4
 
                 Image {
-                    source: Icons.getIcon("arrowDown")
+                    source: Icons.getIcon("ui/arrowDown")
                     sourceSize.width: width * Screen.devicePixelRatio
                     sourceSize.height: height * Screen.devicePixelRatio
 
@@ -97,7 +97,7 @@ Rectangle {
                 spacing: 4
 
                 Image {
-                    source: Icons.getIcon("arrowUp")
+                    source: Icons.getIcon("ui/arrowUp")
                     sourceSize.width: width * Screen.devicePixelRatio
                     sourceSize.height: height * Screen.devicePixelRatio
 

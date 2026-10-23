@@ -39,7 +39,7 @@ BarWidgetContainer {
             Layout.preferredWidth: 14
             Layout.preferredHeight: 14
             fillMode: Image.PreserveAspectFit
-            source: Icons.getIcon("electricBolt")
+            source: Icons.getIcon("ui/electricBolt")
         }
 
         Image {
@@ -50,7 +50,7 @@ BarWidgetContainer {
             fillMode: Image.PreserveAspectFit
             source: batteryWidget.currentAccessory
                 ? Icons.getIcon(batteryWidget.currentAccessory.icon)
-                : Icons.getIcon("laptop")
+                : Icons.getIcon("hardware/laptop")
         }
 
         Text {

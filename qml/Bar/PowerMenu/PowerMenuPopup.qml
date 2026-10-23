@@ -35,35 +35,35 @@ BarPopup {
         {
             id: "lock",
             label: "Lock",
-            glyph: "lock",
+            glyph: "ui/lock",
             colorKey: "accent",
             command: [Quickshell.env("WISP_SHARE_DIR") + "/scripts/wisp_safe_lock.sh"]
         },
         {
             id: "sleep",
             label: "Sleep",
-            glyph: "moon",
+            glyph: "ui/moon",
             colorKey: "info",
             command: ["systemctl", "suspend"]
         },
         {
             id: "logout",
             label: "Log Out",
-            glyph: "logout",
+            glyph: "ui/logout",
             colorKey: "accentAlt",
             command: ["hyprctl", "dispatch", "hl.dsp.exit()"]
         },
         {
             id: "reboot",
             label: "Reboot",
-            glyph: "reboot",
+            glyph: "ui/reboot",
             colorKey: "warning",
             command: ["systemctl", "reboot"]
         },
         {
             id: "shutdown",
             label: "Shut Down",
-            glyph: "powerButton",
+            glyph: "ui/powerButton",
             colorKey: "error",
             command: ["systemctl", "poweroff"]
         }

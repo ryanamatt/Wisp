@@ -120,9 +120,9 @@ BarPopup {
                 spacing: 8
 
                 Image {
-                    source: networkPopup.connectionType === "ethernet" ? Icons.getIcon("ethernet")
-                    : networkPopup.connectionType === "wifi" ? Icons.getIcon("wifi")
-                    : Icons.getIcon("wifiOff")
+                    source: networkPopup.connectionType === "ethernet" ? Icons.getIcon("wifi/ethernet")
+                    : networkPopup.connectionType === "wifi" ? Icons.getIcon("wifi/wifi")
+                    : Icons.getIcon("wifi/wifiOff")
                     Layout.alignment: Qt.AlignVCenter
 
                     Layout.preferredWidth: innerLayout.width * 0.1
@@ -161,7 +161,7 @@ BarPopup {
 
                 Image {
                     id: refreshIcon
-                    source: Icons.getIcon("refresh")
+                    source: Icons.getIcon("ui/refresh")
                     Layout.alignment: Qt.AlignVCenter
 
                     sourceSize.width: width * Screen.devicePixelRatio
@@ -387,9 +387,9 @@ BarPopup {
                             spacing: 8
 
                             Image {
-                                source: entryDelegate.modelData.signal >= 70 ? Icons.getIcon("wifi")
-                                    : entryDelegate.modelData.signal >= 40 ? Icons.getIcon("wifi2Bar")
-                                    : Icons.getIcon("wifi1Bar")
+                                source: entryDelegate.modelData.signal >= 70 ? Icons.getIcon("wifi/wifi")
+                                    : entryDelegate.modelData.signal >= 40 ? Icons.getIcon("wifi/wifi2Bar")
+                                    : Icons.getIcon("wifi/wifi1Bar")
                                 Layout.alignment: Qt.AlignVCenter
                                 opacity: Math.max(0.35, entryDelegate.modelData.signal / 100)
 
@@ -411,7 +411,7 @@ BarPopup {
 
                             Image {
                                 visible: entryDelegate.modelData.secured
-                                source: Icons.getIcon("lock")
+                                source: Icons.getIcon("ui/lock")
                                 Layout.alignment: Qt.AlignVCenter
 
                                 sourceSize.width: width * Screen.devicePixelRatio

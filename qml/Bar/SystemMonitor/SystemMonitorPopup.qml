@@ -49,7 +49,7 @@ BarPopup {
                     spacing: 4
 
                     Image {
-                        source: Icons.getIcon("arrowDown")
+                        source: Icons.getIcon("ui/arrowDown")
                         sourceSize.width: width * Screen.devicePixelRatio
                         sourceSize.height: height * Screen.devicePixelRatio
 
@@ -78,7 +78,7 @@ BarPopup {
                     spacing: 4
 
                     Image {
-                        source: Icons.getIcon("arrowUp")
+                        source: Icons.getIcon("ui/arrowUp")
                         sourceSize.width: width * Screen.devicePixelRatio
                         sourceSize.height: height * Screen.devicePixelRatio
 
@@ -108,7 +108,7 @@ BarPopup {
             MonitorLayout {
                 id: cpuLayout
 
-                icon: Icons.getIcon("devBoard")
+                icon: Icons.getIcon("hardware/devBoard")
                 name: "CPU"
                 beforeBarText: SystemMonitor.cpuTemp + "°C"
                 afterBarText: SystemMonitor.cpuUsage.toFixed(1) + "%"
@@ -120,7 +120,7 @@ BarPopup {
             MonitorLayout {
                 id: gpuLayout
 
-                icon: Icons.getIcon("devBoard")
+                icon: Icons.getIcon("hardware/devBoard")
                 name: "GPU"
                 beforeBarText: SystemMonitor.gpuTemp + "°C"
                 afterBarText: SystemMonitor.gpuUsage.toFixed(1) + "%"
@@ -132,7 +132,7 @@ BarPopup {
             MonitorLayout {
                 id: memoryLayout
 
-                icon: Icons.getIcon("memory")
+                icon: Icons.getIcon("hardware/memory")
                 name: "MEM"
                 afterBarText: Utils.formatSizePair(SystemMonitor.memUsed, SystemMonitor.memTotal)
                 barValue: (SystemMonitor.memUsed / SystemMonitor.memTotal) * 100
@@ -144,7 +144,7 @@ BarPopup {
                 MonitorLayout {
                     required property var modelData
 
-                    icon: Icons.getIcon("hardDrive")
+                    icon: Icons.getIcon("hardware/hardDrive")
                     name: modelData.mountpoint  === "/" ? "disk" : modelData.mountpoint
                     afterBarText: Utils.formatSizePair(modelData.used, modelData.total)
                     barValue: modelData.total > 0 ? (modelData.used / modelData.total) * 100 : -1

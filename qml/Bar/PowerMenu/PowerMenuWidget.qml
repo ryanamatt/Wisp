@@ -12,7 +12,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    iconImage.source: Icons.getIcon("powerButton")
+    iconImage.source: Icons.getIcon("ui/powerButton")
     iconImage.width: powerMenu.width * 0.5
 
     isOpenHere: IpcState.powerMenu.isOpenOn(powerMenu.screen)

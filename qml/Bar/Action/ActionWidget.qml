@@ -12,7 +12,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    iconImage.source: Icons.getIcon("action")
+    iconImage.source: Icons.getIcon("ui/action")
 
     isOpenHere: IpcState.actionWidget.isOpenOn(actionWidget.screen)
 
