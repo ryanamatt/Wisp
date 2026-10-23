@@ -23,7 +23,7 @@ BarWidgetContainer {
         },
         {
             id: "overcast",
-            codes: [116],
+            codes: [116, 149],
             icon: "overcast"
         },
         { 
