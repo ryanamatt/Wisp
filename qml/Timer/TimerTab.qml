@@ -19,12 +19,18 @@ FocusScope {
         target: CountdownTimer
         function onTimerFinished() {
             sendEndNotification.running = true
+            playEndSound.running = true
         }
     }
 
     Process {
         id: sendEndNotification
         command: ["notify-send", "-a", "Wisp", "-i", "clock", "Timer", "Timer has Ended"]
+    }
+
+    Process {
+        id: playEndSound
+        command: ["paplay", "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"]
     }
 
     Keys.onPressed: (event) => {
