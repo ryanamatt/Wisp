@@ -79,7 +79,7 @@ BarPopup {
                 spacing: 6
 
                 Image {
-                    source: Icons.getIcon("search")
+                    source: Icons.getIcon("ui/search")
                     Layout.preferredWidth: innerLayout.width * 0.075
                     Layout.preferredHeight: width
                 }
@@ -112,7 +112,7 @@ BarPopup {
                 }
 
                 Image {
-                    source: Icons.getIcon("close")
+                    source: Icons.getIcon("ui/close")
                     visible: searchInput.length > 0
                     fillMode: Image.PreserveAspectCrop
 

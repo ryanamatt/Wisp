@@ -28,7 +28,7 @@ BarWidgetContainer {
                 : brightnessWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
-            source: Icons.getIcon("moon")
+            source: Icons.getIcon("ui/moon")
             sourceSize.width: width * Screen.devicePixelRatio
             sourceSize.height: height * Screen.devicePixelRatio
         }
@@ -40,7 +40,7 @@ BarWidgetContainer {
                 : brightnessWidget.width * 0.25
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
-            source: Icons.getIcon("brightness")
+            source: Icons.getIcon("ui/brightness")
         }
 
         Image {
@@ -48,7 +48,7 @@ BarWidgetContainer {
             Layout.preferredWidth: brightnessWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
-            source: Icons.getIcon("moonOff")
+            source: Icons.getIcon("ui/moonOff")
         }
 
         Text {

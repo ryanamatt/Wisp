@@ -131,7 +131,7 @@ ColumnLayout {
 
         Image {
             id: refreshIcon
-            source: Icons.getIcon("refresh")
+            source: Icons.getIcon("ui/refresh")
             Layout.alignment: Qt.AlignVCenter
 
             Layout.preferredHeight: lastCheckedText.implicitHeight * 1.4

@@ -98,7 +98,7 @@ ColumnLayout {
             indicator : Image {
                 x: comboBox.width - width - 10
                 y: (comboBox.height - height) / 2
-                source: Icons.getIcon("arrowDropDown")
+                source: Icons.getIcon("ui/arrowDropDown")
             }
 
             delegate: ItemDelegate {

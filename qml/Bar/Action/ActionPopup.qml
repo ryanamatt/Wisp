@@ -31,8 +31,8 @@ BarPopup {
             Image {
                 id: gameModeImage
 
-                source: WispState.gameMode ? Icons.getIcon("gameModeOn") :
-                    Icons.getIcon("gameModeOff")
+                source: WispState.gameMode ? Icons.getIcon("ui/gameModeOn") :
+                    Icons.getIcon("ui/gameModeOff")
                 sourceSize.width: width * Screen.devicePixelRatio
                 sourceSize.height: height * Screen.devicePixelRatio
 

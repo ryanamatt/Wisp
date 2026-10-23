@@ -231,7 +231,7 @@ Rectangle {
                 Image {
                     anchors.fill: parent
                     anchors.margins: snap.hasImage ? 0 : 7
-                    source: card.hasRealIcon ? card.iconSource : Icons.getIcon("notification")
+                    source: card.hasRealIcon ? card.iconSource : Icons.getIcon("ui/notification")
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     smooth: true

@@ -14,7 +14,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    iconImage.source: Icons.getIcon("notification")
+    iconImage.source: Icons.getIcon("ui/notification")
     iconImage.width: notifWidget.implicitWidth * 0.6
     iconImage.opacity: NotificationService.dnd ? 0.45 : 1
 

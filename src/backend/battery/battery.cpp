@@ -12,10 +12,10 @@
 
 namespace {
 
-constexpr const char *kSystemIcon = "laptop";
-constexpr const char *kRazerIcon = "mouse";
-constexpr const char *kHeadsetIcon = "headphones";
-constexpr const char *kBluetoothIcon = "bluetooth";
+constexpr const char *kSystemIcon = "hardware/laptop";
+constexpr const char *kRazerIcon = "hardware/mouse";
+constexpr const char *kHeadsetIcon = "hardware/headphones";
+constexpr const char *kBluetoothIcon = "hardware/bluetooth";
 
 constexpr const char *kLaptopName = "Laptop Battery";
 

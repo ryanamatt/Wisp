@@ -38,7 +38,7 @@ BarPopup {
             visible: Brightness.hasBacklight
 
             Image {
-                source: Icons.getIcon("brightness")
+                source: Icons.getIcon("ui/brightness")
                 sourceSize.width: width * Screen.devicePixelRatio
                 sourceSize.height: height * Screen.devicePixelRatio
                 fillMode: Image.PreserveAspectFit

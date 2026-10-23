@@ -13,7 +13,7 @@ BarWidgetContainer {
 
     required property var screen
 
-    iconImage.source: Icons.getIcon("clipboard")
+    iconImage.source: Icons.getIcon("ui/clipboard")
     iconImage.width: clipboardWidget.implicitWidth * 0.6
 
     isOpenHere: IpcState.clipboardWidget.isOpenOn(clipboardWidget.screen)
