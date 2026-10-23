@@ -52,6 +52,7 @@ public slots:
     // QTimer here (a QTimer must be created on the thread it runs on).
     void start();
     void updateSystem();
+    void setLowPowerMode(bool enabled);
 
 signals:
     void statsReady(SystemStats stats, QVariantList partitions);
@@ -59,6 +60,8 @@ signals:
 private:
     SystemStats systemStats;
     QTimer *m_timer = nullptr;
+    bool m_lowPower = false;
+    std::chrono::steady_clock::time_point m_prevNetSampleTime;
 
     void getCpuTemp();
 
@@ -108,6 +111,8 @@ class SystemMonitor : public QObject {
     QML_ELEMENT
     QML_SINGLETON
 
+    Q_PROPERTY(bool lowPowerMode READ lowPowerMode WRITE setLowPowerMode NOTIFY lowPowerModeChanged)
+
     Q_PROPERTY(double cpuTemp READ cpuTemp NOTIFY systemChanged)
     Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY systemChanged)
     Q_PROPERTY(double memTotal READ memTotal NOTIFY systemChanged)
@@ -126,6 +131,11 @@ public:
     explicit SystemMonitor(QObject *parent = nullptr);
     ~SystemMonitor() override;
 
+    bool lowPowerMode() const {
+        return m_lowPowerMode;
+    }
+    Q_INVOKABLE void setLowPowerMode(bool enabled);
+
     double cpuTemp() const;
     double cpuUsage() const;
     double memTotal() const;
@@ -142,6 +152,8 @@ public:
 
 signals:
     void systemChanged();
+    void lowPowerModeChanged();
+    void lowPowerModeRequested(bool enabled); // to work thread
 
 private slots:
     // Runs on the main thread (queued connection from the worker).
@@ -149,6 +161,7 @@ private slots:
 
 private:
     QThread m_workerThread;
+    bool m_lowPowerMode;
     SystemStats systemStats;
     QVariantList m_partitions;
 };
