@@ -443,7 +443,7 @@ Scope {
                         Layout.preferredWidth: batteryBox.iconSize
                         Layout.preferredHeight: batteryBox.iconSize
                         fillMode: Image.PreserveAspectFit
-                        source: Icons.getIcon("electricBolt")
+                        source: Icons.getIcon("ui/electricBolt")
                         sourceSize.width: width
                         sourceSize.height: height
                     }
@@ -452,7 +452,7 @@ Scope {
                         Layout.preferredWidth: batteryBox.iconSize
                         Layout.preferredHeight: batteryBox.iconSize
                         fillMode: Image.PreserveAspectFit
-                        source: Icons.getIcon("laptop")
+                        source: Icons.getIcon("heardware/laptop")
                         sourceSize.width: width
                         sourceSize.height: height
                     }
