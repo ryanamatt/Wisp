@@ -203,6 +203,14 @@ BarPopup {
             Layout.preferredHeight: 22
             spacing: 8
 
+            Image {
+                source: networkPopup.wifiRadioOn ? Icons.getIcon("wifi/wifi") : Icons.getIcon("wifi/wifiOff")
+                Layout.alignment: Qt.AlignVCenter
+
+                sourceSize.width: width * Screen.devicePixelRatio
+                sourceSize.height: height * Screen.devicePixelRatio
+            }
+
             ToggleButton {
                 condition: networkPopup.wifiRadioOn
                 label: "Wi-Fi"
