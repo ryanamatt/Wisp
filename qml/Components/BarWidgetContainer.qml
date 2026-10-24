@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell.Hyprland
 import "../Colors"
 import "../Config"
+import "../WispState" 
 
 Rectangle {
     id: container
@@ -20,6 +21,17 @@ Rectangle {
 
     property alias iconText: iconText
     property alias iconImage: iconImage
+
+    // Which monitor this widget is on. Uses the window the widget lives in,
+    // so it works for every widget, even ones without a `screen` property.
+    readonly property string screenName: Window.window && Window.window.screen
+        ? Window.window.screen.name : ""
+
+    // Popups are disabled on this monitor while game mode is on.
+    readonly property bool popupsBlocked: WispState.gameMode && screenName === "DP-3"
+
+    // Close immediately if game mode turns on while a popup is already open.
+    onPopupsBlockedChanged: if (popupsBlocked) forceClose()
 
     // ----- Open/close progress -----
     // Bind isOpenHere to whatever condition means "my popup is the one
@@ -57,6 +69,7 @@ Rectangle {
     // Call from any hover source (the widget pill itself, or its popup) to
     // keep things open; call close() once that source stops hovering.
     function open() {
+        if (popupsBlocked) return
         cancelClose()
         requestOpen()
     }
