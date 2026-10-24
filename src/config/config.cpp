@@ -64,6 +64,7 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kPackagesNotifyEveryDay, cfg.packagesNotifyEveryDay ? "true" : "false", 1);
     setenv(wisp::env::kBatteryWarnPerc, std::to_string(cfg.batteryWarnPerc).c_str(), 1);
     setenv(wisp::env::kBatteryAutoPowerSaver, cfg.batteryAutoPowerSaver ? "true" : "false", 1);
+    setenv(wisp::env::kNotificationToastMs, std::to_string(cfg.notificationToastMs).c_str(), 1);
 }
 
 } // namespace
@@ -143,6 +144,11 @@ Config load(const std::string &path) {
         const auto &battery = j["battery"];
         readInt(battery, "warnPercentage", "battery.warnPercentage", cfg.batteryWarnPerc, 0, 100);
         readBool(battery, "autoPowerSaver", "battery.autoPowerSaver", cfg.batteryAutoPowerSaver);
+    }
+
+    if (j.contains("notifications") && j["notifications"].is_object()) {
+        const auto &notifications = j["notifications"];
+        readInt(notifications, "toastDurationMs", "notifications.toastDurationMs", cfg.notificationToastMs, 500, 60000);
     }
 
     exportEnv(cfg, path);
