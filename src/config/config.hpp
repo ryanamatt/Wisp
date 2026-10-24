@@ -18,6 +18,7 @@ inline constexpr bool kDefaultPackagesNotifyOnStartUp = false;
 inline constexpr bool kDefaultPackagesNotifyEveryDay = false;
 inline constexpr const int kDefaultBatteryWarnPerc = 30;
 inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
+inline constexpr int kDefaultNotificationToastMs = 2000;
 
 struct Config {
     std::string timeFormat = kDefaultTimeFormat;
@@ -28,6 +29,7 @@ struct Config {
     bool packagesNotifyEveryDay = kDefaultPackagesNotifyEveryDay;
     int batteryWarnPerc = kDefaultBatteryWarnPerc;
     bool batteryAutoPowerSaver = kDefaultBatteryAutoPowerSaver;
+    int notificationToastMs = kDefaultNotificationToastMs;
 };
 
 // Resolves the default config file location:

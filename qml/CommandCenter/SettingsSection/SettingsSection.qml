@@ -87,6 +87,14 @@ ColumnLayout {
                 NotifyOnStartUpSetting { Layout.fillWidth: true }
                 NotifyEveryDaySetting { Layout.fillWidth: true }
             }
+
+            SettingsSubSection {
+                Layout.fillWidth: true
+                sectionLabel: "Notifications"
+
+                NotificationToastDurationSetting { Layout.fillWidth: true }
+            }
+
         }
 
     }
