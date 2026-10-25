@@ -196,6 +196,23 @@ PanelWindow {
                             border.color: isFocused ? Colors.colors.accent : Colors.colors.borderSoft
                             border.width: isFocused ? 3 : 1
 
+                            // Focused card "pops" up with a springy overshoot
+                            // while the others settle slightly smaller
+                            scale: isFocused ? 1.0 : 0.92
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: 280
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 2.0
+                                }
+                            }
+                            Behavior on border.color {
+                                ColorAnimation { duration: 200 }
+                            }
+                            Behavior on border.width {
+                                NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                            }
+
                             // Container for the masked image
                             Item {
                                 anchors.fill: parent
@@ -230,6 +247,16 @@ PanelWindow {
                                     source: wallpaperImage
                                     maskEnabled: true
                                     maskSource: maskRect
+
+                                    // Unfocused wallpapers are muted; the focused one blooms into full color
+                                    saturation: isFocused ? 0.0 : -0.15
+                                    brightness: isFocused ? 0.0 : -0.05
+                                    Behavior on saturation {
+                                        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+                                    }
+                                    Behavior on brightness {
+                                        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+                                    }
                                 }
                             }
 
