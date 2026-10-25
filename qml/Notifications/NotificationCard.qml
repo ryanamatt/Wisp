@@ -62,7 +62,7 @@ Rectangle {
             return card.notif.expireTimeout * 1000
         if (card.notif.urgency === NotificationUrgency.Critical)
             return 0
-        return card.notif.urgency === NotificationUrgency.Low ? 1000 : 2000
+        return Config.notificationToastMs
     }
 
     readonly property var defaultAction: {
