@@ -96,6 +96,14 @@ BarPopup {
 
                 Item { Layout.fillWidth: true }
 
+                Image {
+                    source: Brightness.nightlightEnabled ? Icons.getIcon("ui/moon") : Icons.getIcon("ui/moonOff")
+                    Layout.alignment: Qt.AlignVCenter
+
+                    sourceSize.width: width * Screen.devicePixelRatio
+                    sourceSize.height: height * Screen.devicePixelRatio
+                }
+
                 ToggleButton {
                     Layout.fillWidth: false
                     Layout.preferredWidth: 110 // Adjust this if the text gets cut off
