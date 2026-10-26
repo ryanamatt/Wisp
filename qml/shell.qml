@@ -12,6 +12,7 @@ import "CommandCenter"
 import "Screenshot"
 import "Runner"
 import "Timer"
+import "WindowRules"
 import "LockScreen"
 import "OSD"
 
@@ -33,6 +34,8 @@ Scope {
     Runner {}
 
     Timer {}
+
+    WindowRules {}
 
     LockScreen {}
 
