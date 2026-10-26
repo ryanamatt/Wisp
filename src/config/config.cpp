@@ -65,7 +65,9 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kBatteryWarnPerc, std::to_string(cfg.batteryWarnPerc).c_str(), 1);
     setenv(wisp::env::kBatteryAutoPowerSaver, cfg.batteryAutoPowerSaver ? "true" : "false", 1);
     setenv(wisp::env::kNotificationToastMs, std::to_string(cfg.notificationToastMs).c_str(), 1);
+    setenv(wisp::env::kJokesFile, cfg.jokesFile.c_str(), 1);
 }
+
 
 } // namespace
 
@@ -150,6 +152,19 @@ Config load(const std::string &path) {
         const auto &notifications = j["notifications"];
         readInt(notifications, "toastDurationMs", "notifications.toastDurationMs", cfg.notificationToastMs, 500, 60000);
     }
+
+    if (j.contains("welcome") && j["welcome"].is_object()) {
+        const auto &welcome = j["welcome"];
+        if (welcome.contains("jokesFile")) {
+            if (welcome["jokesFile"].is_string())
+                cfg.jokesFile = welcome["jokesFile"];
+            else
+                wisp::log::warning("config", "welcome.jokesFile must be a string, ignoring");
+
+        }
+    }
+
+
 
     exportEnv(cfg, path);
     return cfg;
