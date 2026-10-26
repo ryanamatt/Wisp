@@ -452,7 +452,7 @@ Scope {
                         Layout.preferredWidth: batteryBox.iconSize
                         Layout.preferredHeight: batteryBox.iconSize
                         fillMode: Image.PreserveAspectFit
-                        source: Icons.getIcon("heardware/laptop")
+                        source: Icons.getIcon("hardware/laptop")
                         sourceSize.width: width
                         sourceSize.height: height
                     }
