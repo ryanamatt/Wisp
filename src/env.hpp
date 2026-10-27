@@ -18,6 +18,7 @@ inline constexpr const char *kPackagesNotifyEveryDay = "WISP_PACKAGES_NOTIFY_EVE
 inline constexpr const char *kBatteryWarnPerc = "WISP_BATTERY_WARN_PERC";
 inline constexpr const char *kBatteryAutoPowerSaver = "WISP_BATTERY_AUTO_POWER_SAVER";
 inline constexpr const char *kNotificationToastMs = "WISP_NOTIFICATION_TOAST_MS";
+inline constexpr const char *kJokesFile = "WISP_JOKES_FILE";
 
 // Other
 inline constexpr const char *kShareDir = "WISP_SHARE_DIR";

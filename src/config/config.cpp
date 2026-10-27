@@ -29,6 +29,22 @@ std::string resolveWallpaperDir(const std::string &configured) {
     return configured;
 }
 
+// Resolves Joke File Path
+std::string resolveJokeFile(const std::string &configured) {
+    const char *home = std::getenv("HOME");
+
+    if (configured.empty()) { return home && *home ? std::string(home) + "/.config/wisp/" + kDefaultJokesFile : ""; }
+
+    if (configured == "~") {
+        return home && *home ? std::string(home) : configured;
+    }
+    if (configured.rfind("~/", 0) == 0) {
+        return home && *home ? std::string(home) + configured.substr(1) : configured;
+    }
+
+    return configured;
+}
+
 // Reads j[key] into `out` if it is a boolean. Otherwise warns and leaves
 // `out` untouched. `label` is the dotted config path used in the warning.
 void readBool(const nlohmann::json &j, const char *key, const std::string &label, bool &out) {
@@ -65,7 +81,9 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kBatteryWarnPerc, std::to_string(cfg.batteryWarnPerc).c_str(), 1);
     setenv(wisp::env::kBatteryAutoPowerSaver, cfg.batteryAutoPowerSaver ? "true" : "false", 1);
     setenv(wisp::env::kNotificationToastMs, std::to_string(cfg.notificationToastMs).c_str(), 1);
+    setenv(wisp::env::kJokesFile, cfg.jokesFile.c_str(), 1);
 }
+
 
 } // namespace
 
@@ -82,6 +100,7 @@ std::string defaultPath() {
 Config load(const std::string &path) {
     Config cfg;
     cfg.wallpaperDir = resolveWallpaperDir("");
+    cfg.jokesFile = resolveJokeFile("");
 
     std::ifstream in(path);
     if (!in.is_open()) {
@@ -149,6 +168,17 @@ Config load(const std::string &path) {
     if (j.contains("notifications") && j["notifications"].is_object()) {
         const auto &notifications = j["notifications"];
         readInt(notifications, "toastDurationMs", "notifications.toastDurationMs", cfg.notificationToastMs, 500, 60000);
+    }
+
+    if (j.contains("welcome") && j["welcome"].is_object()) {
+        const auto &welcome = j["welcome"];
+        if (welcome.contains("jokesFile")) {
+            if (welcome["jokesFile"].is_string())
+                cfg.jokesFile = resolveJokeFile(welcome["jokesFile"].get<std::string>());
+            else
+                wisp::log::warning("config", "welcome.jokesFile must be a string, ignoring");
+
+        }
     }
 
     exportEnv(cfg, path);
