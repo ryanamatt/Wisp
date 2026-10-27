@@ -102,6 +102,8 @@ BarPopup {
 
                     sourceSize.width: width * Screen.devicePixelRatio
                     sourceSize.height: height * Screen.devicePixelRatio
+                    Layout.preferredWidth: row.width * 0.1
+                    Layout.preferredHeight: Layout.preferredWidth
                 }
 
                 ToggleButton {
