@@ -35,9 +35,7 @@ std::string resolveJokeFile(const std::string &configured) {
 
     if (configured.empty()) { return home && *home ? std::string(home) + "/.config/wisp/" + kDefaultJokesFile : ""; }
 
-    if (configured == "~") {
-        return home && *home ? std::string(home) : configured;
-    }
+    if (configured == "~") { return home && *home ? std::string(home) : configured; }
     if (configured.rfind("~/", 0) == 0) {
         return home && *home ? std::string(home) + configured.substr(1) : configured;
     }
@@ -83,7 +81,6 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kNotificationToastMs, std::to_string(cfg.notificationToastMs).c_str(), 1);
     setenv(wisp::env::kJokesFile, cfg.jokesFile.c_str(), 1);
 }
-
 
 } // namespace
 
@@ -177,7 +174,6 @@ Config load(const std::string &path) {
                 cfg.jokesFile = resolveJokeFile(welcome["jokesFile"].get<std::string>());
             else
                 wisp::log::warning("config", "welcome.jokesFile must be a string, ignoring");
-
         }
     }
 

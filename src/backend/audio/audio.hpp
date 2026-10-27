@@ -2,13 +2,13 @@
 
 #pragma once
 
+#include <QList>
 #include <QObject>
+#include <QProcess>
 #include <QQmlEngine>
 #include <QString>
-#include <QTimer>
-#include <QList>
-#include <QProcess>
 #include <QTemporaryFile>
+#include <QTimer>
 #include <qtmetamacros.h>
 
 class Audio : public QObject {

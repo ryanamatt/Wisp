@@ -2,9 +2,9 @@
 
 #include "audio.hpp"
 
+#include <QByteArray>
 #include <QProcess>
 #include <QRegularExpression>
-#include <QByteArray>
 #include <algorithm>
 #include <qcontainerfwd.h>
 #include <qnamespace.h>
@@ -175,17 +175,17 @@ void Audio::startCava() {
     }
 
     const QString config = QStringLiteral("[general]\n"
-                                      "bars = %1\n"
-                                      "\n"
-                                      "[output]\n"
-                                      "method = raw\n"
-                                      "raw_target = /dev/stdout\n"
-                                      "data_format = ascii\n"
-                                      "ascii_max_range = %2\n"
-                                      "bar_delimiter = 59\n"
-                                      "frame_delimiter = 10\n")
-                           .arg(kCavaBarCount)
-                           .arg(kCavaMaxRange);
+                                          "bars = %1\n"
+                                          "\n"
+                                          "[output]\n"
+                                          "method = raw\n"
+                                          "raw_target = /dev/stdout\n"
+                                          "data_format = ascii\n"
+                                          "ascii_max_range = %2\n"
+                                          "bar_delimiter = 59\n"
+                                          "frame_delimiter = 10\n")
+                               .arg(kCavaBarCount)
+                               .arg(kCavaMaxRange);
 
     m_cavaConfig.write(config.toUtf8());
     m_cavaConfig.close();
@@ -208,4 +208,3 @@ void Audio::onCavaReadyRead() {
     if (m_cavaFailed) m_cavaFailed = false;
     emit cavaChanged();
 }
-
