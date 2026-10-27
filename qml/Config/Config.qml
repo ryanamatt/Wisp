@@ -20,9 +20,9 @@ Singleton {
 
     readonly property string home: Quickshell.env("HOME")
     readonly property string xdgConfigHome: Quickshell.env("XDG_CONFIG_HOME")
+    readonly property string configDir: xdgConfigHome ? xdgConfigHome + "/wisp" : home + "./config/wisp"
     readonly property string configPath: Quickshell.env("WISP_CONFIG_PATH")
-        || (xdgConfigHome ? xdgConfigHome + "/wisp/config.json"
-            : home + "/.config/wisp/config.json")
+        || configDir + "config.json"
 
     property string timeFormat: Quickshell.env("WISP_TIME_FORMAT") || "ddd MMM d hh:mm:ss AP"
     property string pendingTimeFormat: timeFormat
@@ -51,6 +51,9 @@ Singleton {
     property int notificationToastMs: parseInt(Quickshell.env("WISP_NOTIFICATION_TOAST_MS")) || 2000
     property int pendingNotificationToastMs: notificationToastMs
 
+    property string jokesFilePath: Quickshell.env("WISP_JOKES_FILE") || configDir + "/jokes.txt"
+    property string pendingJokesFilePath: jokesFilePath
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
@@ -60,7 +63,8 @@ Singleton {
                                   pendingPackagesNotifyEveryDay !== packagesNotifyEveryDay ||
                                   pendingBatteryWarnPerc !== batteryWarnPerc ||
                                   pendingBatteryAutoPowerSaver !== batteryAutoPowerSaver ||
-                                  pendingNotificationToastMs !== notificationToastMs
+                                  pendingNotificationToastMs !== notificationToastMs ||
+                                  pendingJokesFilePath !== jokesFilePath
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -100,6 +104,10 @@ Singleton {
         pendingNotificationToastMs = Math.max(500, Math.min(60000, ms))
     }
 
+    function stageJokesFilePath(path) {
+        pendingJokesFilePath = path
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
@@ -110,6 +118,7 @@ Singleton {
         pendingBatteryWarnPerc = batteryWarnPerc
         pendingBatteryAutoPowerSaver = batteryAutoPowerSaver
         pendingNotificationToastMs = notificationToastMs
+        pendingJokesFilePath = jokesFilePath
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -130,6 +139,7 @@ Singleton {
         batteryAutoPowerSaver = pendingBatteryAutoPowerSaver
         Battery.autoPowerSaver = batteryAutoPowerSaver
         notificationToastMs = pendingNotificationToastMs
+        jokesFilePath = pendingJokesFilePath
 
         try {
             const raw = configFile.text()
@@ -155,6 +165,9 @@ Singleton {
 
             if (!parsed.notifications || typeof parsed.notifications !== "object") parsed.notifications = {}
             parsed.notifications.toastDurationMs = notificationToastMs
+
+            if (!parsed.welcome || typeof parsed.welcome !== "object") parsed.welcome = {}
+            parsed.welcome.jokesFile = jokesFilePath
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {

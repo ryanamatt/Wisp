@@ -47,7 +47,7 @@ ColumnLayout {
 
     FileView {
         id: jokeFile
-        path: Quickshell.env("HOME") + "/.config/wisp/jokes.txt"
+        path: Config.jokesFilePath
 
         onLoaded: root.pickJoke(text())
         onLoadFailed: root.currentJoke = ""

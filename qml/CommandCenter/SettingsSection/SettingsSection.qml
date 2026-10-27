@@ -95,6 +95,13 @@ ColumnLayout {
                 NotificationToastDurationSetting { Layout.fillWidth: true }
             }
 
+            SettingsSubSection {
+                Layout.fillWidth: true
+                sectionLabel: "Welcome"
+
+                JokesFileSetting { Layout.fillWidth: true }
+            }
+
         }
 
     }
