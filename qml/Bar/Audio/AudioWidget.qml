@@ -5,63 +5,19 @@ import Quickshell
 import Quickshell.Io
 import "../../Components"
 import "../../Config"
+import Wisp.Audio
 
 BarWidgetContainer {
     id: audioWidget
 
-    property int barCount: 16
-    property int maxRange: 7
+    property int barCount: Audio.cavaBarCount
+    property int maxRange: Audio.cavaMaxRange
 
     // Property holding the current bar values (raw ints, 0..maxRange)
-    property var audioBars: []
+    property var audioBars: Audio.cavaBars
 
-    // Block characters used to render each amplitude level (index 0..7)
+   // Block characters used to render each amplitude level (index 0..7)
     readonly property var barChars: ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
-
-    Process {
-        id: cavaProcess
-
-        command: [
-            "bash", "-c",
-            "cava -p <(cat <<'EOF'\n" +
-            "[general]\n" +
-            "bars = " + barCount + "\n" +
-            "\n" +
-            "[output]\n" +
-            "method = raw\n" +
-            "raw_target = /dev/stdout\n" +
-            "data_format = ascii\n" +
-            "ascii_max_range = " + maxRange + "\n" +
-            "bar_delimiter = 59\n" +
-            "frame_delimiter = 10\n" +
-            "EOF\n" +
-            ")"
-        ]
-        running: true
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                // Each line looks like: "3;5;1;7;0;4;2;6;5;3;" (trailing ';' possible)
-                const values = data.split(";")
-                    .filter(v => v.length > 0)
-                    .map(v => parseInt(v, 10));
-
-                if (values.length === 0)
-                    return;
-
-                audioWidget.audioBars = values;
-
-                iconText.text = values
-                    .map(v => audioWidget.barChars[Math.max(0, Math.min(audioWidget.maxRange, v))])
-                    .join("");
-            }
-        }
-
-        onExited: (exitCode, exitStatus) => {
-            iconText.text = "cava error";
-        }
-    }
 
     // ----- Font-aware sizing -----
     // Glyph widths differ between fonts (and block characters often fall back
@@ -91,7 +47,13 @@ BarWidgetContainer {
         ? (height - 2 * border.width) * measureSize / barFontMetrics.height
         : Number.POSITIVE_INFINITY
 
-    iconText.text: "…"
+    iconText.text: {
+        if (Audio.cavaFailed)
+            return "cava error"
+        if (Audio.cavaBars.length === 0)
+            return "…"
+        return Audio.cavaBars.map(v => audioWidget.barChars[v]).join("")
+    }
     iconText.font.pixelSize: Math.max(1, Math.floor(
         Math.min(implicitWidth * 0.09, maxSizeByWidth, maxSizeByHeight)))
 

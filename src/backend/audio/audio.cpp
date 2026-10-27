@@ -2,9 +2,14 @@
 
 #include "audio.hpp"
 
+#include <QByteArray>
 #include <QProcess>
 #include <QRegularExpression>
 #include <algorithm>
+#include <qcontainerfwd.h>
+#include <qnamespace.h>
+#include <qobject.h>
+#include <qprocess.h>
 
 namespace {
 
@@ -31,6 +36,20 @@ QString runWpctl(const QStringList &args) {
     return QString::fromUtf8(proc.readAllStandardOutput());
 }
 
+// Each line looks like "3;5;1;7;0;4;2;6;5;3;" (trailing ';' possible).
+QList<int> parseCavaLine(const QByteArray &line, int maxRange) {
+    QList<int> values;
+    const QString text = QString::fromUtf8(line).trimmed();
+    const QStringList parts = text.split(";", Qt::SkipEmptyParts);
+    values.reserve(parts.size());
+    for (const QString &part : parts) {
+        bool ok = false;
+        const int v = part.toInt(&ok);
+        if (ok) values.append(std::clamp(v, 0, maxRange));
+    }
+    return values;
+}
+
 } // namespace
 
 Audio::Audio(QObject *parent) : QObject(parent) {
@@ -48,6 +67,29 @@ Audio::Audio(QObject *parent) : QObject(parent) {
 
     // Populate initial state synchronously so the first paint isn't empty.
     poll();
+
+    connect(&m_cava, &QProcess::readyReadStandardOutput, this, &Audio::onCavaReadyRead);
+    connect(&m_cava, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
+        m_cavaFailed = true;
+        emit cavaChanged();
+    });
+    connect(&m_cava, &QProcess::finished, this, [this](int, QProcess::ExitStatus) {
+        // Cava is meant to run forever, so any exit is a failure.
+        m_cavaFailed = true;
+        emit cavaChanged();
+    });
+    startCava();
+}
+
+Audio::~Audio() {
+    if (m_cava.state() != QProcess::NotRunning) {
+        m_cava.disconnect(this);
+        m_cava.terminate();
+        if (!m_cava.waitForFinished(500)) {
+            m_cava.kill();
+            m_cava.waitForFinished(500);
+        }
+    }
 }
 
 void Audio::pollNode(const QString &nodeAlias, bool *hasNode, bool *mutedOut, qreal *volumeOut, bool *changedOut) {
@@ -122,4 +164,47 @@ void Audio::toggleSourceMute() {
 
 void Audio::writeMute(const QString &nodeAlias, bool muted) {
     QProcess::startDetached("wpctl", {"set-mute", nodeAlias, muted ? "1" : "0"});
+}
+
+void Audio::startCava() {
+    // Cava wants a config file path. A temp file lives as long as this object does.
+    if (!m_cavaConfig.open()) {
+        m_cavaFailed = true;
+        emit cavaChanged();
+        return;
+    }
+
+    const QString config = QStringLiteral("[general]\n"
+                                          "bars = %1\n"
+                                          "\n"
+                                          "[output]\n"
+                                          "method = raw\n"
+                                          "raw_target = /dev/stdout\n"
+                                          "data_format = ascii\n"
+                                          "ascii_max_range = %2\n"
+                                          "bar_delimiter = 59\n"
+                                          "frame_delimiter = 10\n")
+                               .arg(kCavaBarCount)
+                               .arg(kCavaMaxRange);
+
+    m_cavaConfig.write(config.toUtf8());
+    m_cavaConfig.close();
+
+    m_cava.setStandardErrorFile(QProcess::nullDevice());
+    m_cava.start("cava", {"-p", m_cavaConfig.fileName()});
+}
+
+void Audio::onCavaReadyRead() {
+    // Cava can emit faster than we are scheduled, so only publish the newest complete frame.
+    QList<int> latest;
+    while (m_cava.canReadLine()) {
+        const QList<int> frame = parseCavaLine(m_cava.readLine(), kCavaMaxRange);
+        if (!frame.isEmpty()) latest = frame;
+    }
+
+    if (latest.isEmpty()) return;
+
+    m_cavaBars = latest;
+    if (m_cavaFailed) m_cavaFailed = false;
+    emit cavaChanged();
 }
