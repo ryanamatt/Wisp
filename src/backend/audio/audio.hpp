@@ -6,6 +6,10 @@
 #include <QQmlEngine>
 #include <QString>
 #include <QTimer>
+#include <QList>
+#include <QProcess>
+#include <QTemporaryFile>
+#include <qtmetamacros.h>
 
 class Audio : public QObject {
     Q_OBJECT
@@ -22,8 +26,15 @@ class Audio : public QObject {
     Q_PROPERTY(bool sourceMuted READ sourceMuted NOTIFY sourceChanged)
     Q_PROPERTY(qreal sourceVolume READ sourceVolume NOTIFY sourceChanged)
 
+    // ----- Cava (audio visualizer) -----
+    Q_PROPERTY(QList<int> cavaBars READ cavaBars NOTIFY cavaChanged)
+    Q_PROPERTY(bool cavaFailed READ cavaFailed NOTIFY cavaChanged)
+    Q_PROPERTY(int cavaBarCount READ cavaBarCount CONSTANT)
+    Q_PROPERTY(int cavaMaxRange READ cavaMaxRange CONSTANT)
+
 public:
     explicit Audio(QObject *parent = nullptr);
+    ~Audio();
 
     bool hasSink() const {
         return m_hasSink;
@@ -45,6 +56,19 @@ public:
         return m_sourceVolume;
     }
 
+    QList<int> cavaBars() const {
+        return m_cavaBars;
+    }
+    bool cavaFailed() const {
+        return m_cavaFailed;
+    }
+    int cavaBarCount() const {
+        return kCavaBarCount;
+    }
+    int cavaMaxRange() const {
+        return kCavaMaxRange;
+    }
+
 public slots:
     // V is between 0..1, inclusive.
     void setSinkVolume(qreal v);
@@ -56,15 +80,21 @@ public slots:
 signals:
     void sinkChanged();
     void sourceChanged();
+    void cavaChanged();
 
 private slots:
     void poll();
     void writeSinkVolume();
     void writeSourceVolume();
+    void onCavaReadyRead();
 
 private:
     static constexpr int kPollMs = 500;
     static constexpr int kDebounceMs = 80;
+    static constexpr int kCavaBarCount = 16;
+    static constexpr int kCavaMaxRange = 7;
+
+    void startCava();
 
     // Polls a single node (sink or source), updating the target state and reporting whether anything actually
     // changed so the caller only emits when needed.
@@ -86,4 +116,10 @@ private:
     bool m_sourceMuted = false;
     qreal m_sourceVolume = 0.0;
     qreal m_pendingSourceVolume = 0.0;
+
+    // --- Cava ---
+    QProcess m_cava;
+    QTemporaryFile m_cavaConfig;
+    QList<int> m_cavaBars;
+    bool m_cavaFailed = false;
 };
