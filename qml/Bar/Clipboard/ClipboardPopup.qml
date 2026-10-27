@@ -71,6 +71,10 @@ BarPopup {
 
             Behavior on border.color { ColorAnimation { duration: 120 } }
 
+            HoverHandler {
+                cursorShape: searchInput.activeFocus ? Qt.IBeamCursor : Qt.ArrowCursor
+            }
+
             RowLayout {
                 id: innerLayout
                 anchors.fill: parent
