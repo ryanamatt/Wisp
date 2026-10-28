@@ -105,6 +105,16 @@ BarPopup {
 
             }
 
+            // Horizontal Spacer
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 3
+                Layout.leftMargin: 15
+                Layout.rightMargin: 15
+                color: Colors.colors.shadow
+                radius: 10
+            }
+
             MonitorLayout {
                 id: cpuLayout
 
