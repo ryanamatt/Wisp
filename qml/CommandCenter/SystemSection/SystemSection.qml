@@ -19,6 +19,35 @@ ColumnLayout {
     spacing: 10
 
     readonly property int maxPartitionsPerRow: 4
+    readonly property int scrollStep: 80
+
+    // Take keyboard focus so the arrow keys reach this section
+    focus: true
+
+    Keys.onPressed: (event) => {
+        // Leave Shift+arrows alone, CommandCenter uses them to switch sections
+        if (event.modifiers & Qt.ShiftModifier)
+            return
+
+        if (event.key === Qt.Key_Down) {
+            root.scrollBy(root.scrollStep)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            root.scrollBy(-root.scrollStep)
+            event.accepted = true
+        }
+    }
+
+    function scrollBy(dy) {
+        var flick = scrollView.contentItem
+        var current = scrollAnim.running ? scrollAnim.to : flick.contentY
+        var maxY = Math.max(0, flick.contentHeight - flick.height)
+
+        scrollAnim.stop()
+        scrollAnim.from = flick.contentY
+        scrollAnim.to = Math.max(0, Math.min(maxY, current + dy))
+        scrollAnim.start()
+    }
 
     readonly property var partitionRows: {
         var rows = []
@@ -86,6 +115,14 @@ ColumnLayout {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+        NumberAnimation {
+            id: scrollAnim
+            target: scrollView.contentItem
+            property: "contentY"
+            duration: 120
+            easing.type: Easing.OutCubic
+        }
 
         ColumnLayout {
             width: scrollView.availableWidth

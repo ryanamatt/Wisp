@@ -196,6 +196,7 @@ FloatingWindow {
 
                     Loader {
                         id: sectionLoader
+                        focus: true
 
                         Layout.fillWidth: true
                         Layout.fillHeight: true
