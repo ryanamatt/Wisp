@@ -8,7 +8,7 @@ set -g fish_color_redirection         {{ colors.info.default.hex_stripped }}
 set -g fish_color_end                 {{ colors.outline_variant.default.hex_stripped }}
 set -g fish_color_error               {{ colors.error.default.hex_stripped }} --underline
 set -g fish_color_param               {{ colors.on_background.default.hex_stripped }}
-set -g fish_color_color_comment       {{ colors.surface_container_high.default.hex_stripped }}
+set -g fish_color_comment       {{ colors.surface_container_high.default.hex_stripped }}
 set -g fish_color_operator            {{ colors.warning.default.hex_stripped }}
 set -g fish_color_escape              {{ colors.info.default.hex_stripped }}
 set -g fish_color_cancel              {{ colors.error.default.hex_stripped }}
