@@ -100,6 +100,7 @@ BarPopup {
     }
 
     ColumnLayout {
+        id: rootLayout
         anchors.fill: parent
         spacing: 8
 
@@ -209,7 +210,7 @@ BarPopup {
 
                 sourceSize.width: width * Screen.devicePixelRatio
                 sourceSize.height: height * Screen.devicePixelRatio
-                Layout.preferredWidth: rescanToggleRow.implicitWidth * 0.125
+                Layout.preferredWidth: rescanToggleRow.Layout.implicitWidth * 0.125
                 Layout.preferredHeight: width
             }
 
