@@ -210,8 +210,8 @@ BarPopup {
 
                 sourceSize.width: width * Screen.devicePixelRatio
                 sourceSize.height: height * Screen.devicePixelRatio
-                Layout.preferredWidth: rescanToggleRow.Layout.implicitWidth * 0.125
-                Layout.preferredHeight: width
+                Layout.preferredHeight: rescanToggleRow.Layout.preferredHeight
+                Layout.preferredWidth: height
             }
 
             ToggleButton {
