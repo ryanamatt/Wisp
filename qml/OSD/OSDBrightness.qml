@@ -12,8 +12,8 @@ OSDBase {
         function onBrightnessChanged() { root.show() }
     }
 
-    icon: Icons.getIcon("brightness")
-    
+    icon: Icons.getIcon("ui/brightness")
+
     barValue: Brightness.brightnessPercent
     valueText: Brightness.brightnessPercent + "%"
 }
