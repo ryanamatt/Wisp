@@ -92,6 +92,7 @@ BarPopup {
 
             // Center Toggle Button
             RowLayout {
+                id: toggleButtonLayout
                 Layout.fillWidth: true
 
                 Item { Layout.fillWidth: true }
@@ -102,8 +103,8 @@ BarPopup {
 
                     sourceSize.width: width * Screen.devicePixelRatio
                     sourceSize.height: height * Screen.devicePixelRatio
-                    Layout.preferredWidth: row.width * 0.1
-                    Layout.preferredHeight: Layout.preferredWidth
+                    Layout.preferredHeight: toggleButtonLayout.Layout.preferredHeight * 0.1
+                    Layout.preferredWidth: height
                 }
 
                 ToggleButton {
