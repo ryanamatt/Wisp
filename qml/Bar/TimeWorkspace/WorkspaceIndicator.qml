@@ -38,7 +38,7 @@ RowLayout {
         let name = ws.name.toLowerCase()
         if (name.includes("spotify")) return "S"
         if (name.includes("discord")) return "D"
-        if (name.includes("desktop") || name.includes("~")) return "~"
+        if (name.includes("grave") || name.includes("~")) return "~"
         // Fallback: use the first character of the name if custom
         return ws.name.charAt(0).toUpperCase()
     }
