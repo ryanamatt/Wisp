@@ -51,7 +51,7 @@ Feel free to fork or take in compliance with the MIT License.
 This builds wisp and installs it:
 
 * `wisp` binary to `~/.local/bin`
-* QML tree, internal scripts, and matugen config to `/usr/share/wisp` 
+* QML tree, internal scripts, and matugen config to `/usr/share/wisp`
 
 ## Build & Run (without installing)
 
@@ -59,7 +59,7 @@ This builds wisp and installs it:
 # Build
 cmake -B build
 cmake --build build
-# Or 
+# Or
 ./tools/build.sh
 
 # Run directly from the build directory
@@ -79,11 +79,23 @@ wisp [command] [options]
 | `run` | Launch the bar |
 | `kill` | Stop a running wisp instance |
 | `reload` | Restart the quickshell process of a running wisp instance |
-| `log` [head|tail|clear] [n] | Show the Log File | 
-| `open <target>` | Open a widget/popup |
-| `close <target>` | Close a widget/popup |
-| `toggle <target>` | Toggle a widget/popup |
-| `lock` | Lock the Screen |
+| `log [head\|tail\|clear] [n]` | Print or manage log contents (default: tail 15 lines) |
+| `status` | Show the status of the Wisp Shell |
+| `open <target>` | Open a widget/popup, e.g. `wisp open themeSwitcher` |
+| `close <target>` | Close a widget/popup, e.g. `wisp close calendar` |
+| `toggle <target>` | Toggle a widget/popup, e.g. `wisp toggle themeSwitcher` |
+| `lock` | Lock the screen |
+
+### Options
+
+| Option | Description |
+|---|---|
+| `-d` | Disown: return control to the shell immediately and keep Wisp running detached |
+| `-f <dir>` | Directory containing `shell.qml` (defaults to the configured QML directory) |
+| `-m <dir>` | Extra QML module import directory, checked before installed modules; useful for testing an unreleased build |
+| `-c <file>` | Path to `config.json` (default: `~/.config/wisp/config.json`) |
+| `-h, --help` | Show this help message |
+| `-v, --version` | Show version information |
 
 ### Examples
 
@@ -91,8 +103,11 @@ wisp [command] [options]
 wisp run                    # launch the bar in the foreground
 wisp -d run                 # launch the bar and detach immediately
 wisp toggle themeSwitcher   # open/close the theme switcher
+wisp status                 # show whether the Wisp Shell is running
+wisp log clear              # clear the log file
 wisp reload                 # restart quickshell without restarting wisp
 wisp kill                   # stop a running instance
+wisp --help                 # show all commands and options
 ```
 
 ## IPC Targets
@@ -111,9 +126,9 @@ Every widget below can be controlled with `wisp open <target>`, `wisp close <tar
 | `battery` | Battery widget |
 | `themeSwitcher` | Theme/wallpaper switcher |
 | `workspaceSwitcher` | Workspace switcher |
-| `screenshot` | A Screenshot Window | 
+| `screenshot` | A Screenshot Window |
 | `commandCenter` | Command Center |
-| `timer` | A Timer / Stopwatch Window | 
+| `timer` | A Timer / Stopwatch Window |
 | `runner` | Runner |
 
 ## Configuration
