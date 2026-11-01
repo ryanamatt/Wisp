@@ -92,6 +92,7 @@ BarPopup {
 
             // Center Toggle Button
             RowLayout {
+                id: toggleButtonLayout
                 Layout.fillWidth: true
 
                 Item { Layout.fillWidth: true }
@@ -102,13 +103,13 @@ BarPopup {
 
                     sourceSize.width: width * Screen.devicePixelRatio
                     sourceSize.height: height * Screen.devicePixelRatio
-                    Layout.preferredWidth: row.width * 0.1
-                    Layout.preferredHeight: Layout.preferredWidth
+                    Layout.preferredHeight: toggleButton.height
+                    Layout.preferredWidth: height
                 }
 
                 ToggleButton {
+                    id: toggleButton
                     Layout.fillWidth: false
-                    Layout.preferredWidth: 110 // Adjust this if the text gets cut off
                     condition: Brightness.nightlightEnabled
                     label: "Night Light"
                     onToggled: (newValue) => Brightness.toggleNightlight()
