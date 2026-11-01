@@ -159,11 +159,7 @@ PanelWindow {
         Keys.onReturnPressed: {
             if (mainWindow.focusedIndex >= 0 && mainWindow.focusedIndex < mainWindow.workspaceModel.length) {
                 const modelData = mainWindow.workspaceModel[mainWindow.focusedIndex]
-                if (modelData.name && isNaN(Number(modelData.name))) {
-                    mainWindow.selectedWorkspace = "name:" + modelData.name
-                } else {
-                    mainWindow.selectedWorkspace = modelData.id
-                }
+                mainWindow.selectedWorkspace = WorkspaceUtils.workspaceTarget(modelData)
                 switchWorkspace.running = true
             }
         }
@@ -303,12 +299,7 @@ PanelWindow {
                             Item { Layout.fillWidth: true }
 
                             Text {
-                                text: {
-                                    if (modelData.name === "desktop") return "~:"
-                                    if (modelData.name === "discord") return "D:"
-                                    if (modelData.name === "spotify") return "S:"
-                                    return modelData.id + ":"
-                                }
+                                text: WorkspaceUtils.workspaceLabel(modelData)
                                 color: Colors.colors.info
                                 font.pixelSize: 16
                                 font.family: Config.font
@@ -346,11 +337,7 @@ PanelWindow {
                             anchors.fill: parent
                             onClicked: {
                                 rolodexView.currentIndex = index
-                                if (modelData.name && isNaN(Number(modelData.name))) {
-                                    mainWindow.selectedWorkspace = "name:" + modelData.name
-                                } else {
-                                    mainWindow.selectedWorkspace = modelData.id
-                                }
+                                mainWindow.selectedWorkspace = WorkspaceUtils.workspaceTarget(modelData)
                                 switchWorkspace.running = true
                             }
                         }
