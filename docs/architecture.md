@@ -25,7 +25,6 @@ Wisp has two halves the run as two processes:
 QML gets native functionality (audio, battery, calendar, and so on) from the C++ backend modules under `src/backed`, which are compiled as QML modules rather than linked into `wisp`.
 
 ```
-```
                  +-----------------------------------+
   user / hypr -> |  wisp (C++ executable)            |
   keybinds       |  CLI, supervisor, config, logging |
