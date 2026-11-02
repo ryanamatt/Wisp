@@ -39,9 +39,6 @@ ColumnLayout {
         font.family: Config.font
         color: Colors.colors.accentAlt
 
-        text: {
-            const path = Config.pendingJokesFilePath
-            return path.startsWith("~") ? path.replace("~", Config.home) : path
-        }
+        text: Config.expandPath(Config.pendingJokesFilePath)
     }
 }

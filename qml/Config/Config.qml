@@ -19,6 +19,15 @@ Singleton {
     }
 
     readonly property string home: Quickshell.env("HOME")
+
+    // Expands a leading "~" (bare, or followed by "/") to $HOME. Anything
+    // else, including "~otheruser/..." or a "~" mid-path, is left alone.
+    function expandPath(path) {
+        if (typeof path !== "string") return path
+        if (path === "~") return home
+        if (path.startsWith("~/")) return home + path.slice(1)
+        return path
+    }
     readonly property string xdgConfigHome: Quickshell.env("XDG_CONFIG_HOME")
     readonly property string configDir: xdgConfigHome ? xdgConfigHome + "/wisp" : home + "./config/wisp"
     readonly property string configPath: Quickshell.env("WISP_CONFIG_PATH")
@@ -30,7 +39,7 @@ Singleton {
     property string barOrientation: Quickshell.env("WISP_BAR_ORIENTATION") || "top"
     property string pendingBarOrientation: barOrientation
 
-    property string wallpaperDirectory: Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers"
+    property string wallpaperDirectory: expandPath(Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers")
     property string pendingWallpaperDirectory: wallpaperDirectory
 
     property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
@@ -51,7 +60,7 @@ Singleton {
     property int notificationToastMs: parseInt(Quickshell.env("WISP_NOTIFICATION_TOAST_MS")) || 2000
     property int pendingNotificationToastMs: notificationToastMs
 
-    property string jokesFilePath: Quickshell.env("WISP_JOKES_FILE") || configDir + "/jokes.txt"
+    property string jokesFilePath: expandPath(Quickshell.env("WISP_JOKES_FILE") || configDir + "/jokes.txt")
     property string pendingJokesFilePath: jokesFilePath
 
     // True whenever a staged setting differs from what's currently live.
@@ -130,7 +139,8 @@ Singleton {
         timeFormat = pendingTimeFormat
         Time.setFormatOverride(timeFormat)
         barOrientation = pendingBarOrientation
-        wallpaperDirectory = pendingWallpaperDirectory
+        wallpaperDirectory = expandPath(pendingWallpaperDirectory)
+        pendingWallpaperDirectory = wallpaperDirectory
         font = pendingFont
         packagesNotifyOnStartUp = pendingPackagesNotifyOnStartUp
         packagesNotifyEveryDay = pendingPackagesNotifyEveryDay
@@ -139,7 +149,8 @@ Singleton {
         batteryAutoPowerSaver = pendingBatteryAutoPowerSaver
         Battery.autoPowerSaver = batteryAutoPowerSaver
         notificationToastMs = pendingNotificationToastMs
-        jokesFilePath = pendingJokesFilePath
+        jokesFilePath = expandPath(pendingJokesFilePath)
+        pendingJokesFilePath = jokesFilePath
 
         try {
             const raw = configFile.text()

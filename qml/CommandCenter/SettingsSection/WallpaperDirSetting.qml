@@ -39,9 +39,6 @@ ColumnLayout {
         font.family: Config.font
         color: Colors.colors.accentAlt
 
-        text: {
-            const dir = Config.pendingWallpaperDirectory
-            return dir.startsWith("~") ? dir.replace("~", Config.home) : dir
-        }
+        text: Config.expandPath(Config.pendingWallpaperDirectory)
     }
 }
