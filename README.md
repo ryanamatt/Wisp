@@ -30,13 +30,12 @@ Feel free to fork or take in compliance with the MIT License.
 </td><td>
 
 * PipeWire
-* swaync
+* hyprsunset
 * cliphist
 * wl-clipboard
 
 </td><td>
 
-* hyprsunset
 * grim
 * slurp
 
@@ -45,6 +44,8 @@ Feel free to fork or take in compliance with the MIT License.
 ## Install
 
 ```Bash
+just install
+# Or
 ./install.sh
 ```
 
@@ -57,13 +58,10 @@ This builds wisp and installs it:
 
 ```Bash
 # Build
-cmake -B build
-cmake --build build
-# Or 
-./tools/build.sh
+just build
 
 # Run directly from the build directory
-./build/wisp run
+just run
 ```
 
 ## Usage
