@@ -238,5 +238,5 @@ Install layout:
 | `assets/` | `/usr/share/wisp/assets` |
 | `config/jokes.txt` | `/usr/share/wisp/config` |
  
-Developing without installing: build, then `./build/wisp run -m build/qml` (or use `run.sh`) so quickshell picks up the modules in the build tree ahead of the installed ones.
+Developing without installing: build, then `just run` so quickshell picks up the modules in the build tree ahead of the installed ones.
 
