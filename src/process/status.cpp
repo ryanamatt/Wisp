@@ -11,6 +11,9 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include <cerrno>
+#include <fcntl.h>
+#include <sys/wait.h>
 
 #include "config/config.hpp"
 #include "process/pidfile.hpp"
@@ -67,6 +70,68 @@ std::string formatDuration(long long total) {
     if (days > 0 || hours > 0 || mins > 0) out += std::to_string(mins) + "m ";
     out += std::to_string(secs) + "s";
     return out;
+}
+
+// Fallback for instances that predate the version file: ask the running
+// instance's own binary for its version by executing /proc/<pid>/exe --version.
+std::optional<VersionInfo> runningVersionInfo(pid_t pid) {
+    const std::string exe = "/proc/" + std::to_string(pid) + "/exe";
+
+    int fds[2];
+    if (pipe(fds) != 0) return std::nullopt;
+
+    pid_t child = fork();
+    if (child < 0) {
+        close(fds[0]);
+        close(fds[1]);
+        return std::nullopt;
+    }
+
+    if (child == 0) {
+        int devnull = open("/dev/null", O_RDWR);
+        if (devnull >= 0) {
+            dup2(devnull, STDIN_FILENO);
+            dup2(devnull, STDERR_FILENO);
+        }
+        dup2(fds[1], STDOUT_FILENO);
+        close(fds[0]);
+        close(fds[1]);
+        execl(exe.c_str(), "wisp", "--version", static_cast<char *>(nullptr));
+        _exit(127);
+    }
+
+    close(fds[1]);
+
+    std::string output;
+    char buf[512];
+    for (;;) {
+        ssize_t n = read(fds[0], buf, sizeof(buf));
+        if (n > 0) {
+            output.append(buf, static_cast<size_t>(n));
+        } else if (n < 0 && errno == EINTR) {
+            continue;
+        } else {
+            break;
+        }
+    }
+    close(fds[0]);
+
+    int status = 0;
+    while (waitpid(child, &status, 0) < 0 && errno == EINTR) {}
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) return std::nullopt;
+
+    VersionInfo info;
+    std::istringstream lines(output);
+    std::string line;
+    while (std::getline(lines, line)) {
+        if (line.rfind("Version: ", 0) == 0) {
+            info.version = line.substr(9);
+        } else if (line.rfind("Commit: ", 0) == 0) {
+            info.commit = line.substr(8);
+        }
+    }
+    if (info.version.empty()) return std::nullopt;
+    return info;
 }
 
 // The running instance may have been started with `-c <file>`, which this
@@ -129,7 +194,17 @@ int statusInstance() {
     }
 
     std::cout << "Config:   " << runningConfigPath(*pid) << "\n";
-    std::cout << "Version:  " << WISP_VERSION << " (" << WISP_COMMIT_HASH << ")\n";
+
+    auto v = readVersionFile(*pid);
+    if (!v) v = runningVersionInfo(*pid);
+
+    if (v) {
+        std::cout << "Version:  " << v->version;
+        if (!v->commit.empty()) std::cout << " (" << v->commit << ")";
+        std::cout << "\n";
+    } else {
+        std::cout << "Version:  unknown\n";
+    }
 
     return 0;
 }

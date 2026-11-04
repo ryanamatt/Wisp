@@ -7,10 +7,10 @@
 #include <dirent.h>
 #include <fstream>
 #include <signal.h>
-#include <string>
 #include <unistd.h>
 
 #include "logging/log.hpp"
+#include "version.hpp"
 
 namespace wisp::process {
 
@@ -70,6 +70,10 @@ std::filesystem::path pidFilePath() {
     return runtimeDir() / "wisp.pid";
 }
 
+std::filesystem::path versionFilePath() {
+    return runtimeDir() / "wisp.version";
+}
+
 void writePidFile(pid_t pid) {
     std::error_code ec;
     std::filesystem::create_directories(runtimeDir(), ec);
@@ -79,6 +83,13 @@ void writePidFile(pid_t pid) {
         wisp::log::debug("wrote pid file " + pidFilePath().string() + " (pid " + std::to_string(pid) + ")");
     } else {
         wisp::log::warning("could not write pid file at " + pidFilePath().string());
+    }
+
+    std::ofstream ver(versionFilePath(), std::ios::trunc);
+    if (ver) {
+        ver << pid << "\n" << WISP_VERSION << "\n" << WISP_COMMIT_HASH << "\n";
+    } else {
+        wisp::log::warning("could not write version file at " + versionFilePath().string());
     }
 }
 
@@ -93,6 +104,15 @@ void removePidFileIfOwnedBySelf() {
         } else {
             wisp::log::debug("removed pid file " + pidFilePath().string());
         }
+
+        std::error_code verEc;
+        std::filesystem::remove(versionFilePath(), verEc);
+        if (verEc) {
+            wisp::log::warning("could not remove version file " + versionFilePath().string() + ": " + verEc.message());
+        } else {
+            wisp::log::debug("removed version file " + versionFilePath().string());
+        }
+
     }
 }
 
@@ -108,6 +128,17 @@ std::optional<pid_t> findRunningWispPid() {
     auto found = scanProcForWisp();
     if (found) { wisp::log::debug("found running wisp instance via /proc scan (pid " + std::to_string(*found) + ")"); }
     return found;
+}
+
+std::optional<VersionInfo> readVersionFile(pid_t pid) {
+    std::ifstream in(versionFilePath());
+    pid_t recorded = -1;
+    VersionInfo info;
+    if (!(in >> recorded) || recorded != pid) return std::nullopt;
+    in >> std::ws;
+    if (!std::getline(in, info.version) || info.version.empty()) return std::nullopt;
+    std::getline(in, info.commit);
+    return info;
 }
 
 } // namespace wisp::process
