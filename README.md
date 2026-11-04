@@ -52,7 +52,7 @@ just install
 This builds wisp and installs it:
 
 * `wisp` binary to `~/.local/bin`
-* QML tree, internal scripts, and matugen config to `/usr/share/wisp` 
+* QML tree, internal scripts, and matugen config to `/usr/share/wisp`
 
 ## Build & Run (without installing)
 
@@ -77,7 +77,8 @@ wisp [command] [options]
 | `run` | Launch the bar |
 | `kill` | Stop a running wisp instance |
 | `reload` | Restart the quickshell process of a running wisp instance |
-| `log` [head|tail|clear] [n] | Show the Log File | 
+| `log` [head\|tail\|clear] [n] | Show the Log File | 
+| `status` | Shows the Status of Wisp |
 | `open <target>` | Open a widget/popup |
 | `close <target>` | Close a widget/popup |
 | `toggle <target>` | Toggle a widget/popup |
