@@ -64,3 +64,19 @@ function formatRate(bytesPerSec) {
     var decimals = (i > 0 && val < 10) ? 1 : 0
     return val.toFixed(decimals) + " " + units[i]
 }
+
+// Formats a duration in seconds as "m:ss" or "h:mm:ss" once it reaches an hour.
+// e.g. 125 -> 2:05, 7530 -. "2:05:30".
+function formatTime(seconds) {
+    if (!seconds || seconds < 0 || !isFinite(seconds)) return "0:00"
+
+    var total = Math.floor(seconds)
+    var hours = Math.floor(total / 3600)
+    var minutes = Math.floor((total % 3600) / 60)
+    var secs = total % 60
+
+    var ss = (secs < 10 ? "0" : "") + secs
+    if (hours > 0) return hours + ":" + (minutes < 10 ? "0": "") + minutes + ":" + ss
+    return minutes + ":" + ss
+}
+

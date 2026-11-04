@@ -9,6 +9,7 @@ import "../../Colors"
 import "../../Components"
 import "../../Config"
 import "../../Icons"
+import "../../Utils/Utils.js" as Utils
 import Wisp.Audio
 
 BarPopup {
@@ -52,11 +53,11 @@ BarPopup {
                 return playerList[i]
             }
         }
-        
+
         if (cachedPlayer !== null && playerList.includes(cachedPlayer)) {
             return cachedPlayer
         }
-        
+
         return playerList.length > 0 ? playerList[0] : null;
     }
 
@@ -67,15 +68,6 @@ BarPopup {
     }
 
     readonly property bool hasPlayer: activePlayer !== null
-
-    function formatTime(seconds) {
-        if (!seconds || seconds < 0 || !isFinite(seconds))
-            return "0:00"
-        const total = Math.floor(seconds)
-        const m = Math.floor(total / 60)
-        const s = total % 60
-        return m + ":" + (s < 10 ? "0" : "") + s
-    }
 
     // Keep position advancing visually while playing, without hammering
     // dbus with a signal per frame.
@@ -325,15 +317,23 @@ BarPopup {
                 Layout.fillWidth: true
                 spacing: 10
 
-                Text {
-                    text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.position) : "0:00"
-                    textFormat: Text.PlainText
-                    color: Colors.colors.foregroundMuted
-                    font.family: Config.font
-                    font.pixelSize: 10
-                }
+                // Left Cell: elapsted time
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 0
+                    implicitHeight: elapsedText.implicitHeight
 
-                Item { Layout.fillWidth: true }
+                    Text {
+                        id: elapsedText
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: audioPopup.hasPlayer ? Utils.formatTime(audioPopup.activePlayer.position): "0:00"
+                        textFormat: Text.PlainText
+                        color: Colors.colors.foregroundMuted
+                        font.family: Config.font
+                        font.pixelSize: 10
+                    }
+                }
 
                 Image {
                     source: Icons.getIcon("audio/previous")
@@ -386,14 +386,21 @@ BarPopup {
                     }
                 }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 0
+                    implicitHeight: lengthText.implicitHeight
 
-                Text {
-                    text: audioPopup.hasPlayer ? audioPopup.formatTime(audioPopup.activePlayer.length) : "0:00"
-                    textFormat: Text.PlainText
-                    color: Colors.colors.foregroundMuted
-                    font.family: Config.font
-                    font.pixelSize: 10
+                    Text {
+                        id: lengthText
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: audioPopup.hasPlayer ? Utils.formatTime(audioPopup.activePlayer.length) : "0:00"
+                        textFormat: Text.PlainText
+                        color: Colors.colors.foregroundMuted
+                        font.family: Config.font
+                        font.pixelSize: 10
+                    }
                 }
             }
         }
