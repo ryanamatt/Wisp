@@ -22,7 +22,7 @@ Wisp has two halves the run as two processes:
 - **`wisp`**: a C++ executable. It is the CLI, the process supervisor, and the owner of the configuration and logging.
 - **`quickshell`**: the actual UI. It runs the QML under `qml/` and is spawned by `wisp` as a child process.
 
-QML gets native functionality (audio, battery, calendar, and so on) from the C++ backend modules under `src/backed`, which are compiled as QML modules rather than linked into `wisp`.
+QML gets native functionality (audio, battery, calendar, and so on) from the C++ backend modules under `src/backend`, which are compiled as QML modules rather than linked into `wisp`.
 
 ```
                  +-----------------------------------+
@@ -49,7 +49,7 @@ QML gets native functionality (audio, battery, calendar, and so on) from the C++
 ```
 ## Tech Stack
 
-| Layer | User For |
+| Layer | Used For |
 |---|---|
 | Quickshell QML | All UI: Bar, Popups, UI, Lock Screen, Runner, etc. |
 | JavaScript | Helper Logic inside QML |
@@ -65,7 +65,7 @@ QML gets native functionality (audio, battery, calendar, and so on) from the C++
 ├── CMakeLists.txt        Build definition for everything
 ├── install.sh            Build + install
 ├── uninstall.sh          Remove installed files
-├── run.sh                Dev helper for running from the build tree
+├── justfile              Just file for Running commands
 ├── cmake/                CMake helper scripts (version header generation)
 ├── config/               Example config.json, jokes.txt, matugen config + templates
 ├── qml/                  The Quickshell config (the whole UI)
@@ -81,7 +81,7 @@ QML gets native functionality (audio, battery, calendar, and so on) from the C++
 │   ├── logging/          Shared plain C++ logger
 │   └── process/          Pid file, signals, kill/reload/status
 ├── third_party/          Vendored dependencies (nlohmann/json)
-└── tools/                Development Tools (`format.sh`, `build.sh`)
+└── tools/                Development Tools (`format.sh`, `build.sh`, ...)
 ```
  
 The key rule for `src/`:
