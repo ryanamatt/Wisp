@@ -83,6 +83,7 @@ public slots:
 signals:
     void accessoriesChanged();
     void laptopBatteryChanged();
+    void deviceChargingChanged(const QString &name, const QString &icon, int percent, bool charging);
     void warnPercentChanged();
     void powerProfileChanged();
     void availableProfilesChanged();
@@ -108,6 +109,8 @@ private:
     void onBluetoothFinished();
     void onProfileGetFinished();
     void onProfileListFinished();
+
+    void checkChargeChanges(const std::vector<Device> &devices);
 
     // Switches to power-saver the first time the laptop battery goes low, if enabled.
     void checkAutoSwitch();
@@ -139,6 +142,9 @@ private:
     QVariantList m_accessories;
     bool m_hasLaptopBattery = false;
     QVariantMap m_laptopBattery;
+
+    // Last Known charging state per device name and used to detect plug/unplug transition
+    QHash<QString, bool> m_lastCharging;
 
     int m_warnPercent = kDefaultWarnPercent;
 

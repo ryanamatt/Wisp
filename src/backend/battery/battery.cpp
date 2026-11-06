@@ -267,6 +267,30 @@ void Battery::onBluetoothFinished() {
     rebuild();
 }
 
+// ----- Charging Changes -----
+
+void Battery::checkChargeChanges(const std::vector<Device> &devices) {
+    QSet<QString> present;
+
+    for (const Device &dev : devices) {
+        present.insert(dev.name);
+
+        // Only compare against a previous state. A device's first sighting is silent, which also keeps
+        // startup quiet while the probes finish one by one.
+        const auto it = m_lastCharging.constFind(dev.name);
+        if (it != m_lastCharging.constEnd() && it.value() != dev.charging)
+            emit deviceChargingChanged(dev.name, dev.icon, dev.percent, dev.charging);
+
+        m_lastCharging.insert(dev.name, dev.charging);
+    }
+
+    // Forget devices that disappeared, so a reconnect doesn't compare against stale state.
+    for (auto it = m_lastCharging.begin(); it != m_lastCharging.end();) {
+        if (!present.contains(it.key())) it = m_lastCharging.erase(it);
+        else ++it;
+    }
+}
+
 // ----- Power profiles -----
 
 void Battery::onProfileGetFinished() {
@@ -409,6 +433,8 @@ void Battery::rebuild() {
         });
         if (!duplicate) merged.push_back(bt);
     }
+
+    checkChargeChanges(merged);
 
     // Notify before building the maps so sentLowNotif reflects this pass.
     checkNotify(merged);

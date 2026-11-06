@@ -40,10 +40,11 @@ Scope {
 
     // ---- Sources: add or remove OSDs here ----
     OSDBrightness { id: brightness; onRequested: root.show(brightness) }
-    OSDVolume     { id: volume;     onRequested: root.show(volume) }
-    OSDMic        { id: mic;        onRequested: root.show(mic) }
-    OSDCapsLock   { id: capsLock;   onRequested: root.show(capsLock) }
-    OSDNumLock    { id: numLock;    onRequested: root.show(numLock) }
+    OSDVolume     { id: volume;     onRequested: root.show(volume)     }
+    OSDMic        { id: mic;        onRequested: root.show(mic)        }
+    OSDCapsLock   { id: capsLock;   onRequested: root.show(capsLock)   }
+    OSDNumLock    { id: numLock;    onRequested: root.show(numLock)    }
+    OSDCharging   { id: charging;   onRequested: root.show(charging)   }
 
     // ---- The single window ----
     PanelWindow {
