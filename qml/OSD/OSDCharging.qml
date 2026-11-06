@@ -12,7 +12,7 @@ OSDBase {
         function onDeviceChargingChanged(name, icon, percent, charging) {
             root.icon = Icons.getIcon(icon)
             root.barValue = percent
-            root.valueText = name + (charging ? " plugging in" : " unplugged") + " (" + percent + "%)"
+            root.valueText = percent + "%"
             root.show()
         }
     }
