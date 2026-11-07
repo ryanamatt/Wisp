@@ -286,8 +286,10 @@ void Battery::checkChargeChanges(const std::vector<Device> &devices) {
 
     // Forget devices that disappeared, so a reconnect doesn't compare against stale state.
     for (auto it = m_lastCharging.begin(); it != m_lastCharging.end();) {
-        if (!present.contains(it.key())) it = m_lastCharging.erase(it);
-        else ++it;
+        if (!present.contains(it.key()))
+            it = m_lastCharging.erase(it);
+        else
+            ++it;
     }
 }
 
