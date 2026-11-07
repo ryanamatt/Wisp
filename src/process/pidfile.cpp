@@ -112,7 +112,6 @@ void removePidFileIfOwnedBySelf() {
         } else {
             wisp::log::debug("removed version file " + versionFilePath().string());
         }
-
     }
 }
 

@@ -3,17 +3,17 @@
 #include "process/status.hpp"
 
 #include <algorithm>
+#include <cerrno>
+#include <fcntl.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <optional>
 #include <sstream>
 #include <string>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
-#include <cerrno>
-#include <fcntl.h>
-#include <sys/wait.h>
 
 #include "config/config.hpp"
 #include "process/pidfile.hpp"
