@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
         case wisp::cli::Command::Status: return wisp::process::statusInstance();
         case wisp::cli::Command::Log: return wisp::cli::runLogCommand(parsed.logCommand, parsed.logNum);
         case wisp::cli::Command::Ipc: return wisp::ipc::exec(parsed.qmlDir, parsed.ipcTarget, parsed.ipcAction);
+        case wisp::cli::Command::Targets: return wisp::ipc::listTargets(parsed.qmlDir);
         case wisp::cli::Command::None: break;
     }
 
