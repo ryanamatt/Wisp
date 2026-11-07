@@ -12,7 +12,7 @@ import "../Config"
 Scope {
     id: root
 
-    property int duration: 1000
+    property int duration: Config.osdDuration
     property bool whenVisible: false
     property var current: null
 

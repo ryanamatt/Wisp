@@ -20,6 +20,7 @@ inline constexpr const int kDefaultBatteryWarnPerc = 30;
 inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
 inline constexpr int kDefaultNotificationToastMs = 2000;
 inline constexpr const char *kDefaultJokesFile = "jokes.txt";
+inline constexpr int kDefaultOSDDuration = 1000; // milliseconds
 
 struct Config {
     std::string timeFormat = kDefaultTimeFormat;
@@ -32,6 +33,7 @@ struct Config {
     bool batteryAutoPowerSaver = kDefaultBatteryAutoPowerSaver;
     int notificationToastMs = kDefaultNotificationToastMs;
     std::string jokesFile = kDefaultJokesFile;
+    int osdDuration = kDefaultOSDDuration;
 };
 
 // Resolves the default config file location:

@@ -102,6 +102,13 @@ ColumnLayout {
                 JokesFileSetting { Layout.fillWidth: true }
             }
 
+            SettingsSubSection {
+                Layout.fillWidth: true
+                sectionLabel: "OSD"
+
+                OSDDurationSetting { Layout.fillWidth: true }
+            }
+
         }
 
     }

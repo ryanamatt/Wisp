@@ -63,6 +63,9 @@ Singleton {
     property string jokesFilePath: expandPath(Quickshell.env("WISP_JOKES_FILE") || configDir + "/jokes.txt")
     property string pendingJokesFilePath: jokesFilePath
 
+    property int osdDuration: parseInt(Quickshell.env("WISP_OSD_DURATION")) || 1000
+    property int pendingOSDDuration: osdDuration
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
@@ -73,7 +76,8 @@ Singleton {
                                   pendingBatteryWarnPerc !== batteryWarnPerc ||
                                   pendingBatteryAutoPowerSaver !== batteryAutoPowerSaver ||
                                   pendingNotificationToastMs !== notificationToastMs ||
-                                  pendingJokesFilePath !== jokesFilePath
+                                  pendingJokesFilePath !== jokesFilePath ||
+                                  pendingOSDDuration !== osdDuration
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -117,6 +121,11 @@ Singleton {
         pendingJokesFilePath = path
     }
 
+    function stageOSDDuration(ms) {
+        if (isNaN(ms)) return
+        pendingOSDDuration = Math.max(0, Math.min(ms, Number.MAX_SAFE_INTEGER))
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
@@ -128,6 +137,7 @@ Singleton {
         pendingBatteryAutoPowerSaver = batteryAutoPowerSaver
         pendingNotificationToastMs = notificationToastMs
         pendingJokesFilePath = jokesFilePath
+        pendingOSDDuration = osdDuration
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -151,6 +161,7 @@ Singleton {
         notificationToastMs = pendingNotificationToastMs
         jokesFilePath = expandPath(pendingJokesFilePath)
         pendingJokesFilePath = jokesFilePath
+        osdDuration = pendingOSDDuration
 
         try {
             const raw = configFile.text()
@@ -179,6 +190,9 @@ Singleton {
 
             if (!parsed.welcome || typeof parsed.welcome !== "object") parsed.welcome = {}
             parsed.welcome.jokesFile = jokesFilePath
+
+            if (!parsed.osd || typeof parsed.osd !== "object") parsed.osd = {}
+            parsed.osd.duration = osdDuration
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {
