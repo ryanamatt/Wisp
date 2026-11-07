@@ -15,4 +15,7 @@
         "warnPercentage": 30,
         "autoPowerSaver": true
     }
+    "osd": {
+        "duration": 1000
+    }
 }
