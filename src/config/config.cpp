@@ -83,6 +83,7 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kNotificationToastMs, std::to_string(cfg.notificationToastMs).c_str(), 1);
     setenv(wisp::env::kJokesFile, cfg.jokesFile.c_str(), 1);
     setenv(wisp::env::kOSDDuration, std::to_string(cfg.osdDuration).c_str(), 1);
+    setenv(wisp::env::kOSDOrientation, cfg.osdOrientation.c_str(), 1);
 }
 
 } // namespace
@@ -183,6 +184,12 @@ Config load(const std::string &path) {
     if (j.contains("osd") && j["osd"].is_object()) {
         const auto &osd = j["osd"];
         readInt(osd, "duration", "osd.duration", cfg.osdDuration, 0, std::numeric_limits<int>::max());
+        if (osd.contains("orientation")) {
+            if (osd["orientation"].is_string())
+                cfg.osdOrientation = osd["orientation"].get<std::string>();
+            else
+                wisp::log::warning("config", "osd.orientation must be a string, ignoring");
+        }
     }
 
     exportEnv(cfg, path);

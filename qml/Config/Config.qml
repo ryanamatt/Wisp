@@ -66,6 +66,9 @@ Singleton {
     property int osdDuration: parseInt(Quickshell.env("WISP_OSD_DURATION")) || 1000
     property int pendingOSDDuration: osdDuration
 
+    property string osdOrientation: Quickshell.env("WISP_OSD_ORIENTATION") || "bottom"
+    property string pendingOSDOrientation: osdOrientation
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
@@ -77,7 +80,8 @@ Singleton {
                                   pendingBatteryAutoPowerSaver !== batteryAutoPowerSaver ||
                                   pendingNotificationToastMs !== notificationToastMs ||
                                   pendingJokesFilePath !== jokesFilePath ||
-                                  pendingOSDDuration !== osdDuration
+                                  pendingOSDDuration !== osdDuration ||
+                                  pendingOSDOrientation !== osdOrientation
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -126,6 +130,10 @@ Singleton {
         pendingOSDDuration = Math.max(0, Math.min(ms, Number.MAX_SAFE_INTEGER))
     }
 
+    function stageOSDOrientation(orientation) {
+        pendingOSDOrientation = orientation
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
@@ -138,6 +146,7 @@ Singleton {
         pendingNotificationToastMs = notificationToastMs
         pendingJokesFilePath = jokesFilePath
         pendingOSDDuration = osdDuration
+        pendingOSDOrientation = osdOrientation
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -162,6 +171,7 @@ Singleton {
         jokesFilePath = expandPath(pendingJokesFilePath)
         pendingJokesFilePath = jokesFilePath
         osdDuration = pendingOSDDuration
+        osdOrientation = pendingOSDOrientation
 
         try {
             const raw = configFile.text()
@@ -193,6 +203,7 @@ Singleton {
 
             if (!parsed.osd || typeof parsed.osd !== "object") parsed.osd = {}
             parsed.osd.duration = osdDuration
+            parsed.osd.orientation = osdOrientation
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {
