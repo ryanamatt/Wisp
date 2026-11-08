@@ -78,8 +78,8 @@ Scope {
             id: rect
             anchors.centerIn: parent
 
-            implicitWidth: 150
-            implicitHeight: 40
+            implicitWidth: 150 * Config.osdScaleSize
+            implicitHeight: 40 * Config.osdScaleSize
 
             radius: rect.width / 5
 

@@ -108,6 +108,7 @@ ColumnLayout {
 
                 OSDDurationSetting { Layout.fillWidth: true }
                 OSDOrientationSetting { Layout.fillWidth: true }
+                OSDScaleSizeSetting { Layout.fillWidth: true }
             }
 
         }

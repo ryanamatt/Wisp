@@ -69,6 +69,9 @@ Singleton {
     property string osdOrientation: Quickshell.env("WISP_OSD_ORIENTATION") || "bottom"
     property string pendingOSDOrientation: osdOrientation
 
+    property double osdScaleSize: parseFloat(Quickshell.env("WISP_OSD_SCALE_SIZE")) || 1.0;
+    property double pendingOSDScaleSize: osdScaleSize
+
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
@@ -81,7 +84,8 @@ Singleton {
                                   pendingNotificationToastMs !== notificationToastMs ||
                                   pendingJokesFilePath !== jokesFilePath ||
                                   pendingOSDDuration !== osdDuration ||
-                                  pendingOSDOrientation !== osdOrientation
+                                  pendingOSDOrientation !== osdOrientation ||
+                                  pendingOSDScaleSize !== osdScaleSize
 
     // Called by settings UI as the user picks a new value.
     function stageTimeFormat(format) {
@@ -134,6 +138,10 @@ Singleton {
         pendingOSDOrientation = orientation
     }
 
+    function stageOSDScaleSize(size) {
+        pendingOSDScaleSize = Math.max(0, Math.min(size, 4.0))
+    }
+
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
@@ -147,6 +155,7 @@ Singleton {
         pendingJokesFilePath = jokesFilePath
         pendingOSDDuration = osdDuration
         pendingOSDOrientation = osdOrientation
+        pendingOSDScaleSize = osdScaleSize
     }
 
     // Applies every pending setting to the live bar and rewrites
@@ -172,6 +181,7 @@ Singleton {
         pendingJokesFilePath = jokesFilePath
         osdDuration = pendingOSDDuration
         osdOrientation = pendingOSDOrientation
+        osdScaleSize = pendingOSDScaleSize
 
         try {
             const raw = configFile.text()
@@ -204,6 +214,7 @@ Singleton {
             if (!parsed.osd || typeof parsed.osd !== "object") parsed.osd = {}
             parsed.osd.duration = osdDuration
             parsed.osd.orientation = osdOrientation
+            parsed.osd.scaleSize = osdScaleSize
 
             configFile.setText(JSON.stringify(parsed, null, 4))
         } catch (e) {
