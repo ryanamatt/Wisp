@@ -12,45 +12,38 @@ import "../Colors"
 import "../Config"
 import "AppIndex.js" as AppIndex
 
-PanelWindow {
+RunnerBasePopup {
     id: root
 
     // ---- Inputs ----
-    // True while the Runner is in app mode (or idle, when showing recents).
-    property bool open: false
+    // `open` comes from the base. True while the Runner is in app mode
+    // (or idle, when showing recents).
     // Text typed into the Runner.
     property string query: ""
 
-    // Geometry of the Runner this popup hangs from.
-    property int runnerWidth: 400
-    property int runnerHeight: 100
-    property int runnerTopMargin: 0
-
     // ---- Tweakables ----
-    property int popupWidth: runnerWidth
-    property int popupHeight: 344
-    property int bottomRadius: 30
     property int rowHeight: 48
     property int iconSize: 32
-    property int footerHeight: 44
-    property int sidePadding: 14
 
     // Used for .desktop files with Terminal=true. $TERMINAL is only set if the
     // shell inherited it, so xdg-terminal-exec is the fallback.
     property string terminal: Quickshell.env("TERMINAL") || "xdg-terminal-exec"
 
-    readonly property int borderWidth: 2
-
     // Emitted after an app was launched. Runner.qml closes itself on this.
     signal appLaunched(string id)
 
-    // ---- Animation state ----
-    property real cornerProgress: 0
-    property real slideProgress: 0
+    // ---- Base settings ----
+    popupHeight: 344
+    showFooter: true
+    footerText: current ? current.name : ""
+    footerHint: "\u21B5 launch"
+    footerHintVisible: current !== null
+    emptyVisible: results.length === 0
+    emptyText: entries.length === 0
+        ? "No applications found."
+        : "No apps match '" + query.trim() + "'\n> command   = calculate   : symbols"
 
     // ---- Internals ----
-    property bool expanded: false
-
     // Rebuilt automatically when apps are installed or removed.
     readonly property var entries: AppIndex.build(DesktopEntries.applications.values)
 
@@ -145,298 +138,124 @@ PanelWindow {
         return Quickshell.iconPath(name, true);
     }
 
-    // ---- Open / close animation (same scheme as RunnerSymbolPopup) ----
-    function setExpanded(value) {
-        if (value === expanded) return;
-        expanded = value;
-
-        openAnim.stop();
-        closeAnim.stop();
-
-        // Scale durations by the distance left so interrupting is seamless.
-        if (value) {
-            openCorners.duration = Math.round(90 * (1 - cornerProgress));
-            openSlide.duration = Math.round(320 * (1 - slideProgress));
-            openAnim.start();
-        } else {
-            closeSlide.duration = Math.round(200 * slideProgress);
-            closeCorners.duration = Math.round(90 * cornerProgress);
-            closeAnim.start();
-        }
-    }
-
-    // Jump straight to closed with no animation (used when the Runner hides).
-    function snapClosed() {
-        openAnim.stop();
-        closeAnim.stop();
-        expanded = false;
-        cornerProgress = 0;
-        slideProgress = 0;
-    }
-
-    onOpenChanged: setExpanded(open)
-
-    SequentialAnimation {
-        id: openAnim
-        NumberAnimation {
-            id: openCorners
-            target: root; property: "cornerProgress"
-            to: 1; duration: 90; easing.type: Easing.InOutQuad
-        }
-        NumberAnimation {
-            id: openSlide
-            target: root; property: "slideProgress"
-            to: 1; duration: 320; easing.type: Easing.OutCubic
-        }
-    }
-
-    SequentialAnimation {
-        id: closeAnim
-        NumberAnimation {
-            id: closeSlide
-            target: root; property: "slideProgress"
-            to: 0; duration: 200; easing.type: Easing.InCubic
-        }
-        NumberAnimation {
-            id: closeCorners
-            target: root; property: "cornerProgress"
-            to: 0; duration: 90; easing.type: Easing.InOutQuad
-        }
-    }
-
-    // ---- Window ----
-    visible: expanded || cornerProgress > 0 || slideProgress > 0
-    color: "transparent"
-    exclusionMode: ExclusionMode.Ignore
-
-    anchors { top: true }
-    // Overlap the Runner by one border width so the two borders merge.
-    margins.top: runnerTopMargin + runnerHeight - borderWidth
-
-    implicitWidth: popupWidth
-    implicitHeight: popupHeight
-
-    Item {
+    // ---- App list ----
+    ListView {
+        id: list
         anchors.fill: parent
+
+        model: root.results
         clip: true
+        boundsBehavior: Flickable.StopAtBounds
+        // The text field owns the keyboard, Runner.qml calls move().
+        keyNavigationEnabled: false
+        interactive: true
 
-        Rectangle {
-            id: card
-            visible: root.slideProgress > 0
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+            contentItem: Rectangle {
+                implicitWidth: 4
+                radius: 2
+                color: Colors.colors.foregroundDisabled
+                opacity: parent.active ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+            }
+        }
 
-            width: parent.width
-            // Extra border width on top, pushed above the clip edge, so only
-            // the side and bottom borders are visible.
-            height: root.popupHeight + root.borderWidth
-            y: -root.borderWidth - (1 - root.slideProgress) * root.popupHeight
+        delegate: Item {
+            id: row
 
-            color: Colors.colors.backgroundAlt
-            border.color: Colors.colors.background
-            border.width: root.borderWidth
+            required property int index
+            required property var modelData
 
-            topLeftRadius: 0
-            topRightRadius: 0
-            bottomLeftRadius: root.bottomRadius
-            bottomRightRadius: root.bottomRadius
+            readonly property bool isCurrent: ListView.isCurrentItem
 
-            // ---- App list ----
+            width: list.width
+            height: root.rowHeight
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 2
+                radius: 12
+                color: row.isCurrent ? Colors.colors.selected : "transparent"
+                border.width: row.isCurrent ? 1 : 0
+                border.color: Colors.colors.borderActive
+
+                Behavior on color { ColorAnimation { duration: 90 } }
+            }
+
+            // The app's own icon, installed by the app itself.
             Item {
-                id: listArea
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                    right: parent.right
-                    bottom: footer.top
-                    topMargin: root.borderWidth * 2 + 6
-                    leftMargin: root.sidePadding + root.borderWidth
-                    rightMargin: root.sidePadding + root.borderWidth
-                }
+                id: iconBox
+                anchors.left: parent.left
+                anchors.leftMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                width: root.iconSize
+                height: root.iconSize
 
-                ListView {
-                    id: list
+                // Letter tile, only visible when the icon is missing.
+                Rectangle {
                     anchors.fill: parent
+                    radius: 8
+                    visible: appIcon.status !== Image.Ready
+                    color: Colors.colors.surfaceElevated
 
-                    model: root.results
-                    clip: true
-                    boundsBehavior: Flickable.StopAtBounds
-                    // The text field owns the keyboard, Runner.qml calls move().
-                    keyNavigationEnabled: false
-                    interactive: true
-
-                    ScrollBar.vertical: ScrollBar {
-                        policy: ScrollBar.AsNeeded
-                        contentItem: Rectangle {
-                            implicitWidth: 4
-                            radius: 2
-                            color: Colors.colors.foregroundDisabled
-                            opacity: parent.active ? 1 : 0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
-                    }
-
-                    delegate: Item {
-                        id: row
-
-                        required property int index
-                        required property var modelData
-
-                        readonly property bool isCurrent: ListView.isCurrentItem
-
-                        width: list.width
-                        height: root.rowHeight
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 2
-                            radius: 12
-                            color: row.isCurrent ? Colors.colors.selected : "transparent"
-                            border.width: row.isCurrent ? 1 : 0
-                            border.color: Colors.colors.borderActive
-
-                            Behavior on color { ColorAnimation { duration: 90 } }
-                        }
-
-                        // The app's own icon, installed by the app itself.
-                        Item {
-                            id: iconBox
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: root.iconSize
-                            height: root.iconSize
-
-                            // Letter tile, only visible when the icon is missing.
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: 8
-                                visible: appIcon.status !== Image.Ready
-                                color: Colors.colors.surfaceElevated
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: row.modelData.name.charAt(0).toUpperCase()
-                                    color: Colors.colors.accent
-                                    font.pixelSize: 16
-                                    font.bold: true
-                                    font.family: Config.font
-                                }
-                            }
-
-                            IconImage {
-                                id: appIcon
-                                anchors.fill: parent
-                                implicitSize: root.iconSize
-                                asynchronous: true
-                                source: root.iconSource(row.modelData.icon)
-                            }
-                        }
-
-                        Column {
-                            anchors.left: iconBox.right
-                            anchors.leftMargin: 12
-                            anchors.right: parent.right
-                            anchors.rightMargin: 14
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 1
-
-                            Text {
-                                width: parent.width
-                                text: row.modelData.name
-                                color: Colors.colors.foreground
-                                font.pixelSize: 15
-                                font.family: Config.font
-                                elide: Text.ElideRight
-                            }
-
-                            Text {
-                                width: parent.width
-                                visible: row.modelData.detail !== ""
-                                text: row.modelData.detail
-                                color: Colors.colors.foregroundSubtle
-                                font.pixelSize: 11
-                                font.family: Config.font
-                                elide: Text.ElideRight
-                            }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-
-                            // Only real mouse movement moves the selection, so
-                            // a list scrolling under a still cursor (keyboard
-                            // navigation) does not steal it.
-                            onPositionChanged: list.currentIndex = row.index
-                            onClicked: root.launch(row.modelData)
-                        }
+                    Text {
+                        anchors.centerIn: parent
+                        text: row.modelData.name.charAt(0).toUpperCase()
+                        color: Colors.colors.accent
+                        font.pixelSize: 16
+                        font.bold: true
+                        font.family: Config.font
                     }
                 }
 
-                // Shown instead of the list when there is nothing to list.
-                Text {
-                    anchors.centerIn: parent
-                    width: parent.width - 24
-                    visible: root.results.length === 0
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
-                    color: Colors.colors.foregroundSubtle
-                    font.pixelSize: 14
-                    font.family: Config.font
-                    text: root.entries.length === 0
-                        ? "No applications found."
-                        : "No apps match '" + root.query.trim() + "'\n> command   = calculate   : symbols"
+                IconImage {
+                    id: appIcon
+                    anchors.fill: parent
+                    implicitSize: root.iconSize
+                    asynchronous: true
+                    source: root.iconSource(row.modelData.icon)
                 }
             }
 
-            // ---- Footer: details of the highlighted app ----
-            Item {
-                id: footer
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    bottom: parent.bottom
-                    bottomMargin: root.borderWidth
-                }
-                height: root.footerHeight
-
-                Rectangle {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: root.bottomRadius
-                    anchors.rightMargin: root.bottomRadius
-                    height: 1
-                    color: Colors.colors.border
-                    opacity: 0.6
-                }
+            Column {
+                anchors.left: iconBox.right
+                anchors.leftMargin: 12
+                anchors.right: parent.right
+                anchors.rightMargin: 14
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 1
 
                 Text {
-                    id: hintText
-                    anchors.right: parent.right
-                    anchors.rightMargin: root.bottomRadius
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: 1
-                    visible: root.current !== null
-                    text: "\u21B5 launch"
-                    color: Colors.colors.accent
-                    font.pixelSize: 12
-                    font.family: Config.font
-                }
-
-                Text {
-                    anchors.left: parent.left
-                    anchors.leftMargin: root.bottomRadius
-                    anchors.right: hintText.left
-                    anchors.rightMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: 1
-                    text: root.current ? root.current.name : ""
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 14
+                    width: parent.width
+                    text: row.modelData.name
+                    color: Colors.colors.foreground
+                    font.pixelSize: 15
                     font.family: Config.font
                     elide: Text.ElideRight
                 }
+
+                Text {
+                    width: parent.width
+                    visible: row.modelData.detail !== ""
+                    text: row.modelData.detail
+                    color: Colors.colors.foregroundSubtle
+                    font.pixelSize: 11
+                    font.family: Config.font
+                    elide: Text.ElideRight
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+
+                // Only real mouse movement moves the selection, so
+                // a list scrolling under a still cursor (keyboard
+                // navigation) does not steal it.
+                onPositionChanged: list.currentIndex = row.index
+                onClicked: root.launch(row.modelData)
             }
         }
     }

@@ -8,49 +8,46 @@ import "../Colors"
 import "../Config"
 import "SymbolIndex.js" as SymbolIndex
 
-PanelWindow {
+RunnerBasePopup {
     id: root
 
     // ---- Inputs ----
-    // True while the Runner is in symbol mode.
-    property bool open: false
+    // `open` comes from the base. True while the Runner is in symbol mode.
     // Text typed after the leading ":".
     property string query: ""
-
-    // Geometry of the Runner this popup hangs from.
-    property int runnerWidth: 400
-    property int runnerHeight: 100
-    property int runnerTopMargin: 0
 
     // ---- Data sources ----
     // Emoji and common symbols, with names and keywords.
     // Arch: unicode-cldr-annotations   Debian/Ubuntu: unicode-cldr-core
     property string annotationsPath: "/usr/share/unicode/cldr/common/annotations/en.xml"
     // Extra blocks (Greek, box drawing, fractions, ...). Optional.
-    // Arch: unicode-character-database   Debian/Ubuntu: unicode-data
+    // Arch: unicode-character-database
     property string unicodeDataPath: "/usr/share/unicode/UnicodeData.txt"
 
     // ---- Tweakables ----
-    property int popupWidth: runnerWidth
-    property int popupHeight: 340
-    property int bottomRadius: 30
     property int columns: 8
     property int glyphSize: 24
-    property int footerHeight: 44
-    property int sidePadding: 14
-
-    readonly property int borderWidth: 2
 
     // Emitted after a symbol was copied. Runner.qml closes itself on this.
     signal symbolCopied(string symbol)
 
-    // ---- Animation state ----
-    property real cornerProgress: 0
-    property real slideProgress: 0
+    // ---- Base settings ----
+    popupHeight: 340
+    showFooter: true
+    footerText: current ? current.c + "   " + current.n : ""
+    footerHint: "\u21B5 copy"
+    footerHintVisible: current !== null
+    footerHintColor: Colors.colors.purple
+    emptyVisible: results.length === 0
+    emptyText: {
+        if (loading)
+            return "Loading symbols...";
+        if (noData)
+            return "No symbol data found.\nCould not read " + annotationsPath;
+        return "No symbols match '" + query.trim() + "'";
+    }
 
     // ---- Internals ----
-    property bool expanded: false
-
     // Files are only read once the popup has been opened for the first time.
     property bool loadRequested: false
     // "idle" | "loading" | "ok" | "missing" for each source.
@@ -84,6 +81,15 @@ PanelWindow {
             grid.currentIndex = targetIndex;
         }
         grid.positionViewAtBeginning();
+    }
+
+    // Kick off the file loads the first time the popup opens.
+    onOpenChanged: {
+        if (open && !loadRequested) {
+            cldrState = "loading";
+            ucdState = "loading";
+            loadRequested = true;
+        }
     }
 
     FileView {
@@ -135,264 +141,80 @@ PanelWindow {
         symbolCopied(glyph);
     }
 
-    // ---- Open / close animation (same scheme as RunnerCalcPopup) ----
-    function setExpanded(value) {
-        if (value === expanded) return;
-        expanded = value;
+    // ---- Symbol grid ----
+    GridView {
+        id: grid
 
-        openAnim.stop();
-        closeAnim.stop();
+        // Fit whole cells and centre the leftover pixels. The parent is the
+        // base's content area.
+        readonly property int cell: Math.floor(parent.width / root.columns)
 
-        // Scale durations by the distance left so interrupting is seamless.
-        if (value) {
-            openCorners.duration = Math.round(90 * (1 - cornerProgress));
-            openSlide.duration = Math.round(320 * (1 - slideProgress));
-            openAnim.start();
-        } else {
-            closeSlide.duration = Math.round(200 * slideProgress);
-            closeCorners.duration = Math.round(90 * cornerProgress);
-            closeAnim.start();
-        }
-    }
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: cell * root.columns
+        height: parent.height
 
-    // Jump straight to closed with no animation (used when the Runner hides).
-    function snapClosed() {
-        openAnim.stop();
-        closeAnim.stop();
-        expanded = false;
-        cornerProgress = 0;
-        slideProgress = 0;
-    }
+        cellWidth: cell
+        cellHeight: cell
 
-    onOpenChanged: {
-        if (open && !loadRequested) {
-            cldrState = "loading";
-            ucdState = "loading";
-            loadRequested = true;
-        }
-        setExpanded(open);
-    }
-
-    SequentialAnimation {
-        id: openAnim
-        NumberAnimation {
-            id: openCorners
-            target: root; property: "cornerProgress"
-            to: 1; duration: 90; easing.type: Easing.InOutQuad
-        }
-        NumberAnimation {
-            id: openSlide
-            target: root; property: "slideProgress"
-            to: 1; duration: 320; easing.type: Easing.OutCubic
-        }
-    }
-
-    SequentialAnimation {
-        id: closeAnim
-        NumberAnimation {
-            id: closeSlide
-            target: root; property: "slideProgress"
-            to: 0; duration: 200; easing.type: Easing.InCubic
-        }
-        NumberAnimation {
-            id: closeCorners
-            target: root; property: "cornerProgress"
-            to: 0; duration: 90; easing.type: Easing.InOutQuad
-        }
-    }
-
-    // ---- Window ----
-    visible: expanded || cornerProgress > 0 || slideProgress > 0
-    color: "transparent"
-    exclusionMode: ExclusionMode.Ignore
-
-    anchors { top: true }
-    // Overlap the Runner by one border width so the two borders merge.
-    margins.top: runnerTopMargin + runnerHeight - borderWidth
-
-    implicitWidth: popupWidth
-    implicitHeight: popupHeight
-
-    Item {
-        anchors.fill: parent
+        model: root.results
         clip: true
+        boundsBehavior: Flickable.StopAtBounds
+        // The text field owns the keyboard, Runner.qml calls move().
+        keyNavigationEnabled: false
+        interactive: true
 
-        Rectangle {
-            id: card
-            visible: root.slideProgress > 0
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+            contentItem: Rectangle {
+                implicitWidth: 4
+                radius: 2
+                color: Colors.colors.foregroundDisabled
+                opacity: parent.active ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+            }
+        }
 
-            width: parent.width
-            // Extra border width on top, pushed above the clip edge, so only
-            // the side and bottom borders are visible.
-            height: root.popupHeight + root.borderWidth
-            y: -root.borderWidth - (1 - root.slideProgress) * root.popupHeight
+        delegate: Item {
+            id: cell
 
-            color: Colors.colors.backgroundAlt
-            border.color: Colors.colors.background
-            border.width: root.borderWidth
+            required property int index
+            required property var modelData
 
-            topLeftRadius: 0
-            topRightRadius: 0
-            bottomLeftRadius: root.bottomRadius
-            bottomRightRadius: root.bottomRadius
+            readonly property bool isCurrent: GridView.isCurrentItem
 
-            // ---- Symbol grid ----
-            Item {
-                id: gridArea
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                    right: parent.right
-                    bottom: footer.top
-                    topMargin: root.borderWidth * 2 + 6
-                    leftMargin: root.sidePadding + root.borderWidth
-                    rightMargin: root.sidePadding + root.borderWidth
-                }
+            width: grid.cellWidth
+            height: grid.cellHeight
 
-                GridView {
-                    id: grid
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 2
+                radius: 10
+                color: cell.isCurrent ? Colors.colors.selected : "transparent"
+                border.width: cell.isCurrent ? 1 : 0
+                border.color: Colors.colors.borderActive
 
-                    // Fit whole cells and centre the leftover pixels.
-                    readonly property int cell: Math.floor(gridArea.width / root.columns)
-
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: cell * root.columns
-                    height: parent.height
-
-                    cellWidth: cell
-                    cellHeight: cell
-
-                    model: root.results
-                    clip: true
-                    boundsBehavior: Flickable.StopAtBounds
-                    // The text field owns the keyboard, Runner.qml calls move().
-                    keyNavigationEnabled: false
-                    interactive: true
-
-                    ScrollBar.vertical: ScrollBar {
-                        policy: ScrollBar.AsNeeded
-                        contentItem: Rectangle {
-                            implicitWidth: 4
-                            radius: 2
-                            color: Colors.colors.foregroundDisabled
-                            opacity: parent.active ? 1 : 0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
-                    }
-
-                    delegate: Item {
-                        id: cell
-
-                        required property int index
-                        required property var modelData
-
-                        readonly property bool isCurrent: GridView.isCurrentItem
-
-                        width: grid.cellWidth
-                        height: grid.cellHeight
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 2
-                            radius: 10
-                            color: cell.isCurrent ? Colors.colors.selected : "transparent"
-                            border.width: cell.isCurrent ? 1 : 0
-                            border.color: Colors.colors.borderActive
-
-                            Behavior on color { ColorAnimation { duration: 90 } }
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: cell.modelData.c
-                            color: Colors.colors.foreground
-                            font.pixelSize: root.glyphSize
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-
-                            // Only real mouse movement moves the selection, so
-                            // a view scrolling under a still cursor (keyboard
-                            // navigation) does not steal it.
-                            onPositionChanged: grid.currentIndex = cell.index
-                            onClicked: root.copySymbol(cell.modelData.c)
-                        }
-                    }
-                }
-
-                // Shown instead of the grid when there is nothing to list.
-                Text {
-                    anchors.centerIn: parent
-                    width: parent.width - 24
-                    visible: root.results.length === 0
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
-                    color: Colors.colors.foregroundSubtle
-                    font.pixelSize: 14
-                    font.family: Config.font
-                    text: {
-                        if (root.loading)
-                            return "Loading symbols...";
-                        if (root.noData)
-                            return "No symbol data found.\nCould not read " + root.annotationsPath;
-                        return "No symbols match '" + root.query.trim() + "'";
-                    }
-                }
+                Behavior on color { ColorAnimation { duration: 90 } }
             }
 
-            // ---- Footer: name of the highlighted symbol ----
-            Item {
-                id: footer
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    bottom: parent.bottom
-                    bottomMargin: root.borderWidth
-                }
-                height: root.footerHeight
+            Text {
+                anchors.centerIn: parent
+                text: cell.modelData.c
+                color: Colors.colors.foreground
+                font.pixelSize: root.glyphSize
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
 
-                Rectangle {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: root.bottomRadius
-                    anchors.rightMargin: root.bottomRadius
-                    height: 1
-                    color: Colors.colors.border
-                    opacity: 0.6
-                }
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
 
-                Text {
-                    id: hintText
-                    anchors.right: parent.right
-                    anchors.rightMargin: root.bottomRadius
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: 1
-                    visible: root.current !== null
-                    text: "\u21B5 copy"
-                    color: Colors.colors.purple
-                    font.pixelSize: 12
-                    font.family: Config.font
-                }
-
-                Text {
-                    anchors.left: parent.left
-                    anchors.leftMargin: root.bottomRadius
-                    anchors.right: hintText.left
-                    anchors.rightMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: 1
-                    text: root.current ? root.current.c + "   " + root.current.n : ""
-                    color: Colors.colors.foregroundMuted
-                    font.pixelSize: 14
-                    font.family: Config.font
-                    elide: Text.ElideRight
-                }
+                // Only real mouse movement moves the selection, so
+                // a view scrolling under a still cursor (keyboard
+                // navigation) does not steal it.
+                onPositionChanged: grid.currentIndex = cell.index
+                onClicked: root.copySymbol(cell.modelData.c)
             }
         }
     }
