@@ -39,6 +39,7 @@ void printUsage(const char *argv0) {
                  "  open <target>       Open a widget/popup, e.g. `wisp open themeSwitcher`\n"
                  "  close <target>      Close a widget/popup, e.g. `wisp close calendar`\n"
                  "  toggle <target>     Toggle a widget/popup, e.g. `wisp toggle themeSwitcher`\n"
+                 "  targets             List the targets usable with open/close/toggle\n"
                  "  lock                Lock the screen\n"
                  "\n"
                  "Options:\n"
@@ -171,6 +172,10 @@ ParsedArgs parse(int argc, char *argv[]) {
                     }
                 }
             }
+            continue;
+        }
+        if (arg == "targets") {
+            parsed.command = Command::Targets;
             continue;
         }
         if (arg == "lock") {
