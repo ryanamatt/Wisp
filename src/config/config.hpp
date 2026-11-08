@@ -21,6 +21,7 @@ inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
 inline constexpr int kDefaultNotificationToastMs = 2000;
 inline constexpr const char *kDefaultJokesFile = "jokes.txt";
 inline constexpr int kDefaultOSDDuration = 1000; // milliseconds
+inline constexpr const char *kDefaultOSDOrientation = "bottom";
 
 struct Config {
     std::string timeFormat = kDefaultTimeFormat;
@@ -34,6 +35,7 @@ struct Config {
     int notificationToastMs = kDefaultNotificationToastMs;
     std::string jokesFile = kDefaultJokesFile;
     int osdDuration = kDefaultOSDDuration;
+    std::string osdOrientation = kDefaultOSDOrientation;
 };
 
 // Resolves the default config file location:

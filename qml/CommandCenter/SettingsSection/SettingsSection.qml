@@ -107,6 +107,7 @@ ColumnLayout {
                 sectionLabel: "OSD"
 
                 OSDDurationSetting { Layout.fillWidth: true }
+                OSDOrientationSetting { Layout.fillWidth: true }
             }
 
         }

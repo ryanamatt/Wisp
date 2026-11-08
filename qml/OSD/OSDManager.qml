@@ -55,8 +55,21 @@ Scope {
 
         WlrLayershell.layer: WlrLayer.Overlay
 
-        anchors { bottom: true; left: true; right: true }
-        margins.bottom: (osd.screen ? osd.screen.height : 1000) / 10
+        property double borderMargins: {
+            let baseHeight = osd.screen ? osd.screen.height : 1000
+            return baseHeight / 10
+        }
+
+        anchors {
+            top: Config.osdOrientation === "top"
+            bottom: Config.osdOrientation === "bottom";
+            left: true;
+            right: true
+        }
+
+        margins.top: Config.osdOrientation === "top" ? osd.borderMargins : 0
+        margins.bottom: Config.osdOrientation === "bottom" ? osd.borderMargins : 0
+
         color: "transparent"
 
         exclusionMode: ExclusionMode.Ignore

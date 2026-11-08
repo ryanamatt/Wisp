@@ -16,6 +16,7 @@
         "autoPowerSaver": true
     }
     "osd": {
-        "duration": 1000
+        "duration": 1000,
+        "orientation": "top"
     }
 }
