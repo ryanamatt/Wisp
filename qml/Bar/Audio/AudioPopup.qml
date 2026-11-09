@@ -395,7 +395,7 @@ BarPopup {
                         id: lengthText
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        text: audioPopup.hasPlayer ? Utils.formatTime(audioPopup.activePlayer.length) : "0:00"
+                        text: audioPopup.hasPlayer ? (audioPopup.activePlayerLength > 86400 ? ">24h": Utils.formatTime(audioPopup.activePlayer.length)) : "0:00"
                         textFormat: Text.PlainText
                         color: Colors.colors.foregroundMuted
                         font.family: Config.font
