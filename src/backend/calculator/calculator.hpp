@@ -1,59 +1,11 @@
-// src/backend/calculator.hpp
+// src/backend/calculator/calculator.hpp
 
 #pragma once
 
 #include <QObject>
 #include <QQmlEngine>
-#include <string>
-#include <utility>
-#include <vector>
+#include <QString>
 
-// ----- Token Stuff -----
-enum class TokenType {
-    Number,
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
-    Modulo,
-    Power,
-    Factorial,
-    Sqrt,
-    Sin,
-    Cos,
-    Tan,
-    Asin,
-    Acos,
-    Atan,
-    Csc,
-    Sec,
-    Cot,
-    Log,
-    Log10,
-    LeftParen,
-    RightParen,
-    Pi,
-    E,
-};
-
-class Token {
-public:
-    Token(TokenType token, std::string value) : token(token), value(std::move(value)) {
-    }
-
-    TokenType get_token() const {
-        return token;
-    }
-    std::string get_value() const {
-        return value;
-    }
-
-private:
-    TokenType token;
-    std::string value;
-};
-
-// ----- Calculator -----
 class Calculator : public QObject {
     Q_OBJECT
     QML_ELEMENT
@@ -65,6 +17,8 @@ public:
     explicit Calculator(QObject *parent = nullptr) : QObject(parent) {
     }
 
+    // Returns true and updates answer if the text is a finite number.
+    // Half-typed input like "2(3" is completed so it can be previewed.
     Q_INVOKABLE bool solve(QString equation);
 
     double answer() const {
@@ -72,21 +26,5 @@ public:
     }
 
 private:
-    void runLexer();
-    Token make_number(int &current_pos);
-    Token make_identifier(int &current_pos);
-
-    void completeTokens();
-
-    double runParser();
-    double parseExpression();
-    double parseTerm();
-    double parsePower();
-    double parseFactor();
-    double parseAtom();
-
     double m_answer = 0.0;
-    std::string m_equation;
-    std::vector<Token> m_tokens;
-    size_t m_parser_pos = 0;
 };

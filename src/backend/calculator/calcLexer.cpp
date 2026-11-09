@@ -41,6 +41,8 @@ bool matchWord(std::string_view text, Word &out) {
 
     consider("pi", TokenType::Number, -1, kPi);
     consider("e", TokenType::Number, -1, kE);
+    consider("x", TokenType::X, -1, 0.0);
+    consider("y", TokenType::Y, -1, 0.0);
     for (int i = 0; i < functionCount(); i++) consider(functionAt(i).name, TokenType::Func, i, 0.0);
 
     return found;
@@ -101,7 +103,7 @@ std::vector<Token> tokenize(std::string_view text) {
             while (offset < run.size()) {
                 Word w;
                 if (!matchWord(std::string_view(run).substr(offset), w))
-                    fail("Unknown Function or identifier.", (int)(i + offset));
+                    fail("Unknown function or identifier", (int)(i + offset));
 
                 Token t;
                 t.type = w.type;
@@ -112,8 +114,8 @@ std::vector<Token> tokenize(std::string_view text) {
 
                 // Letters stop at digits, so "log10" arrives as "log" then "10"
                 if (w.name == "log" && offset == run.size() && runEnd + 1 < text.size() &&
-                        text[runEnd] == '1' && text[runEnd + 1] == '0') {
-                    runEnd +=2;
+                    text[runEnd] == '1' && text[runEnd + 1] == '0') {
+                    runEnd += 2;
                     t.func = findFunction("log10");
                 }
 
@@ -133,11 +135,27 @@ std::vector<Token> tokenize(std::string_view text) {
             case '!': push(TokenType::Fact, i); break;
             case '(': push(TokenType::LParen, i); break;
             case ')': push(TokenType::RParen, i); break;
+            case '=': push(TokenType::Eq, i); break;
+            case '<':
+                if (i + 1 < text.size() && text[i + 1] == '=') {
+                    push(TokenType::Le, i);
+                    i++;
+                } else
+                    push(TokenType::Lt, i);
+                break;
+            case '>':
+                if (i + 1 < text.size() && text[i + 1] == '=') {
+                    push(TokenType::Ge, i);
+                    i++;
+                } else
+                    push(TokenType::Gt, i);
+                break;
+            default: fail("Unknown character in expression", (int)i);
         }
+        i++;
     }
 
     return tokens;
 }
 
 } // namespace wisp::calc
-

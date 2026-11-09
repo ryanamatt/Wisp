@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick)
 qt_standard_project_setup()
 qt_policy(SET QTP0001 NEW)
 
@@ -66,7 +66,38 @@ add_wisp_qml_module(wispbattery Battery backend/battery battery)
 add_wisp_qml_module(wispcalendar Calendar backend/calendar calendar)
 
 # --- wispcalculator QML module ---
-add_wisp_qml_module(wispcalculator Calculator backend/calculator calculator)
+set(WISP_CALC_DIR src/backend/calculator)
+set(WISP_CALC_CORE_SOURCES
+    ${WISP_CALC_DIR}/calcFunctions.cpp
+    ${WISP_CALC_DIR}/calcLexer.cpp
+    ${WISP_CALC_DIR}/calcParser.cpp
+    ${WISP_CALC_DIR}/calcExpression.cpp
+)
+
+qt_add_qml_module(wispcalculator
+    URI Wisp.Calculator
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Calculator
+    DEPENDENCIES QtQuick
+    SOURCES
+        ${WISP_CALC_DIR}/calculator.hpp
+        ${WISP_CALC_DIR}/calculator.cpp
+        ${WISP_CALC_DIR}/calcFunctions.hpp
+        ${WISP_CALC_DIR}/calcLexer.hpp
+        ${WISP_CALC_DIR}/calcParser.hpp
+        ${WISP_CALC_DIR}/calcExpression.hpp
+        ${WISP_CALC_CORE_SOURCES}
+)
+
+target_include_directories(wispcalculator PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/${WISP_CALC_DIR}
+)
+
+target_link_libraries(wispcalculator PRIVATE
+    Qt6::Core
+    Qt6::Qml
+    Qt6::Quick
+)
 
 # --- wisplogcore: plain C++ logging ---
 add_library(wisplogcore STATIC

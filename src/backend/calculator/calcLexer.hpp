@@ -1,6 +1,6 @@
 // src/backend/calculator/calcLexer.hpp
 
-// Turn text into tokens
+// Turns text into tokens
 
 #pragma once
 
@@ -16,7 +16,9 @@ struct ParseError {
 };
 
 enum class TokenType {
-    Number, // Includes constants like pi or e
+    Number, // also used for the constants pi and e
+    X,
+    Y,
     Add,
     Sub,
     Mul,
@@ -26,13 +28,18 @@ enum class TokenType {
     Fact,
     LParen,
     RParen,
-    Func,
+    Func, // see Token::func
+    Eq,
+    Lt,
+    Le,
+    Gt,
+    Ge,
 };
 
 struct Token {
     TokenType type = TokenType::Number;
     double value = 0.0; // Number
-    int func = -1; // Func: index into the function table
+    int func = -1;      // Func: index into the function table
     int pos = 0;
 };
 
@@ -40,4 +47,3 @@ struct Token {
 std::vector<Token> tokenize(std::string_view text);
 
 } // namespace wisp::calc
-
