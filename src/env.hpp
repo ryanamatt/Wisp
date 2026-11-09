@@ -21,6 +21,7 @@ inline constexpr const char *kNotificationToastMs = "WISP_NOTIFICATION_TOAST_MS"
 inline constexpr const char *kJokesFile = "WISP_JOKES_FILE";
 inline constexpr const char *kOSDDuration = "WISP_OSD_DURATION";
 inline constexpr const char *kOSDOrientation = "WISP_OSD_ORIENTATION";
+inline constexpr const char *kOSDScaleSize = "WISP_OSD_SCALE_SIZE";
 
 // Other
 inline constexpr const char *kShareDir = "WISP_SHARE_DIR";
