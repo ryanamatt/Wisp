@@ -37,9 +37,15 @@ public:
     Expression() = default;
     Expression(std::vector<Node> nodes, int root);
 
-    bool empty() const { return m_root < 0; }
-    bool usesX() const { return m_usesX; }
-    bool usesY() const { return m_usesY; }
+    bool empty() const {
+        return m_root < 0;
+    }
+    bool usesX() const {
+        return m_usesX;
+    }
+    bool usesY() const {
+        return m_usesY;
+    }
 
     // True if the whole expression is just the variable y.
     bool isBareY() const;

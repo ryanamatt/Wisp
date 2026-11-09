@@ -30,7 +30,9 @@ Expression::Expression(std::vector<Node> nodes, int root) : m_nodes(std::move(no
     }
 }
 
-bool Expression::isBareY() const { return m_nodes.size() == 1 && m_nodes[0].op == Op::VarY; }
+bool Expression::isBareY() const {
+    return m_nodes.size() == 1 && m_nodes[0].op == Op::VarY;
+}
 
 double Expression::eval(double x, double y) const noexcept {
     if (m_root < 0) return kNaN;

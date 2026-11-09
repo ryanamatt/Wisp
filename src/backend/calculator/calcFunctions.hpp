@@ -25,4 +25,3 @@ const FunctionInfo &functionAt(int index);
 int findFunction(std::string_view name);
 
 } // namespace wisp::calc
-

@@ -11,13 +11,17 @@ namespace wisp::calc {
 namespace {
 
 constexpr double kPi = 3.14159265358979323846;
-constexpr double kE  = 2.71828182845904523536;
+constexpr double kE = 2.71828182845904523536;
 
 // Protects the recursive parser and evaluator from absurd input.
 constexpr size_t kMaxTokens = 2000;
 
-bool isDigit(char c) { return std::isdigit((unsigned char)c) != 0; }
-bool isAlpha(char c) { return std::isalpha((unsigned char)c) != 0; }
+bool isDigit(char c) {
+    return std::isdigit((unsigned char)c) != 0;
+}
+bool isAlpha(char c) {
+    return std::isalpha((unsigned char)c) != 0;
+}
 
 // One name the lexer can pull out of a run of letters.
 struct Word {
@@ -48,7 +52,9 @@ bool matchWord(std::string_view text, Word &out) {
     return found;
 }
 
-[[noreturn]] void fail(const char *message, int pos) { throw ParseError{message, pos}; }
+[[noreturn]] void fail(const char *message, int pos) {
+    throw ParseError{message, pos};
+}
 
 } // namespace
 
@@ -113,8 +119,8 @@ std::vector<Token> tokenize(std::string_view text) {
                 offset += w.name.size();
 
                 // Letters stop at digits, so "log10" arrives as "log" then "10"
-                if (w.name == "log" && offset == run.size() && runEnd + 1 < text.size() &&
-                    text[runEnd] == '1' && text[runEnd + 1] == '0') {
+                if (w.name == "log" && offset == run.size() && runEnd + 1 < text.size() && text[runEnd] == '1' &&
+                    text[runEnd + 1] == '0') {
                     runEnd += 2;
                     t.func = findFunction("log10");
                 }

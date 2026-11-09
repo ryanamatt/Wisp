@@ -77,7 +77,8 @@ void completeTokens(std::vector<Token> &tokens) {
 
 class Parser {
 public:
-    Parser(std::vector<Token> tokens, int textEnd) : m_tokens(std::move(tokens)), m_textEnd(textEnd) {}
+    Parser(std::vector<Token> tokens, int textEnd) : m_tokens(std::move(tokens)), m_textEnd(textEnd) {
+    }
 
     Equation parseEquation() {
         Equation eq;
@@ -126,12 +127,22 @@ public:
 
 private:
     // --- token helpers ---
-    bool atEnd() const { return m_pos >= m_tokens.size(); }
-    const Token &cur() const { return m_tokens[m_pos]; }
-    void advance() { m_pos++; }
-    int errorPos() const { return atEnd() ? m_textEnd : cur().pos; }
+    bool atEnd() const {
+        return m_pos >= m_tokens.size();
+    }
+    const Token &cur() const {
+        return m_tokens[m_pos];
+    }
+    void advance() {
+        m_pos++;
+    }
+    int errorPos() const {
+        return atEnd() ? m_textEnd : cur().pos;
+    }
 
-    [[noreturn]] void fail(const std::string &message) const { throw ParseError{message, errorPos()}; }
+    [[noreturn]] void fail(const std::string &message) const {
+        throw ParseError{message, errorPos()};
+    }
 
     // --- node helpers ---
     int add(Node n) {
@@ -311,9 +322,7 @@ std::variant<Equation, ParseError> parse(std::string_view text, ParseOptions opt
 
         Parser parser(std::move(tokens), (int)text.size());
         return parser.parseEquation();
-    } catch (const ParseError &e) {
-        return e;
-    }
+    } catch (const ParseError &e) { return e; }
 }
 
 } // namespace wisp::calc
