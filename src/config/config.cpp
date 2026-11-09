@@ -17,25 +17,11 @@ namespace wisp::config {
 
 namespace {
 
-// Resolves the wallpaper directory to use.
-std::string resolveWallpaperDir(const std::string &configured) {
+// Resolves a file or directory path, expanding '~' and falling back to defaultPath if empty.
+std::string resolvePath(const std::string &configured, const std::string &defaultPath) {
     const char *home = std::getenv("HOME");
 
-    if (configured.empty()) { return home && *home ? std::string(home) + "/" + kDefaultWallpaperSubdir : ""; }
-
-    if (configured == "~") { return home && *home ? std::string(home) : configured; }
-    if (configured.rfind("~/", 0) == 0) {
-        return home && *home ? std::string(home) + configured.substr(1) : configured;
-    }
-
-    return configured;
-}
-
-// Resolves Joke File Path
-std::string resolveJokeFile(const std::string &configured) {
-    const char *home = std::getenv("HOME");
-
-    if (configured.empty()) { return home && *home ? std::string(home) + "/.config/wisp/" + kDefaultJokesFile : ""; }
+    if (configured.empty()) { return defaultPath; }
 
     if (configured == "~") { return home && *home ? std::string(home) : configured; }
     if (configured.rfind("~/", 0) == 0) {
@@ -95,6 +81,16 @@ void readStr(const nlohmann::json &j, const char *key, const std::string &label,
     out = value;
 }
 
+void readPath(const nlohmann::json &j, const char *key, const std::string &label, std::string &out, const std::string &defaultPath) {
+    if (!j.contains(key)) return;
+    if (!j[key].is_string()) {
+        wisp::log::warning("config", label + " must be a string, ignoring");
+        return;
+    }
+    const std::string value = j[key].get<std::string>();
+    out = resolvePath(value, defaultPath);
+}
+
 void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kConfigPath, path.c_str(), 1);
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
@@ -125,9 +121,13 @@ std::string defaultPath() {
 }
 
 Config load(const std::string &path) {
+    const char *home = std::getenv("HOME");
+    const std::string defaultWallpaper = home && *home ? std::string(home) + "/" + kDefaultWallpaperSubdir : "";
+    const std::string defaultJokes = home && *home ? std::string(home) + "/.config/wisp/" + kDefaultJokesFile : "";
+
     Config cfg;
-    cfg.wallpaperDir = resolveWallpaperDir("");
-    cfg.jokesFile = resolveJokeFile("");
+    cfg.wallpaperDir = resolvePath("", defaultWallpaper);
+    cfg.jokesFile = resolvePath("", defaultJokes);
 
     std::ifstream in(path);
     if (!in.is_open()) {
@@ -156,12 +156,7 @@ Config load(const std::string &path) {
 
     if (j.contains("wallpaper") && j["wallpaper"].is_object()) {
         const auto &wallpaper = j["wallpaper"];
-        if (wallpaper.contains("directory")) {
-            if (wallpaper["directory"].is_string())
-                cfg.wallpaperDir = resolveWallpaperDir(wallpaper["directory"].get<std::string>());
-            else
-                wisp::log::warning("config", "wallpaper.directory must be a string, ignoring");
-        }
+        readPath(wallpaper, "directory", "wallpaper.directory", cfg.wallpaperDir, defaultWallpaper);
     }
 
     if (j.contains("packages") && j["packages"].is_object()) {
@@ -183,12 +178,7 @@ Config load(const std::string &path) {
 
     if (j.contains("welcome") && j["welcome"].is_object()) {
         const auto &welcome = j["welcome"];
-        if (welcome.contains("jokesFile")) {
-            if (welcome["jokesFile"].is_string())
-                cfg.jokesFile = resolveJokeFile(welcome["jokesFile"].get<std::string>());
-            else
-                wisp::log::warning("config", "welcome.jokesFile must be a string, ignoring");
-        }
+        readPath(welcome, "jokesFile", "welcome.jokesFile", cfg.jokesFile, defaultJokes);
     }
 
     if (j.contains("osd") && j["osd"].is_object()) {
