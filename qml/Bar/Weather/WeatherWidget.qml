@@ -10,47 +10,47 @@ import "../../Config"
 import "../../Icons"
 
 BarWidgetContainer {
-    id: weatherWidget 
+    id: weatherWidget
 
     property int weatherCode: WeatherSingleton.weatherCode
     property int weatherTemp: WeatherSingleton.weatherTemp
 
     property var weatherCodeMap: [
-        { 
-            id: "sunny", 
-            codes: [113],
+        {
+            id: "sunny",
+            codes: [0, 1],
             icon: "sunny"
         },
         {
             id: "overcast",
-            codes: [116, 149],
+            codes: [2],
             icon: "overcast"
         },
-        { 
-            id: "cloudy", 
-            codes: [119, 122],
+        {
+            id: "cloudy",
+            codes: [3],
             icon: "cloudy"
         },
         {
-            id: "fog", 
-            codes: [143, 248, 260],
+            id: "fog",
+            codes: [45, 48],
             icon: "fog"
         },
-        { 
+        {
             id: "rain",
-            codes: [176, 182, 185, 263, 266, 281, 284, 293, 296, 299, 302, 305, 308, 311, 314, 317, 320, 350, 353, 356, 359, 362, 365],
+            codes: [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82],
             icon: "rain"
         },
-        { 
-            id: "snow", 
-            codes: [179, 227, 230, 323, 326, 329, 332, 335, 338, 368, 371, 374, 377],
+        {
+            id: "snow",
+            codes: [71, 73, 75, 77, 85, 86],
             icon: "snow"
-        }, 
-        { 
+        },
+        {
             id: "thunderstorm",
-            codes: [200, 386, 389, 392, 395],
+            codes: [95, 96, 99],
             icon: "thunderstorm"
-        } 
+        }
     ]
 
     function getWeatherIcon(code) {
