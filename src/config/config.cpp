@@ -56,7 +56,8 @@ void readInt(const nlohmann::json &j, const char *key, const std::string &label,
     out = static_cast<int>(value);
 }
 
-void readDouble(const nlohmann::json &j, const char *key, const std::string &label, double &out, double min, double max) {
+void readDouble(const nlohmann::json &j, const char *key, const std::string &label, double &out, double min,
+                double max) {
     if (!j.contains(key)) return;
     if (!j[key].is_number()) {
         wisp::log::warning("config", label + " must be a number, ignoring");
@@ -64,8 +65,8 @@ void readDouble(const nlohmann::json &j, const char *key, const std::string &lab
     }
     const double value = j[key].get<double>();
     if (value < min || value > max) {
-        wisp::log::warning("config", label + " must be written between " + std::to_string(min) + " and " + std::to_string(max) +
-                ", ignoring");
+        wisp::log::warning("config", label + " must be written between " + std::to_string(min) + " and " +
+                                         std::to_string(max) + ", ignoring");
         return;
     }
     out = value;
@@ -81,7 +82,8 @@ void readStr(const nlohmann::json &j, const char *key, const std::string &label,
     out = value;
 }
 
-void readPath(const nlohmann::json &j, const char *key, const std::string &label, std::string &out, const std::string &defaultPath) {
+void readPath(const nlohmann::json &j, const char *key, const std::string &label, std::string &out,
+              const std::string &defaultPath) {
     if (!j.contains(key)) return;
     if (!j[key].is_string()) {
         wisp::log::warning("config", label + " must be a string, ignoring");

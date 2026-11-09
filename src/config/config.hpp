@@ -20,7 +20,7 @@ inline constexpr const int kDefaultBatteryWarnPerc = 30;
 inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
 inline constexpr int kDefaultNotificationToastMs = 2000;
 inline constexpr const char *kDefaultJokesFile = "jokes.txt"; // Relative to $HOME/.config/wisp
-inline constexpr int kDefaultOSDDuration = 1000; // milliseconds
+inline constexpr int kDefaultOSDDuration = 1000;              // milliseconds
 inline constexpr const char *kDefaultOSDOrientation = "bottom";
 inline constexpr double kDefaultOSDScaleSize = 1.0;
 
