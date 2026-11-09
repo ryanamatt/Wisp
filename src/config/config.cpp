@@ -85,6 +85,16 @@ void readDouble(const nlohmann::json &j, const char *key, const std::string &lab
     out = value;
 }
 
+void readStr(const nlohmann::json &j, const char *key, const std::string &label, std::string &out) {
+    if (!j.contains(key)) return;
+    if (!j[key].is_string()) {
+        wisp::log::warning("config", label + " must be a string, ignoring");
+        return;
+    }
+    const std::string value = j[key].get<std::string>();
+    out = value;
+}
+
 void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kConfigPath, path.c_str(), 1);
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
@@ -138,19 +148,8 @@ Config load(const std::string &path) {
 
     if (j.contains("bar") && j["bar"].is_object()) {
         const auto &bar = j["bar"];
-        if (bar.contains("timeFormat")) {
-            if (bar["timeFormat"].is_string())
-                cfg.timeFormat = bar["timeFormat"].get<std::string>();
-            else
-                wisp::log::warning("config", "bar.timeFormat must be a string, ignoring");
-        }
-
-        if (bar.contains("orientation")) {
-            if (bar["orientation"].is_string())
-                cfg.barOrientation = bar["orientation"].get<std::string>();
-            else
-                wisp::log::warning("config", "bar.orientation must be a string, ignoring");
-        }
+        readStr(bar, "timeFormat", "bar.timeFormat", cfg.timeFormat);
+        readStr(bar, "orientation", "bar.orientation", cfg.barOrientation);
     }
 
     if (j.contains("font")) {
