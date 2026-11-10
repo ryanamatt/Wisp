@@ -9,6 +9,7 @@ import "../Colors"
 import "../IpcState"
 import "../Components"
 import "../Config"
+import "../Icons"
 
 Item {
     id: screenshotTab
@@ -16,9 +17,9 @@ Item {
     readonly property string scriptPath: Quickshell.env("WISP_SHARE_DIR") + "/scripts/screenshot.sh"
 
     readonly property var screenshotTypes: [
-        { "name": "Region", "icon": "\udb83\ude51", "flags": [] },
-        { "name": "Window", "icon": "\ueb7f", "flags": ["-w"] },
-        { "name": "Monitor", "icon": "\udb80\udf79", "flags": ["-m"] }
+        { "name": "Region", "icon": "ui/region", "flags": [] },
+        { "name": "Window", "icon": "ui/window", "flags": ["-w"] },
+        { "name": "Monitor", "icon": "ui/monitor", "flags": ["-m"] }
     ]
 
     property bool isSaveToDisk: false
@@ -61,9 +62,9 @@ Item {
         border.color: Colors.colors.border
         border.width: 2
 
-        ColumnLayout {         
+        ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 10        
+            anchors.margins: 10
             spacing: 6
 
             RowLayout {
@@ -92,16 +93,27 @@ Item {
                         border.color: Colors.colors.accent
                         border.width: 2
 
-                        Text {
-                            text: modelData.icon
-                            color: Colors.colors.accent
-                            font.pixelSize: 40
-                            font.family: Config.font
+                        // Text {
+                        //     text: modelData.icon
+                        //     color: Colors.colors.accent
+                        //     font.pixelSize: 40
+                        //     font.family: Config.font
+                        //     anchors.centerIn: parent
+                        // }
+
+                        Image {
+                            source: Icons.getIcon(modelData.icon)
+                            width: parent.width * 0.6
+                            height: width
                             anchors.centerIn: parent
+                            fillMode: Image.PreserveAspectFit
+
+                            sourceSize.width: width * Screen.devicePixelRatio
+                            sourceSize.height: height * Screen.devicePixelRatio
                         }
 
                         MouseArea {
-                            anchors.fill: parent   
+                            anchors.fill: parent
                             onClicked: (mouse) => {
                                 mouse.accepted = true
                                 screenshotTab.runScreeenshot(modelData.flags)
