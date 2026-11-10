@@ -211,7 +211,16 @@ BarPopup {
                         property int retries: 0
 
                         // Only ever hand this to Image once confirmed the file is actually there.
-                        source: verified ? artUrl : ""
+                        source: verified ? artUrl : Icons.getIcon("audio/album")
+                        width: 64
+                        height: width
+
+                        sourceSize: Qt.size(width * Screen.devicePixelRatio,
+                                            height * Screen.devicePixelRatio)
+                        smooth: true
+                        mipmap: true
+
+
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
                         visible: status === Image.Ready
@@ -259,15 +268,6 @@ BarPopup {
                         }
                     }
 
-                    Text {
-                        anchors.centerIn: parent
-                        visible: artImage.status !== Image.Ready
-                        text: "Unknown"
-                        textFormat: Text.PlainText
-                        font.family: Config.font
-                        font.pixelSize: 20
-                        color: Colors.colors.foregroundMuted
-                    }
                 }
 
                 ColumnLayout {
