@@ -92,23 +92,18 @@ BarPopup {
             Layout.fillWidth: true
             spacing: 10
 
-            Image {
+            AnimatedIconButton {
+                nudge: 0
+                pulseColor: Colors.colors.accentAlt
                 source: audioPopup.micMuted
                     ? Icons.getIcon("audio/micOff")
                     : Icons.getIcon("audio/mic")
 
-                sourceSize.width: width * Screen.devicePixelRatio
-                sourceSize.height: height * Screen.devicePixelRatio
-
                 Layout.preferredWidth: micLayout.width * 0.075
                 Layout.preferredHeight: width
 
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -4
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: audioPopup.toggleMicMute()
-                }
+                enabled: true
+                onClicked: audioPopup.toggleMicMute()
             }
 
             DragBar {
@@ -139,7 +134,9 @@ BarPopup {
             Layout.fillWidth: true
             spacing: 10
 
-            Image {
+            AnimatedIconButton {
+                nudge: 0
+                pulseColor: Colors.colors.accentAlt
                 source: {
                     if (audioPopup.muted || audioPopup.volume === 0)
                         return Icons.getIcon("audio/volumeOff")
@@ -148,18 +145,11 @@ BarPopup {
                     return Icons.getIcon("audio/volumeUp")
                 }
 
-                sourceSize.width: width * Screen.devicePixelRatio
-                sourceSize.height: height * Screen.devicePixelRatio
-
                 Layout.preferredWidth: volLayout.width * 0.075
                 Layout.preferredHeight: width
 
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -4
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: audioPopup.toggleMute()
-                }
+                enabled: true
+                onClicked: audioPopup.toggleMute()
             }
 
             DragBar {
@@ -335,55 +325,42 @@ BarPopup {
                     }
                 }
 
-                Image {
+                AnimatedIconButton {
                     source: Icons.getIcon("audio/previous")
-                    sourceSize.width: width * Screen.devicePixelRatio
-                    sourceSize.height: height * Screen.devicePixelRatio
+                    nudge: -1
+                    pulseColor: Colors.colors.accentAlt
 
                     Layout.preferredWidth: volLayout.width * 0.1
                     Layout.preferredHeight: width
 
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -6
-                        cursorShape: Qt.PointingHandCursor
-                        enabled: audioPopup.hasPlayer && audioPopup.activePlayer.canGoPrevious
-                        onClicked: audioPopup.activePlayer.previous()
-                    }
+                    enabled: audioPopup.hasPlayer && audioPopup.activePlayer.canGoPrevious
+                    onClicked: audioPopup.activePlayer.previous()
                 }
 
-                Image {
-                    source: (audioPopup.hasPlayer && audioPopup.activePlayer.isPlaying) ? Icons.getIcon("audio/pause") : Icons.getIcon("audio/play")
-                    sourceSize.width: width * Screen.devicePixelRatio
-                    sourceSize.height: height * Screen.devicePixelRatio
+                AnimatedIconButton {
+                    source: (audioPopup.hasPlayer && audioPopup.activePlayer.isPlaying)
+                            ? Icons.getIcon("audio/pause")
+                            : Icons.getIcon("audio/play")
+                    animateSourceChange: true
+                    pulseColor: Colors.colors.accentAlt
 
                     Layout.preferredWidth: volLayout.width * 0.1
                     Layout.preferredHeight: width
 
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -6
-                        cursorShape: Qt.PointingHandCursor
-                        enabled: audioPopup.hasPlayer && audioPopup.activePlayer.canTogglePlaying
-                        onClicked: audioPopup.activePlayer.togglePlaying()
-                    }
+                    enabled: audioPopup.hasPlayer && audioPopup.activePlayer.canTogglePlaying
+                    onClicked: audioPopup.activePlayer.togglePlaying()
                 }
 
-                Image {
+                AnimatedIconButton {
                     source: Icons.getIcon("audio/next")
-                    sourceSize.width: width * Screen.devicePixelRatio
-                    sourceSize.height: height * Screen.devicePixelRatio
+                    nudge: 1
+                    pulseColor: Colors.colors.accentAlt
 
                     Layout.preferredWidth: volLayout.width * 0.1
                     Layout.preferredHeight: width
 
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -6
-                        cursorShape: Qt.PointingHandCursor
-                        enabled: audioPopup.hasPlayer && audioPopup.activePlayer.canGoNext
-                        onClicked: audioPopup.activePlayer.next()
-                    }
+                    enabled: audioPopup.hasPlayer && audioPopup.activePlayer.canGoNext
+                    onClicked: audioPopup.activePlayer.next()
                 }
 
                 Item {
