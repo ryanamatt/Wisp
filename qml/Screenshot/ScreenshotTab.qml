@@ -93,14 +93,6 @@ Item {
                         border.color: Colors.colors.accent
                         border.width: 2
 
-                        // Text {
-                        //     text: modelData.icon
-                        //     color: Colors.colors.accent
-                        //     font.pixelSize: 40
-                        //     font.family: Config.font
-                        //     anchors.centerIn: parent
-                        // }
-
                         Image {
                             source: Icons.getIcon(modelData.icon)
                             width: parent.width * 0.6
