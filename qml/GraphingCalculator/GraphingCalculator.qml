@@ -68,6 +68,12 @@ FloatingWindow {
 
                     // Expression Panel GOES HERE
                     // TODO
+                    ExpressionPanel {
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: 300
+                        Layout.fillHeight: true
+                        graph: null
+                    }
 
                     // Graph Canvas Goes HERE
                     // TODO
