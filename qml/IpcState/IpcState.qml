@@ -26,6 +26,7 @@ Singleton {
     property WindowState runner: WindowState { ipcName: "runner" }
     property WindowState timer: WindowState { ipcName: "timer" }
     property WindowState windowRules: WindowState { ipcName: "windowRules" }
+    property WindowState graphingCalculator: WindowState { ipcName: "graphingCalculator" }
 
     property LockState lockScreen: LockState { ipcName: "lock" }
 }
