@@ -36,6 +36,7 @@ if ! command -v quickshell >/dev/null 2>&1; then
 fi
 
 info "Configuring build in ${BUILD_DIR}"
+rm -rf "${BUILD_DIR}/qml"
 cmake -S "${SCRIPT_DIR}" -B "${BUILD_DIR}" -DCMAKE_BUILD_TYPE=Release
 
 info "Building wisp"
@@ -48,7 +49,27 @@ if [[ ! -x "${BUILT_BIN}" ]]; then
 fi
 
 info "Installing QML tree to ${WISP_SHARE_DIR}/qml (sudo)"
+sudo rm -rf "${WISP_SHARE_DIR}/qml"
 sudo cmake --install "${BUILD_DIR}"
+
+info "Verifying installed QML plugins"
+plugin_problems=0
+while IFS= read -r -d '' so; do
+    if ldd "${so}" 2>/dev/null | grep -q "not found"; then
+        error "${so} has unresolved dependencies"
+        plugin_problems=1
+    fi
+    if command -v readelf >/dev/null 2>&1 \
+        && readelf -d "${so}" 2>/dev/null | grep -E 'RPATH|RUNPATH' | grep -qF "${BUILD_DIR}"; then
+        error "${so} depends on the build directory (RPATH)"
+        plugin_problems=1
+    fi
+done < <(find "${WISP_SHARE_DIR}/qml/Wisp" -name '*.so' -print0)
+
+if [[ "${plugin_problems}" -ne 0 ]]; then
+    error "Installed QML plugins are not self-contained."
+    exit 1
+fi
 
 info "Installing wisp binary to ${INSTALL_BIN_DIR}"
 mkdir -p "${INSTALL_BIN_DIR}"
