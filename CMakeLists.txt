@@ -81,6 +81,10 @@ qt_add_qml_module(wispcalculator
     SOURCES
         ${WISP_CALC_DIR}/calculator.hpp
         ${WISP_CALC_DIR}/calculator.cpp
+        ${WISP_CALC_DIR}/graphFunction.hpp
+        ${WISP_CALC_DIR}/graphFunction.cpp
+        ${WISP_CALC_DIR}/graphView.hpp
+        ${WISP_CALC_DIR}/graphView.cpp
         ${WISP_CALC_DIR}/calcFunctions.hpp
         ${WISP_CALC_DIR}/calcLexer.hpp
         ${WISP_CALC_DIR}/calcParser.hpp
