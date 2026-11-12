@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../Colors"
+import "../Components"
 import "../Config"
 
 // Title Bar. Dragging it moves the window

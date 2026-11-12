@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../Colors"
+import "../Components"
 
 // Zoom in, zoom out and reset-view buttons.
 Rectangle {

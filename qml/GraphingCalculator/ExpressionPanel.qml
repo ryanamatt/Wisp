@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../Colors"
+import "../Components"
 import "../Config"
 
 // Left Column: List of Expression and an Add Button
