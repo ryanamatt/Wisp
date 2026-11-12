@@ -25,7 +25,6 @@ Singleton {
                     latitude = parseFloat(coords[0])
                     longitude = parseFloat(coords[1])
 
-                    console.log("Location:", latitude, longitude)
                     getCurrentWeather.running = true
                 }
             }
