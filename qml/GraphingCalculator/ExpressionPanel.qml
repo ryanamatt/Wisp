@@ -99,8 +99,34 @@ ColumnLayout {
                 id: rows
                 model: exprModel
 
-                // Add Expression Row Delegate Row
-                // TODO
+                delegate: ExpressionRow {
+                    Layout.fillWidth: true
+                    graph: panel.graph
+
+                    onRemoveRequested: panel.removeExpression(index)
+                    onColorCycleRequested: panel.cycleColor(index)
+                    onVisibilityToggled: exprModel.setProperty(index, "shown", !shown)
+
+                    onSubmitted: {
+                        if (index === exprModel.count - 1)
+                            panel.addExpression("", true);
+                        else
+                            rows.itemAt(index + 1).focusField();
+                    }
+
+                    onMoveFocus: delta => {
+                        const target = rows.itemAt(index + delta);
+                        if (target)
+                            target.focusField();
+                    }
+                }
+
+                onItemAdded: (index, item) => {
+                    if (panel.focusNewRow) {
+                        panel.focusNewRow = false;
+                        item.focusField();
+                    }
+                }
 
             }
 

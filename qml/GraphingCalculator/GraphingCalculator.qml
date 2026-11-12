@@ -66,17 +66,18 @@ FloatingWindow {
                     Layout.fillHeight: true
                     spacing: 12
 
-                    // Expression Panel GOES HERE
-                    // TODO
                     ExpressionPanel {
                         Layout.fillWidth: false
                         Layout.preferredWidth: 300
                         Layout.fillHeight: true
-                        graph: null
+                        graph: canvas.graph
                     }
 
-                    // Graph Canvas Goes HERE
-                    // TODO
+                    GraphCanvas {
+                        id: canvas
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
 
                 }
             }
