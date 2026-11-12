@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import "../Colors"
 import "../IpcState"
 import "../Config"
+import "GraphFormat.js" as Fmt
 
 FloatingWindow {
     id: win
@@ -21,7 +22,10 @@ FloatingWindow {
     visible: IpcState.graphingCalculator.isOpen
 
     readonly property string viewText: {
-        "x: 0, y: 0"
+        const g = canvas.graph;
+        const step = g.gridStep;
+        return "x: " + Fmt.coord(g.xMin, step) + " to " + Fmt.coord(g.xMax, step)
+            + "    y: " + Fmt.coord(g.yMin, step) + " to " + Fmt.coord(g.yMax, step);
     }
 
     onVisibleChanged: {

@@ -53,6 +53,11 @@ Item {
             maskSource: mask
         }
 
+        GraphGrid {
+            anchors.fill: parent
+            graph: view
+        }
+
         GraphView {
             id: view
             anchors.fill: parent
