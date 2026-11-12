@@ -222,7 +222,7 @@ GraphView::PixelPoint GraphView::samplePoint(const wisp::calc::Expression &expr,
     double gy = expr.eval(toGraphX(px), 0.0);
     if (!std::isfinite(gy)) return {px, 0.0, false};
 
-    double py = std::clamp(toPixelX(gy), -kPixelClamp, kPixelClamp);
+    double py = std::clamp(toPixelY(gy), -kPixelClamp, kPixelClamp);
     return {px, py, true};
 }
 
