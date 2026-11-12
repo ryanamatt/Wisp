@@ -64,6 +64,27 @@ Item {
             lineWidth: 2.5
         }
 
+        HoverReadout {
+            anchors.fill: parent
+            graph: view
+            active: hover.hovered && !zoom.hovered
+            point: hover.point.position
+        }
+
+        HoverHandler {
+            id: hover
+        }
+
+    }
+
+    ZoomControls {
+        id: zoom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 14
+        onZoomIn: view.zoomAt(view.width / 2, view.height / 2, root.zoomFactor)
+        onZoomOut: view.zoomAt(view.width / 2, view.height / 2, 1 / root.zoomFactor)
+        onResetView: view.resetView()
     }
 }
 
