@@ -56,6 +56,7 @@ This Document is kept in line with what is in master.
 - **[Timer](#timer)**
   - *[Timer Tab](#timer-tab)*
   - *[Stopwatch Tab](#stopwatch-tab)*
+- **[Graphing Calculator](#graphing-calculator)**
 - **[Lock Screen](#lock-screen)**
 
 ## **CLI**
@@ -496,6 +497,12 @@ paused on the reset button.
 
 The Window Rules Window shows you all the rules/properties of your current
 hyprland window.
+
+## Graphing Calculator
+
+The Graphing Calculator allows you to graph functions on a 2D Graph.
+Write an expression on the left such as `y = sin(x)` and see in on the graph
+on the right.
 
 ## **Lock Screen**
 
