@@ -29,6 +29,8 @@ function(add_wisp_qml_module target_name uri_name module_dir source_name)
 
     qt_add_qml_module(${target_name}
         URI Wisp.${uri_name}
+        SHARED
+        PLUGIN_TARGET ${target_name}
         OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/${uri_name}
         SOURCES
             src/${module_dir}/${source_name}.hpp
@@ -76,6 +78,8 @@ set(WISP_CALC_CORE_SOURCES
 
 qt_add_qml_module(wispcalculator
     URI Wisp.Calculator
+    SHARED
+    PLUGIN_TARGET wispcalculator
     OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/Wisp/Calculator
     DEPENDENCIES QtQuick
     SOURCES
