@@ -9,8 +9,10 @@ Rectangle {
     property color barColor: "#000000"
     property color barFillColor: "#FFFFFF"
 
-    height: 8
-    radius: 3
+    property int defaultUsageHeight: 8
+
+    height: defaultUsageHeight
+    radius: Math.round(height / 2.67)
     color: root.barColor
 
     Rectangle {

@@ -104,6 +104,7 @@ Scope {
                     visible: root.current ? root.current.showBar : false
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignCenter
+                    height: defaultUsageHeight * Config.osdScaleSize
                     value: root.current ? root.current.barValue : 0
                     barColor: Colors.colors.foregroundMuted
                     barFillColor: Colors.colors.accent
