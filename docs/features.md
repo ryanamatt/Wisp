@@ -37,7 +37,7 @@ This Document is kept in line with what is in master.
   - *[Settings Section](#settings-section)*
 - **[Runner](#runner)**
   - *[App Launching](#app-launching)*
-  - *[Calculator Mode](#calculalor-mode)*
+  - *[Calculator Mode](#calculator-mode)*
   - *[Command Mode](#command-mode)*
   - *[Symbol Mode](#symbol-mode)*
 - **[OSD](#osd)**
@@ -310,7 +310,7 @@ The Audio Widget is where basic Audio Controls can be found. It's widget shows
 a `cava` audio visualizer as its icon.
 
 Its Popup shows:
-  - A Microhpone Control
+  - A Microphone Control
     - Button to toggle muting mic
     - Drag bar to change Mic Volume
   - A Volume Control
@@ -328,8 +328,8 @@ Its Popup shows:
   - A search bar to search through your clipboard history
   - A Toggle Button whether or not it should be saving your clipboard history.
   - A Button to Clear Entire Clipboard History. 1 Press to changes to confirm,
-  2nd press acutally does it.
-  - A list of your clipboard items (shows acutal Images as Images) with an individual
+  2nd press actually does it.
+  - A list of your clipboard items (shows actual Images as Images) with an individual
   x button to remove just that item from clipboard history.
 
 ### Notifications Widget
@@ -343,54 +343,163 @@ Its Popup Shows:
 
 ## **Command Center**
 
+The Command Center is the central control unit of Wisp. It handles many things.
+The Command Center has many sections shown on the left with the body of each 
+section being on the right. 
+Use Shift + Up/Down to move between Sections.
+
 ### Welcome Section
+
+The Welcome Section is the default section for the Command Center.
+It shows a welcome message with the Wisp Will-o-Wisp Mascot floating.
+It also shows a joke from the jokes file which you can set.
 
 ### System Section
 
+The System Section shows you in depth Monitoring of your system.
+It shows your uptime and load.
+It shows your GPU, CPU and RAM on nice looking Gauges.
+Shows a graph of your Rx and Tx network over time.
+Shows each parition on the system in a nice lookig gauge.
+
 ### Packages Section
+
+The Packages Section is where you can see what packages you need updating.
+Uses `yay` and `flatpak`. It shows 2 sections: Packages from yay for Arch and form the AUR; and your packages from flatpak. There is a big button to run upkeep in kitty. Pressing this button will open a kitty terminal and run a script to upkeep your system. This script updates yay, flatpak, removes orphans in both and removes caches in both.
 
 ### Settings Section
 
+The Settings Section is a GUI for your Config. In this section
+you are able to update each of your configurations. There is a big
+save button which will save your Settings by overwriting your
+config file.
+
 ## **Runner**
+
+The Runner is where you are able to launch apps, do basic calculator stuff, and find symbols. The  Runner works by changing modes based on
+the first character typed.
 
 ### App Launching
 
+App Launching is the default behavior of the Runner. It only works
+if there is no special character to change modes.
+Type to Search for your apps.
+Most used Apps are shown first.
+Use Arrows Keys and Enter to select your app.
+
 ### Calculator Mode
+
+To change into calculator mode, type `=` and ensure it is your first character. Then type an equation. The window will extend to show your awnser.
+
+Examples:
+```runner
+=10+2
+=2sin(10)
+=pi + 2
+=sqrt(4)
+```
 
 ### Command Mode
 
+To change into command mode, type `>` as your first character.
+Then type whatever you want to shell out to bash.
+
+Examples:
+```bash
+> notify-send "Hello World"
+```
+
 ### Symbol Mode
+
+To change into symbol mode, type `:` as your fist character.
+Then the window will expand to show all available emojis
+and symbols. Continue typing to search for what you want.
+
+Examples:
+```runner
+:happy
+:thumbs up
+```
 
 ## **OSD**
 
+On Screen Displays (OSD) are little windows that show up upon the change of a certain value. OSD's each contain an Icon of what changed, a usage bar (if applicable) and the new value.
+
 ### Volume OSD
+
+This OSD shows the new volume upon volume value being changed.
 
 ### Mic OSD
 
+This OSD shows the new mic value upon mic value being changed.
+
 ### Brightness OSD
+
+This OSD shows the new brightness value upon brightness value being changed.
 
 ### Caps Lock OSD
 
+This OSD shows the new Caps Lock value upon caps lock value being changed.
+
 ### Num Lock OSD
+
+This OSD shows the new Num Lock value upon num lock value being changed.
 
 ### Charging OSD
 
+This OSD shows the Battery Item's battery upon said item being
+plugged in. See [Battery Widget](#battery-widget) for more info on the devices being checked here.
+
 ## **Theme Switcher**
+
+The theme Switcher is a new Window where you can change your wallpaper and therefore theme. It shows you a gallery of wallpapers from your wallpaper directory path and once selected runs `awww` and `matugen` to
+update your theme. It also runs `razer-cli` to update your razer accessories (does not run if no `razer-cli` on path).
 
 ## **Workspace Switcher**
 
+Shows a Rolodex of your occupied workspaces. Allows you go through with
+each card showing you an icon of what windows are open on the workspace.
+Pressing Enter or Left Clicking takes you to that workspace.
+
 ## **Screenshot**
+
+The Screenshot Window allows you to take Screenshots.
 
 ### Screenshot Tab
 
+The Screenshot Tab has a toggle button to toggle saving to Disk. 
+Then there are 3 buttons to take screenshots: region, window and monitor.
+Screenshots always copy to clipboard. 
+
 ### Video Tab
+
+Not Available Yet.
 
 ## **Timer**
 
+The Timer Window allows you to time things and use a Stopwatch.
+
 ### Timer Tab
+
+This Tab is for timing things. Click the time to set how long you want
+the timer to go. Press Enter to Confirm your time. Press Enter to start
+the timer or press the Start button. THere is a Stop button which stops the timer and a pause button to pause the timer. Upob completion of timer
+sends notification and plays a sound.
 
 ### Stopwatch Tab
 
+The Stopwatch Time allows to run a stopwatch. Press start to start
+the stopwatch. Buttons for Pause and Lap. May reset Stopwatch if it is 
+paused on the reset button.
+
 ## **Window Rules**
 
+The Window Rules Window shows you all the rules/properties of your current
+hyprland window.
+
 ## **Lock Screen**
+
+Lock Screen is what shows up when you lock.
+Press any key to start typing your password which will cause a password
+field to show up. It shows a blurred image of your screen with the time
+and if applicable your battery life.
