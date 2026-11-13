@@ -13,6 +13,7 @@ import "Screenshot"
 import "Runner"
 import "Timer"
 import "WindowRules"
+import "GraphingCalculator"
 import "LockScreen"
 import "OSD"
 
@@ -36,6 +37,8 @@ Scope {
     Timer {}
 
     WindowRules {}
+
+    GraphingCalculator {}
 
     LockScreen {}
 
