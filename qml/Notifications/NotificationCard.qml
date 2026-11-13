@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Services.Notifications
 import "../Colors"
 import "../Config"
+import "../Components/"
 import "../Icons"
 
 // One notification. Used both for toasts (toast: true, auto-expires with a
@@ -246,6 +247,7 @@ Rectangle {
                 spacing: 2
 
                 RowLayout {
+                    id: innerRow
                     Layout.fillWidth: true
                     spacing: 6
 
@@ -268,29 +270,18 @@ Rectangle {
 
                     Item { Layout.fillWidth: true }
 
-                    Rectangle {
-                        implicitWidth: 20
-                        implicitHeight: 20
+                    IconButton {
+                        icon: "ui/close"
+                        iconSize: 14
+                        implicitWidth: innerRow.implicitWidth * 0.125
+                        implicitHeight: width
                         radius: 10
-                        color: closeHover.hovered ? Colors.colors.error : "transparent"
+                        tint: Colors.colors.foregroundMuted
+                        hoverColor: Colors.colors.error
+                        tintOnHover: Colors.colors.background
+                        Layout.alignment: Qt.AlignVCenter
 
-                        Behavior on color { ColorAnimation { duration: 100 } }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "✕"
-                            font.pixelSize: 11
-                            font.family: Config.font
-                            color: closeHover.hovered ? Colors.colors.background : Colors.colors.foregroundMuted
-                        }
-
-                        HoverHandler { id: closeHover }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: card.dismissed()
-                        }
+                        onClicked: card.dismissed()
                     }
                 }
 
