@@ -394,6 +394,19 @@ Scope {
                         opacity: root.failed ? 1 : 0
                         Behavior on opacity { NumberAnimation { duration: 120 } }
                     }
+
+                    Text {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: Math.round(14 * lockSurface.u)
+                        text: "Press any key"
+                        color: Colors.colors.foregroundSubtle
+                        font.pixelSize: Math.max(1, Math.round(15 * lockSurface.u))
+                        font.family: Config.font
+                        font.weight: Font.Medium
+                        font.letterSpacing: Math.round(0.5 * lockSurface.u)
+                        opacity: !root.passwordVisible ? 0.7 : 0
+                        Behavior on opacity { NumberAnimation { duration: 200 } }
+                    }
                 }
 
             } // Top Column Layout
