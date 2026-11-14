@@ -3,18 +3,85 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Quickshell
 import "../../Colors"
 import "../../Config"
 import "SettingsComponents"
 
 ColumnLayout {
-    id: rootLayout
+    id: root
 
     anchors.fill: parent
     clip: true
-    spacing: 30
+    spacing: 20
 
+    // ----- Outline state -----
+    // Every SettingsSubSection placed directly inside `contentColumn` below is
+    // picked up automatically, so adding one needs no outline changes.
+    readonly property var subSections: collectSubSections()
+    property int activeIndex: 0
+
+    // After an outline click the clicked entry stays highlighted until the user
+    // scrolls somewhere else. Without this, short sections near the bottom could
+    // never become "active" because the view cannot scroll far enough.
+    property int pinnedIndex: -1
+    property real pinnedY: 0
+
+    function collectSubSections() {
+        const result = []
+        if (!contentColumn) return result
+        const kids = contentColumn.children
+        for (let i = 0; i < kids.length; i++) {
+            if (kids[i].isSubSection) result.push(kids[i])
+        }
+        return result
+    }
+
+    function maxScrollY() {
+        return Math.max(0, flick.contentHeight - flick.height)
+    }
+
+    function scrollToSection(index) {
+        const target = subSections[index]
+        if (!target) return
+
+        const y = Math.min(target.y, maxScrollY())
+        pinnedIndex = index
+        pinnedY = y
+        activeIndex = index
+
+        flick.cancelFlick()
+        scrollAnim.stop()
+        scrollAnim.from = flick.contentY
+        scrollAnim.to = y
+        scrollAnim.start()
+    }
+
+    function updateActive() {
+        if (subSections.length === 0) return
+
+        if (pinnedIndex >= 0) {
+            if (scrollAnim.running || Math.abs(flick.contentY - pinnedY) < 2) {
+                activeIndex = pinnedIndex
+                return
+            }
+            pinnedIndex = -1
+        }
+
+        const probe = flick.contentY + 24
+        let idx = 0
+        for (let i = 0; i < subSections.length; i++) {
+            if (subSections[i].y <= probe) idx = i
+        }
+        if (maxScrollY() > 0 && flick.contentY >= maxScrollY() - 2) {
+            idx = subSections.length - 1
+        }
+        activeIndex = idx
+    }
+
+    onSubSectionsChanged: updateActive()
+    Component.onCompleted: updateActive()
+
+    // ----- Header -----
     ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 10
@@ -34,88 +101,112 @@ ColumnLayout {
             font.family: Config.font
             color: Colors.colors.accent
         }
-
     }
 
-    ScrollView {
-        id: scrollView
+    // ----- Outline + settings -----
+    RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        contentWidth: availableWidth
-        clip: true
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        spacing: 12
 
-        ColumnLayout {
-            width: scrollView.availableWidth
-            spacing: 20
+        SettingsOutline {
+            Layout.preferredWidth: 120
+            Layout.fillHeight: true
+            Layout.leftMargin: 4
 
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Bar Settings"
-
-                TimeFormatSetting { Layout.fillWidth: true }
-                BarOrientationSetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Theme Settings"
-
-                WallpaperDirSetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Font Settings"
-
-                FontSetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Battery"
-
-                BatteryWarnPercSetting { Layout.fillWidth: true }
-                BatteryAutoPowerSaverSetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Package Notifications"
-
-                NotifyOnStartUpSetting { Layout.fillWidth: true }
-                NotifyEveryDaySetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Notifications"
-
-                NotificationToastDurationSetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "Welcome"
-
-                JokesFileSetting { Layout.fillWidth: true }
-            }
-
-            SettingsSubSection {
-                Layout.fillWidth: true
-                sectionLabel: "OSD"
-
-                OSDDurationSetting { Layout.fillWidth: true }
-                OSDOrientationSetting { Layout.fillWidth: true }
-                OSDScaleSizeSetting { Layout.fillWidth: true }
-            }
-
+            model: root.subSections
+            activeIndex: root.activeIndex
+            onEntryClicked: (index) => root.scrollToSection(index)
         }
 
-    }
+        Flickable {
+            id: flick
 
-    Item { Layout.fillHeight: true }
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            clip: true
+            contentWidth: width
+            contentHeight: contentColumn.implicitHeight
+            flickableDirection: Flickable.VerticalFlick
+            boundsBehavior: Flickable.StopAtBounds
+
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+            onContentYChanged: root.updateActive()
+            onContentHeightChanged: root.updateActive()
+            onHeightChanged: root.updateActive()
+
+            NumberAnimation {
+                id: scrollAnim
+                target: flick
+                property: "contentY"
+                duration: 250
+                easing.type: Easing.OutCubic
+            }
+
+            ColumnLayout {
+                id: contentColumn
+
+                // Leaves a little room so the scrollbar never overlaps content
+                width: flick.width - 12
+                spacing: 20
+
+                SettingsSubSection {
+                    name: "Bar Settings"
+
+                    TimeFormatSetting {}
+                    BarOrientationSetting {}
+                }
+
+                SettingsSubSection {
+                    name: "Theme Settings"
+
+                    WallpaperDirSetting {}
+                }
+
+                SettingsSubSection {
+                    name: "Font Settings"
+
+                    FontSetting {}
+                }
+
+                SettingsSubSection {
+                    name: "Battery"
+
+                    BatteryWarnPercSetting {}
+                    BatteryAutoPowerSaverSetting {}
+                }
+
+                SettingsSubSection {
+                    name: "Package Notifications"
+
+                    NotifyOnStartUpSetting {}
+                    NotifyEveryDaySetting {}
+                }
+
+                SettingsSubSection {
+                    name: "Notifications"
+
+                    NotificationToastDurationSetting {}
+                }
+
+                SettingsSubSection {
+                    name: "Welcome"
+
+                    JokesFileSetting {}
+                }
+
+                SettingsSubSection {
+                    name: "OSD"
+
+                    OSDDurationSetting {}
+                    OSDOrientationSetting {}
+                    OSDScaleSizeSetting {}
+                }
+            }
+        }
+    }
 
     // ----- Global save bar -----
     RowLayout {

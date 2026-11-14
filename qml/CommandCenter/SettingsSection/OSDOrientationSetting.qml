@@ -1,17 +1,12 @@
 // qml/CommandCenter/SettingsSection/OSDOrientationSetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
 import "../../Config"
 import "SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "OSD Orientation"
 
     readonly property var presets: [
         { label: "Top", value: "top" },
@@ -19,7 +14,7 @@ ColumnLayout {
     ]
 
     SettingComboBox {
-        settingText: "OSD Orientation"
+        settingText: root.name
         pendingValue: Config.pendingOSDOrientation
         modified: Config.pendingOSDOrientation !== Config.osdOrientation
         presets: root.presets

@@ -1,44 +1,21 @@
-// qml/CommandCenter/SettingsSection/FontSetting.qml
+// qml/CommandCenter/SettingsSection/BatteryWarnPercSetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import QtQuick.Controls
-import Quickshell
-import "../../Colors"
 import "../../Config"
 import "SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "Warn At"
 
     SettingTextField {
-        id: fontTextField
-        settingText: "Warn At"
+        settingText: root.name
         textFieldText: Config.pendingBatteryWarnPerc
-        modified: Config.pendingBatteryWarnPerc !== Config.batteryWarnPerc
         textFieldPlaceholder: "30"
+        modified: Config.pendingBatteryWarnPerc !== Config.batteryWarnPerc
+        previewText: "Notify when a Battery is at " + Config.pendingBatteryWarnPerc + "%"
 
         onEditingFinished: (text) => Config.stageBatteryWarnPerc(parseInt(text, 10))
-        onAccepted: (text) => Config.stageBatteryWarnPerc(parseInt(text))
-    }
-
-
-    Text {
-        id: previewText
-        Layout.alignment: Qt.AlignLeft
-        Layout.leftMargin: fontTextField.labelWidth + fontTextField.rowSpacing
-        Layout.preferredWidth: fontTextField.controlWidth
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WrapAnywhere
-
-        font.pixelSize: 11
-        font.family: Config.pendingFont
-        color: Colors.colors.accentAlt
-
-        text: "Notify when a Battery is at " + Config.pendingBatteryWarnPerc + "%"
+        onAccepted: (text) => Config.stageBatteryWarnPerc(parseInt(text, 10))
     }
 }

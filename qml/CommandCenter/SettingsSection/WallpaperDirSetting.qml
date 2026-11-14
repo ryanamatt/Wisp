@@ -1,44 +1,21 @@
 // qml/CommandCenter/SettingsSection/WallpaperDirSetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import QtQuick.Controls
-import Quickshell
-import "../../Colors"
 import "../../Config"
 import "SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "Wallpaper Directory"
 
     SettingTextField {
-        id: wallpaperDirTextField
-        settingText: "Wallpaper Directory"
+        settingText: root.name
         textFieldText: Config.pendingWallpaperDirectory
-        modified: Config.pendingWallpaperDirectory !== Config.wallpaperDirectory
         textFieldPlaceholder: "~/Pictures/wallpapers"
+        modified: Config.pendingWallpaperDirectory !== Config.wallpaperDirectory
+        previewText: Config.expandPath(Config.pendingWallpaperDirectory)
 
         onEditingFinished: (text) => Config.stageWallpaperDirectory(text)
         onAccepted: (text) => Config.stageWallpaperDirectory(text)
-    }
-
-
-    Text {
-        id: previewText
-        Layout.alignment: Qt.AlignLeft
-        Layout.leftMargin: wallpaperDirTextField.labelWidth + wallpaperDirTextField.rowSpacing
-        Layout.preferredWidth: wallpaperDirTextField.controlWidth
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WrapAnywhere
-
-        font.pixelSize: 11
-        font.family: Config.font
-        color: Colors.colors.accentAlt
-
-        text: Config.expandPath(Config.pendingWallpaperDirectory)
     }
 }

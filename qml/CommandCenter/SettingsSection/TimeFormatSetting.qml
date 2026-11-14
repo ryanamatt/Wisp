@@ -1,18 +1,12 @@
 // qml/CommandCenter/SettingsSection/TimeFormatSetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
-import "../../Colors"
 import "../../Config"
 import "SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "Time Format"
 
     readonly property var presets: [
         { label: "Weekday, date & time (12h)", value: "ddd MMM d hh:mm:ss AP" },
@@ -23,37 +17,25 @@ ColumnLayout {
         { label: "ISO-like", value: "yyyy-MM-dd HH:mm:ss" }
     ]
 
+    // Bumped every second so the live preview re-evaluates
+    property int tick: 0
+
+    Timer {
+        interval: 1000
+        running: root.visible
+        repeat: true
+        onTriggered: root.tick++
+    }
+
     SettingComboBox {
-        id: timeFormatRow
-        settingText: "Time Format"
+        settingText: root.name
         pendingValue: Config.pendingTimeFormat
         modified: Config.pendingTimeFormat !== Config.timeFormat
         presets: root.presets
-        onActivated: (value) => Config.stageTimeFormat(value)
-    }
-
-    Text {
-        id: previewText
-        Layout.alignment: Qt.AlignLeft
-        Layout.leftMargin: timeFormatRow.labelWidth + timeFormatRow.rowSpacing
-        Layout.preferredWidth: timeFormatRow.controlWidth
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 12
-        font.family: Config.font
-        color: Colors.colors.accentAlt
-
-        text: {
-            clockTick.tick // re-evaluate every second
+        previewText: {
+            root.tick
             return Qt.formatDateTime(new Date(), Config.pendingTimeFormat)
         }
-
-        Timer {
-            id: clockTick
-            property int tick: 0
-            interval: 1000
-            running: true
-            repeat: true
-            onTriggered: tick++
-        }
+        onActivated: (value) => Config.stageTimeFormat(value)
     }
 }
