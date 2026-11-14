@@ -1,17 +1,12 @@
-// qml/CommandCenter/SettingsSection/BarOrientationSetting.qml
+// qml/CommandCenter/SettingsSection/BarSubSection/BarOrientationSetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "Bar Orientation"
 
     readonly property var presets: [
         { label: "Top", value: "top" },
@@ -19,7 +14,7 @@ ColumnLayout {
     ]
 
     SettingComboBox {
-        settingText: "Bar Orientation"
+        settingText: root.name
         pendingValue: Config.pendingBarOrientation
         modified: Config.pendingBarOrientation !== Config.barOrientation
         presets: root.presets

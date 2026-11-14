@@ -2,23 +2,28 @@
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
-import Quickshell
 import "../../../Colors"
 import "../../../Config"
-import "../../../Icons"
 
 ColumnLayout {
-    id: rootLayout
-    spacing: 0
+    id: root
 
-    property string sectionLabel: ""
+    // Display name. Used for the heading, the outline entry and (later) search.
+    property string name: ""
+
+    // Lets SettingsSection discover sub sections for the outline automatically.
+    readonly property bool isSubSection: true
+
+    readonly property int padding: 16
+
     default property alias content: innerLayout.data
 
+    Layout.fillWidth: true
+    spacing: 0
+
     Text {
-        id: barSectionLabel
         Layout.alignment: Qt.AlignHCenter
-        text: rootLayout.sectionLabel
+        text: root.name
         font.pixelSize: 20
         font.family: Config.font
         color: Colors.colors.accentAlt
@@ -26,9 +31,7 @@ ColumnLayout {
 
     Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: innerLayout.implicitHeight + innerLayout.implicitHeight / 2
-        Layout.leftMargin: rootLayout.width / 10
-        Layout.rightMargin: Layout.leftMargin
+        Layout.preferredHeight: innerLayout.implicitHeight + 2 * root.padding
 
         color: "transparent"
         border.color: Colors.colors.shadow
@@ -36,18 +39,13 @@ ColumnLayout {
 
         ColumnLayout {
             id: innerLayout
-            anchors.fill: parent
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: 25
+            anchors.margins: root.padding
 
             spacing: 10
-
         }
-
     }
 }
-

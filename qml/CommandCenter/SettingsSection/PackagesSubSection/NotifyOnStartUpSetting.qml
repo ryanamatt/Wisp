@@ -1,20 +1,15 @@
-// qml/CommandCenter/SettingsSection/NotifyOnStartUpSetting.qml
+// qml/CommandCenter/SettingsSection/PackagesSubSection/NotifyOnStartUpSetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "On Startup"
 
     SettingToggle {
-        settingText: "On Startup"
+        settingText: root.name
         description: "Send a notification if package updates are available shortly after Wisp starts."
         checked: Config.pendingPackagesNotifyOnStartUp
         modified: Config.pendingPackagesNotifyOnStartUp !== Config.packagesNotifyOnStartUp

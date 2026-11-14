@@ -1,20 +1,15 @@
-// qml/CommandCenter/SettingsSection/NotifyEveryDaySetting.qml
+// qml/CommandCenter/SettingsSection/PackagesSubSection/NotifyEveryDaySetting.qml
 
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
-ColumnLayout {
+SettingItem {
     id: root
-    Layout.alignment: Qt.AlignHCenter
-    Layout.fillWidth: true
-
-    spacing: 6
+    name: "Every Day"
 
     SettingToggle {
-        settingText: "Every Day"
+        settingText: root.name
         description: "Check again every 24 hours and notify if package updates are available."
         checked: Config.pendingPackagesNotifyEveryDay
         modified: Config.pendingPackagesNotifyEveryDay !== Config.packagesNotifyEveryDay
