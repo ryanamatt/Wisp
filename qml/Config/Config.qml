@@ -42,6 +42,9 @@ Singleton {
     property string wallpaperDirectory: expandPath(Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers")
     property string pendingWallpaperDirectory: wallpaperDirectory
 
+    property bool runMatugen: envBool("WISP_RUN_MATUGEN", false)
+    property bool pendingRunMatugen: runMatugen
+
     property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
     property string pendingFont: font
 
@@ -76,6 +79,7 @@ Singleton {
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
                                   pendingWallpaperDirectory !== wallpaperDirectory ||
+                                  pendingRunMatugen !== runMatugen ||
                                   pendingFont !== font ||
                                   pendingPackagesNotifyOnStartUp !== packagesNotifyOnStartUp ||
                                   pendingPackagesNotifyEveryDay !== packagesNotifyEveryDay ||
@@ -98,6 +102,10 @@ Singleton {
 
     function stageWallpaperDirectory(dir) {
         pendingWallpaperDirectory = dir
+    }
+
+    function stageRunMatugen(enabled) {
+        pendingRunMatugen = enabled
     }
 
     function stageFont(font) {
@@ -146,6 +154,7 @@ Singleton {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
         pendingWallpaperDirectory = wallpaperDirectory
+        pendingRunMatugen = runMatugen
         pendingFont = font
         pendingPackagesNotifyOnStartUp = packagesNotifyOnStartUp
         pendingPackagesNotifyEveryDay = packagesNotifyEveryDay
@@ -169,6 +178,7 @@ Singleton {
         barOrientation = pendingBarOrientation
         wallpaperDirectory = expandPath(pendingWallpaperDirectory)
         pendingWallpaperDirectory = wallpaperDirectory
+        runMatugen = pendingRunMatugen
         font = pendingFont
         packagesNotifyOnStartUp = pendingPackagesNotifyOnStartUp
         packagesNotifyEveryDay = pendingPackagesNotifyEveryDay
@@ -193,6 +203,7 @@ Singleton {
 
             if (!parsed.wallpaper || typeof parsed.wallpaper !== "object") parsed.wallpaper = {}
             parsed.wallpaper.directory = wallpaperDirectory
+            parsed.wallpaper.runMatugen = runMatugen
 
             if (!parsed.font) parsed.font = {}
             parsed.font = font

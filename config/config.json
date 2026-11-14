@@ -5,7 +5,8 @@
     },
     "font": "Noto Sans Mono",
     "wallpaper": {
-        "directory": "~/Pictures/wallpapers"
+        "directory": "~/Pictures/wallpapers",
+        "runMatugen": false
     },
     "packages": {
         "notifyOnStartUp": true,
@@ -14,10 +15,16 @@
     "battery": {
         "warnPercentage": 30,
         "autoPowerSaver": true
-    }
+    },
+    "notifications": {
+      "toastDurationMs": 3000
+    },
+    "welcome": {
+      "jokesFile": "/home/ryan/.config/wisp/jokes.txt"
+    },
     "osd": {
         "duration": 1000,
-        "orientation": "top"
+        "orientation": "top",
         "scaleSize": 1.0
     }
 }

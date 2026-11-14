@@ -13,9 +13,6 @@ import "../Config"
 PanelWindow {
     id: window
 
-    // Temporary toggle: when true, change_wallpaper.sh is called with -m so it runs matugen
-    property bool tempRunMatugen: true
-
     property var wallpapers: []
     property var pendingCommand: null
     property int focusedIndex: 0
@@ -111,7 +108,7 @@ PanelWindow {
                 let shareDir = Quickshell.env("WISP_SHARE_DIR") || "/usr/share/wisp"
                 let scriptPath = shareDir + "/scripts/change_wallpaper.sh"
                 let cmd = ["bash", scriptPath]
-                if (window.tempRunMatugen) cmd.push("-m")
+                if (Config.runMatugen) cmd.push("-m")
                 cmd.push(path)
                 window.applyWallpaper(cmd)
                 IpcState.themeSwitcher.close()

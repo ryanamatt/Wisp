@@ -6,4 +6,5 @@ SettingsSubSection {
     name: "Theme Settings"
 
     WallpaperDirSetting {}
+    RunMatugenSetting {}
 }
