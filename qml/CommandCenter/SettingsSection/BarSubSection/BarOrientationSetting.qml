@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/BarOrientationSetting.qml
+// qml/CommandCenter/SettingsSection/BarSubSection/BarOrientationSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

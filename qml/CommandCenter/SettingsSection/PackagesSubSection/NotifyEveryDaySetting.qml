@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/NotifyEveryDaySetting.qml
+// qml/CommandCenter/SettingsSection/PackagesSubSection/NotifyEveryDaySetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/NotificationToastDurationSetting.qml
+// qml/CommandCenter/SettingsSection/NotificationsSubSection/NotificationToastDurationSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

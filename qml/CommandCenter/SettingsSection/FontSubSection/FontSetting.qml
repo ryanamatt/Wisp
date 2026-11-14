@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/FontSetting.qml
+// qml/CommandCenter/SettingsSection/FontSubSection/FontSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

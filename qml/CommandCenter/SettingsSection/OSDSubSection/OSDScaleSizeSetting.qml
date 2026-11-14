@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/OSDScaleSizeSetting.qml
+// qml/CommandCenter/SettingsSection/OSDSubSection/OSDScaleSizeSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

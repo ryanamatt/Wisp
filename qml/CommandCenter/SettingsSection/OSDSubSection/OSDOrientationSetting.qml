@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/OSDOrientationSetting.qml
+// qml/CommandCenter/SettingsSection/OSDSubSection/OSDOrientationSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

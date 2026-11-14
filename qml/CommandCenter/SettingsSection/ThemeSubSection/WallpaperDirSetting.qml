@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/WallpaperDirSetting.qml
+// qml/CommandCenter/SettingsSection/ThemeSubSection/WallpaperDirSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

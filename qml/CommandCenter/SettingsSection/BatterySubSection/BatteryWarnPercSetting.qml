@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/BatteryWarnPercSetting.qml
+// qml/CommandCenter/SettingsSection/BatterySubSection/BatteryWarnPercSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

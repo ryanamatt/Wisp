@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/TimeFormatSetting.qml
+// qml/CommandCenter/SettingsSection/BarSubSection/TimeFormatSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

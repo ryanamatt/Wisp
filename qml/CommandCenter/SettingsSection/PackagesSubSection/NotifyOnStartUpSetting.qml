@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/NotifyOnStartUpSetting.qml
+// qml/CommandCenter/SettingsSection/PackagesSubSection/NotifyOnStartUpSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

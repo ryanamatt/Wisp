@@ -1,8 +1,8 @@
-// qml/CommandCenter/SettingsSection/BatteryAutoPowerSaverSetting.qml
+// qml/CommandCenter/SettingsSection/BatterySubSection/BatteryAutoPowerSaverSetting.qml
 
 import QtQuick
-import "../../Config"
-import "SettingsComponents"
+import "../../../Config"
+import "../SettingsComponents"
 
 SettingItem {
     id: root

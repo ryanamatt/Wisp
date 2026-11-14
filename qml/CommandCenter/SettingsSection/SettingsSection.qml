@@ -6,6 +6,14 @@ import QtQuick.Controls
 import "../../Colors"
 import "../../Config"
 import "SettingsComponents"
+import "BarSubSection"
+import "ThemeSubSection"
+import "FontSubSection"
+import "BatterySubSection"
+import "PackagesSubSection"
+import "NotificationsSubSection"
+import "WelcomeSubSection"
+import "OSDSubSection"
 
 ColumnLayout {
     id: root
@@ -152,58 +160,15 @@ ColumnLayout {
                 width: flick.width - 12
                 spacing: 20
 
-                SettingsSubSection {
-                    name: "Bar Settings"
+                BarSubSection {}
+                ThemeSubSection {}
+                FontSubSection {}
+                BatterySubSection {}
+                PackagesSubSection {}
+                NotificationsSubSection {}
+                WelcomeSubSection {}
+                OSDSubSection {}
 
-                    TimeFormatSetting {}
-                    BarOrientationSetting {}
-                }
-
-                SettingsSubSection {
-                    name: "Theme Settings"
-
-                    WallpaperDirSetting {}
-                }
-
-                SettingsSubSection {
-                    name: "Font Settings"
-
-                    FontSetting {}
-                }
-
-                SettingsSubSection {
-                    name: "Battery"
-
-                    BatteryWarnPercSetting {}
-                    BatteryAutoPowerSaverSetting {}
-                }
-
-                SettingsSubSection {
-                    name: "Package Notifications"
-
-                    NotifyOnStartUpSetting {}
-                    NotifyEveryDaySetting {}
-                }
-
-                SettingsSubSection {
-                    name: "Notifications"
-
-                    NotificationToastDurationSetting {}
-                }
-
-                SettingsSubSection {
-                    name: "Welcome"
-
-                    JokesFileSetting {}
-                }
-
-                SettingsSubSection {
-                    name: "OSD"
-
-                    OSDDurationSetting {}
-                    OSDOrientationSetting {}
-                    OSDScaleSizeSetting {}
-                }
             }
         }
     }
