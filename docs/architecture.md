@@ -67,7 +67,7 @@ QML gets native functionality (audio, battery, calendar, and so on) from the C++
 ├── uninstall.sh          Remove installed files
 ├── justfile              Just file for Running commands
 ├── cmake/                CMake helper scripts (version header generation)
-├── config/               Example config.json, jokes.txt, matugen config + templates
+├── config/               Example config.json, jokes.txt
 ├── qml/                  The Quickshell config (the whole UI)
 ├── scripts/              Bash helpers called by QML
 ├── src/                  All C++
@@ -196,7 +196,7 @@ Shared infrastructure:
   3. Add an env var name in `src/env.hpp` and export it in `exportEnv`.
   4. Read it in `qml/Config/Config.qml`.
   5. Optionally add a control in `qml/CommandCenter/SettingsSection/`.
-* Theme colors come from [matugen](https://github.com/InioX/matugen). Config and templates are in `config/matugen/` and install to `/usr/share/wisp/matugen`. The `wisp-colors.json` template feeds `Colors`, and the others theme external tools (kitty, fish, nvim, swaync, Hyprland, starship).
+* Theme colors come from thee `colors.json` file.
 
 ## Logging
  
@@ -234,7 +234,6 @@ Install layout:
 | `wisp` binary | `~/.local/bin` (via `install.sh`) |
 | `qml/` plus built `build/qml/` modules | `/usr/share/wisp/qml` |
 | `scripts/` | `/usr/share/wisp/scripts` |
-| `config/matugen/` | `/usr/share/wisp/matugen` |
 | `assets/` | `/usr/share/wisp/assets` |
 | `config/jokes.txt` | `/usr/share/wisp/config` |
  
