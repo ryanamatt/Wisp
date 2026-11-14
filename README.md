@@ -121,6 +121,8 @@ Wisp reads a `config.json`, by default at `~/.config/wisp/config.json`. A missin
 
 See [config/config.json](config/config.json) for an example.
 
+See [docs/theming.md](docs/theming.md) on how to theme Wisp.
+
 ## Log File
 
 Log file is located at `~/.local/state/wisp/wisp.log`.
