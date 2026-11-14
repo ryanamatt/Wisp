@@ -7,17 +7,28 @@ set -euo pipefail
 WALLPAPER_DIR="${WISP_WALLPAPER_DIR:-$HOME/Pictures/wallpapers}"
 
 WISP_SHARE_DIR="${WISP_SHARE_DIR:-/usr/share/wisp}"
-if [[ -f "$WISP_SHARE_DIR/config/matugen/config.toml" ]]; then
-    MATUGEN_CONFIG="$WISP_SHARE_DIR/config/matugen/config.toml"
-else
-    MATUGEN_CONFIG="$WISP_SHARE_DIR/matugen/config.toml"
-fi
 
 WISP_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/wisp"
 mkdir -p "$WISP_STATE_DIR"
 
 input_arg="${1:-}"
 wallpaper=""
+run_matugen=false
+
+# Usage: change_wall.sh [-m] <wallpaper>
+#   -m also run matugen (optional dependency) using user's global matugen config
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -m)
+            run_matugen=true
+            shift
+            ;;
+        *)
+            input_arg="$1"
+            shift
+            ;;
+    esac
+done
 
 c_green() { printf '\033[1;32m%s\033[0m\n' "$*"; }
 c_yellow() { printf '\033[1;33m%s\033[0m\n' "$*"; }
@@ -26,9 +37,18 @@ c_blue() { printf '\033[1;34m%s\033[0m\n' "$*"; }
 
 function update_wallpaper() {
     awww img --transition-type center --transition-step 90 --transition-fps 60 --transition-duration 2 "$wallpaper"
-    sleep 1
-    (cd "$WISP_STATE_DIR" && matugen image "$wallpaper" -c "$MATUGEN_CONFIG" -t scheme-vibrant --source-color-index 0)
-    c_green "Update Wallpaper and Ran Matugen"
+    if [[ $run_matugen == true ]]; then
+        if command -v matugen >/dev/null 2>&1; then
+            sleep 1
+            (cd "$WISP_STATE_DIR" && matugen image "$wallpaper" -t scheme-vibrant --source-color-index 0)
+            c_green "Updated Wallpaper and Ran Matugen"
+        else
+            c_yellow "matugen requested (-m) but not installed, skipping theme generation"
+            c_green "Updated Wallpaper"
+        fi
+    else
+        c_green "Updated Wallpaper"
+    fi
 }
 
 apply_razer_colors() {

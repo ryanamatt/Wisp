@@ -18,7 +18,6 @@ Feel free to fork or take in compliance with the MIT License.
 * Hyprland
 * Quickshell
 * jq
-* Matugen
 
 </td><td>
 
@@ -93,27 +92,6 @@ wisp toggle themeSwitcher   # open/close the theme switcher
 wisp reload                 # restart quickshell without restarting wisp
 wisp kill                   # stop a running instance
 ```
-
-## IPC Targets
-
-Every widget below can be controlled with `wisp open <target>`, `wisp close <target>`, or `wisp toggle <target>`.
-
-| Target | Controls |
-|---|---|
-| `calendar` | Time / workspace popup (calendar view) |
-| `powerMenu` | Power menu |
-| `audioPlayer` | Audio widget |
-| `systemMonitor` | System monitor widget |
-| `clipboard` | Clipboard widget |
-| `network` | Network widget |
-| `brightness` | Brightness widget |
-| `battery` | Battery widget |
-| `themeSwitcher` | Theme/wallpaper switcher |
-| `workspaceSwitcher` | Workspace switcher |
-| `screenshot` | A Screenshot Window | 
-| `commandCenter` | Command Center |
-| `timer` | A Timer / Stopwatch Window | 
-| `runner` | Runner |
 
 ## Configuration
 
