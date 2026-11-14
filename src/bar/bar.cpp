@@ -76,9 +76,11 @@ void reapChild(pid_t pid) {
 // The wisp process itself stays alive (and named "wisp") for the
 // lifetime of the bar, which is what lets `pgrep wisp`, `wisp kill`,
 // and `wisp reload` find and control it.
-int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath) {
+int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath,
+        const std::string &colorsPath) {
     wisp::log::debug("runBar: qmlDir=" + qmlDir + " configPath=" + configPath +
-                     " modulePath=" + (modulePath.empty() ? "<none>" : modulePath));
+                     " modulePath=" + (modulePath.empty() ? "<none>" : modulePath),
+                     " colorsPath=" + (colorsPath.empty() ? "<none>" : colorsPath));
 
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";
 
@@ -94,6 +96,11 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
 
     wisp::config::load(configPath);
     wisp::log::info("loaded config from " + configPath);
+
+    if (!colorsPath.empty()) {
+        setenv(wisp::env::kColorsPath, colorsPath.c_str(), 1);
+        wisp::log::info("using colors file " + colorsPath);
+    }
 
     // -m lets a dev point at their build tree's QML modules before
     // installing, so it takes priority over both the installed
