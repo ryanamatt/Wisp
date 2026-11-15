@@ -9,6 +9,8 @@ Rectangle {
 
     property string icon: ""
     property color tint: Colors.colors.foregroundMuted
+    property color hoverColor: Colors.colors.hover
+    property color tintOnHover: root.tint
     property int iconSize: 18
 
     signal clicked
@@ -16,14 +18,18 @@ Rectangle {
     implicitWidth: 30
     implicitHeight: 30
     radius: width / 2
-    color: area.pressed ? Colors.colors.pressed : area.containsMouse ? Colors.colors.hover : "transparent"
+    color: area.pressed ? Colors.colors.pressed
+        : area.containsMouse ? root.hoverColor
+        : "transparent"
+
+    Behavior on color { ColorAnimation { duration: 100 } }
 
     TintedIcon {
         anchors.centerIn: parent
         width: root.iconSize
         height: root.iconSize
         name: root.icon
-        tint: root.tint
+        tint: area.containsMouse ? root.tintOnHover : root.tint
     }
 
     MouseArea {

@@ -82,8 +82,9 @@ BarPopup {
                 anchors.rightMargin: 8
                 spacing: 6
 
-                Image {
-                    source: Icons.getIcon("ui/search")
+                TintedIcon {
+                    name: "ui/search"
+                    tint: Colors.colors.foregroundMuted
                     Layout.preferredWidth: innerLayout.width * 0.075
                     Layout.preferredHeight: width
                 }
@@ -249,9 +250,10 @@ BarPopup {
                         }
 
                         RowLayout {
+                            id: entryRow
                             anchors.fill: parent
                             anchors.leftMargin: 8
-                            anchors.rightMargin: 4
+                            anchors.rightMargin: 8
                             spacing: 8
 
                             Rectangle {
@@ -282,31 +284,18 @@ BarPopup {
                                 verticalAlignment: Text.AlignVCenter
                             }
 
-                            Rectangle {
-                                id: deleteButton
-                                implicitWidth: 20
-                                implicitHeight: 20
-                                Layout.alignment: Qt.AlignVCenter
+                            IconButton {
+                                icon: "ui/close"
+                                iconSize: 14
+                                implicitWidth: entryRow.implicitWidth * 0.025
+                                implicitHeight: width
                                 radius: 10
-                                color: deleteHover.hovered ? Colors.colors.error : "transparent"
+                                tint: Colors.colors.foregroundMuted
+                                hoverColor: Colors.colors.error
+                                tintOnHover: Colors.colors.background
+                                Layout.alignment: Qt.AlignVCenter
 
-                                Behavior on color { ColorAnimation { duration: 100 } }
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "✕"
-                                    font.pixelSize: 11
-                                    font.family: Config.font
-                                    color: deleteHover.hovered ? Colors.colors.background : Colors.colors.foregroundMuted
-                                }
-
-                                HoverHandler { id: deleteHover }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: clipboardPopup.deleteEntry(entryDelegate.modelData)
-                                }
+                                onClicked: clipboardPopup.deleteEntry(entryDelegate.modelData)
                             }
                         }
 
