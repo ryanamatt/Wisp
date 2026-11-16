@@ -42,15 +42,46 @@ BarPopup {
             spacing: 2
 
             RowLayout {
+                id: statsRow
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 20
+                Layout.leftMargin: sideMargin
+                Layout.rightMargin: sideMargin
 
+                readonly property real sideMargin: 15
+
+                // Large gap between the two categories (network | uptime)
+                spacing: -50
+
+                // Small gap between Rx and Tx
+                readonly property real innerSpacing: -80
+
+                // Width ratio: Network group : Uptime = 3 : 1
+                readonly property real wNet: 3
+                readonly property real wUp: 1
+
+                // All widths derive from contentLayout.width, which no layout assigns,
+                // so there is no feedback loop.
+                readonly property real availWidth: contentLayout.width - sideMargin * 2
+                readonly property real unit: (availWidth - spacing) / (wNet + wUp)
+                readonly property real netWidth: unit * wNet
+                readonly property real upWidth: unit * wUp
+                readonly property real cellWidth: (netWidth - innerSpacing) / 2
+
+                // Network group (Rx + Tx)
                 RowLayout {
                     id: networkRow
-                    spacing: 4
+                    Layout.fillWidth: false
+                    Layout.preferredWidth: statsRow.netWidth
+                    Layout.minimumWidth: statsRow.netWidth
+                    Layout.maximumWidth: statsRow.netWidth
+                    spacing: statsRow.innerSpacing
 
+                    // Rx cell
                     RowLayout {
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: statsRow.cellWidth
+                        Layout.minimumWidth: statsRow.cellWidth
+                        Layout.maximumWidth: statsRow.cellWidth
                         spacing: 4
 
                         Image {
@@ -72,14 +103,21 @@ BarPopup {
 
                         Text {
                             id: rxText
+                            Layout.fillWidth: true
                             text: Utils.formatRate(SystemMonitor.netRxBytesPerSec)
                             font.pixelSize: 16
                             font.family: Config.font
                             color: Colors.colors.foreground
+                            elide: Text.ElideRight
                         }
                     }
 
+                    // Tx cell
                     RowLayout {
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: statsRow.cellWidth
+                        Layout.minimumWidth: statsRow.cellWidth
+                        Layout.maximumWidth: statsRow.cellWidth
                         spacing: 4
 
                         Image {
@@ -101,22 +139,30 @@ BarPopup {
 
                         Text {
                             id: txText
+                            Layout.fillWidth: true
                             text: Utils.formatRate(SystemMonitor.netTxBytesPerSec)
                             font.pixelSize: 16
                             font.family: Config.font
                             color: Colors.colors.foreground
+                            elide: Text.ElideRight
                         }
                     }
                 }
 
+                // Uptime cell
                 Text {
                     id: uptimeText
+                    Layout.fillWidth: false
+                    Layout.preferredWidth: statsRow.upWidth
+                    Layout.minimumWidth: statsRow.upWidth
+                    Layout.maximumWidth: statsRow.upWidth
+                    horizontalAlignment: Text.AlignRight
                     text: Utils.formatUptime(SystemMonitor.uptimeSeconds)
                     font.pixelSize: 16
                     font.family: Config.font
                     color: Colors.colors.foreground
+                    elide: Text.ElideLeft
                 }
-
             }
 
             // Horizontal Spacer
