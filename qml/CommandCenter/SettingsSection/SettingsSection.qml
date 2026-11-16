@@ -7,8 +7,9 @@ import "../../Colors"
 import "../../Config"
 import "SettingsComponents"
 import "BarSubSection"
-import "ThemeSubSection"
 import "FontSubSection"
+import "WeatherSubSection"
+import "ThemeSubSection"
 import "BatterySubSection"
 import "PackagesSubSection"
 import "NotificationsSubSection"
@@ -161,8 +162,9 @@ ColumnLayout {
                 spacing: 20
 
                 BarSubSection {}
-                ThemeSubSection {}
                 FontSubSection {}
+                WeatherSubSection {}
+                ThemeSubSection {}
                 BatterySubSection {}
                 PackagesSubSection {}
                 NotificationsSubSection {}

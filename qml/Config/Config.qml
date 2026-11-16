@@ -33,20 +33,25 @@ Singleton {
     readonly property string configPath: Quickshell.env("WISP_CONFIG_PATH")
         || configDir + "config.json"
 
+    Component.onCompleted: console.log("CONFIG PATH: " + configPath)
+
     property string timeFormat: Quickshell.env("WISP_TIME_FORMAT") || "ddd MMM d hh:mm:ss AP"
     property string pendingTimeFormat: timeFormat
 
     property string barOrientation: Quickshell.env("WISP_BAR_ORIENTATION") || "top"
     property string pendingBarOrientation: barOrientation
 
+    property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
+    property string pendingFont: font
+
+    property bool getWeatherFromIp: envBool("WISP_GET_WEATHER_FROM_IP", false)
+    property bool pendingGetWeatherFromIp: getWeatherFromIp
+
     property string wallpaperDirectory: expandPath(Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers")
     property string pendingWallpaperDirectory: wallpaperDirectory
 
     property bool runMatugen: envBool("WISP_RUN_MATUGEN", false)
     property bool pendingRunMatugen: runMatugen
-
-    property string font: Quickshell.env("WISP_FONT") || "Noto Sans"
-    property string pendingFont: font
 
     property bool packagesNotifyOnStartUp: envBool("WISP_PACKAGES_NOTIFY_ON_STARTUP", false)
     property bool pendingPackagesNotifyOnStartUp: packagesNotifyOnStartUp
@@ -78,9 +83,10 @@ Singleton {
     // True whenever a staged setting differs from what's currently live.
     readonly property bool dirty: pendingTimeFormat !== timeFormat ||
                                   pendingBarOrientation !== barOrientation ||
+                                  pendingFont !== font ||
+                                  pendingGetWeatherFromIp !== getWeatherFromIp ||
                                   pendingWallpaperDirectory !== wallpaperDirectory ||
                                   pendingRunMatugen !== runMatugen ||
-                                  pendingFont !== font ||
                                   pendingPackagesNotifyOnStartUp !== packagesNotifyOnStartUp ||
                                   pendingPackagesNotifyEveryDay !== packagesNotifyEveryDay ||
                                   pendingBatteryWarnPerc !== batteryWarnPerc ||
@@ -100,16 +106,20 @@ Singleton {
         pendingBarOrientation = orientation
     }
 
+    function stageFont(font) {
+        pendingFont = font
+    }
+
+    function stageGetWeatherFromIp(enabled) {
+        pendingGetWeatherFromIp = enabled
+    }
+
     function stageWallpaperDirectory(dir) {
         pendingWallpaperDirectory = dir
     }
 
     function stageRunMatugen(enabled) {
         pendingRunMatugen = enabled
-    }
-
-    function stageFont(font) {
-        pendingFont = font
     }
 
     function stagePackagesNotifyOnStartUp(enabled) {
@@ -153,9 +163,10 @@ Singleton {
     function discardChanges() {
         pendingTimeFormat = timeFormat
         pendingBarOrientation = barOrientation
+        pendingFont = font
+        pendingGetWeatherFromIp = getWeatherFromIp
         pendingWallpaperDirectory = wallpaperDirectory
         pendingRunMatugen = runMatugen
-        pendingFont = font
         pendingPackagesNotifyOnStartUp = packagesNotifyOnStartUp
         pendingPackagesNotifyEveryDay = packagesNotifyEveryDay
         pendingBatteryWarnPerc = batteryWarnPerc
@@ -176,10 +187,11 @@ Singleton {
         timeFormat = pendingTimeFormat
         Time.setFormatOverride(timeFormat)
         barOrientation = pendingBarOrientation
+        font = pendingFont
+        getWeatherFromIp = pendingGetWeatherFromIp
         wallpaperDirectory = expandPath(pendingWallpaperDirectory)
         pendingWallpaperDirectory = wallpaperDirectory
         runMatugen = pendingRunMatugen
-        font = pendingFont
         packagesNotifyOnStartUp = pendingPackagesNotifyOnStartUp
         packagesNotifyEveryDay = pendingPackagesNotifyEveryDay
         batteryWarnPerc = pendingBatteryWarnPerc
@@ -201,12 +213,15 @@ Singleton {
             parsed.bar.timeFormat = timeFormat
             parsed.bar.orientation = barOrientation
 
+            if (!parsed.font) parsed.font = {}
+            parsed.font = font
+
+            if (!parsed.weather || typeof parsed.weather !== "object") parsed.weather = {}
+            parsed.weather.getWeatherFromIp = getWeatherFromIp
+
             if (!parsed.wallpaper || typeof parsed.wallpaper !== "object") parsed.wallpaper = {}
             parsed.wallpaper.directory = wallpaperDirectory
             parsed.wallpaper.runMatugen = runMatugen
-
-            if (!parsed.font) parsed.font = {}
-            parsed.font = font
 
             if (!parsed.packages || typeof parsed.packages !== "object") parsed.packages = {}
             parsed.packages.notifyOnStartUp = packagesNotifyOnStartUp

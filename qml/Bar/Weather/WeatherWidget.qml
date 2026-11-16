@@ -67,7 +67,10 @@ BarWidgetContainer {
         spacing: 2
         Layout.alignment: Qt.AlignCenter
 
+        // If getWeatherFromIp
+
         Image {
+            visible: Config.getWeatherFromIp
             Layout.preferredWidth: weatherWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
@@ -82,12 +85,23 @@ BarWidgetContainer {
         }
 
         Text {
+            visible: Config.getWeatherFromIp
             color: Colors.colors.foreground
             font.family: Config.font
             font.pixelSize: weatherWidget.width * 0.25
             text: weatherWidget.weatherTemp + "\ue33e"
         }
+
+        // If not getWeatherFromIp
+        Image {
+            visible: !Config.getWeatherFromIp
+            Layout.preferredWidth: weatherWidget.width * 0.4
+            Layout.preferredHeight: Layout.preferredWidth
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: width * Screen.devicePixelRatio
+            sourceSize.height: height * Screen.devicePixelRatio
+            source: Icons.getIcon("weather/cloudLock")
+        }
+
     }
-
-
 }
