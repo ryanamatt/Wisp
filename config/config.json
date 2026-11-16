@@ -3,21 +3,28 @@
         "timeFormat": "ddd MMM d hh:mm:ss AP",
         "orientation": "top"
     },
-    "font": "Noto Sans Mono",
+    "font": "Noto Sans",
     "wallpaper": {
-        "directory": "~/Pictures/wallpapers"
+        "directory": "~/Pictures/wallpapers",
+        "runMatugen": false
     },
     "packages": {
-        "notifyOnStartUp": true,
-        "notifyEveryDay": true
+        "notifyOnStartUp": false,
+        "notifyEveryDay": false
     },
     "battery": {
         "warnPercentage": 30,
         "autoPowerSaver": true
-    }
+    },
+    "notifications": {
+      "toastDurationMs": 2000
+    },
+    "welcome": {
+      "jokesFile": "/home/ryan/.config/wisp/jokes.txt"
+    },
     "osd": {
         "duration": 1000,
-        "orientation": "top"
+        "orientation": "bottom",
         "scaleSize": 1.0
     }
 }

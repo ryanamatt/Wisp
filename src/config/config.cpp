@@ -2,11 +2,9 @@
 
 #include "config.hpp"
 
-#include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <limits>
-#include <optional>
 
 #include <nlohmann/json.hpp>
 
@@ -99,6 +97,7 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
     setenv(wisp::env::kFont, cfg.font.c_str(), 1);
     setenv(wisp::env::kWallpaperDir, cfg.wallpaperDir.c_str(), 1);
+    setenv(wisp::env::kRunMatugen, cfg.runMatguen ? "true" : "false", 1);
     setenv(wisp::env::kPackagesNotifyOnStartUp, cfg.packagesNotifyOnStartUp ? "true" : "false", 1);
     setenv(wisp::env::kPackagesNotifyEveryDay, cfg.packagesNotifyEveryDay ? "true" : "false", 1);
     setenv(wisp::env::kBatteryWarnPerc, std::to_string(cfg.batteryWarnPerc).c_str(), 1);
@@ -159,6 +158,7 @@ Config load(const std::string &path) {
     if (j.contains("wallpaper") && j["wallpaper"].is_object()) {
         const auto &wallpaper = j["wallpaper"];
         readPath(wallpaper, "directory", "wallpaper.directory", cfg.wallpaperDir, defaultWallpaper);
+        readBool(wallpaper, "runMatugen", "wallpaper.runMatugen", cfg.runMatguen);
     }
 
     if (j.contains("packages") && j["packages"].is_object()) {

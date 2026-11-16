@@ -12,7 +12,7 @@ import "../Config"
 
 PanelWindow {
     id: window
-    
+
     property var wallpapers: []
     property var pendingCommand: null
     property int focusedIndex: 0
@@ -79,7 +79,7 @@ PanelWindow {
     }
 
     FocusScope {
-        id: focusScope 
+        id: focusScope
         anchors.fill: parent
         focus: true
 
@@ -107,7 +107,10 @@ PanelWindow {
 
                 let shareDir = Quickshell.env("WISP_SHARE_DIR") || "/usr/share/wisp"
                 let scriptPath = shareDir + "/scripts/change_wallpaper.sh"
-                window.applyWallpaper(["bash", scriptPath, path])
+                let cmd = ["bash", scriptPath]
+                if (Config.runMatugen) cmd.push("-m")
+                cmd.push(path)
+                window.applyWallpaper(cmd)
                 IpcState.themeSwitcher.close()
             }
         }
@@ -120,11 +123,11 @@ PanelWindow {
             MouseArea {
                 anchors.fill: parent
                 onClicked: IpcState.themeSwitcher.close()
-            }    
+            }
         }
 
         Rectangle {
-            id: winRect 
+            id: winRect
             anchors.centerIn: parent
             width: Math.min(840, parent.width - 80)
             height: Math.min(360, parent.height - 80)
@@ -228,7 +231,7 @@ PanelWindow {
                                     asynchronous: true
                                     cache: true
                                     sourceSize.height: 400
-                                    visible: false 
+                                    visible: false
                                 }
 
                                 // The mask source (must be a separate sibling with layer enabled)
@@ -238,7 +241,7 @@ PanelWindow {
                                     radius: cardRect.radius - 4
                                     color: "white"
                                     visible: false
-                                    layer.enabled: true 
+                                    layer.enabled: true
                                 }
 
                                 // The MultiEffect combining them

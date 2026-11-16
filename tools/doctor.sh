@@ -34,9 +34,18 @@ echo "Optional dev tools:"
 check optional clangd
 
 echo "Runtime dependencies:"
-for cmd in Hyprland quickshell jq matugen awww gcalcli curl cava pipewire \
+for cmd in Hyprland quickshell jq awww gcalcli curl cava pipewire \
             cliphist wl-copy hyprsunset grim slurp; do
     if command -v "${cmd}" >/dev/null 2>&1; then
+        ok "${cmd}"
+    else
+        printf '  \033[1;33mmiss\033[0m %s\n' "${cmd}"
+    fi
+done
+
+echo "Optional Runtime dependecies:"
+for cmd in matugen; do
+    if command -v "${cmd}" >/dev/null 2>71; then
         ok "${cmd}"
     else
         printf '  \033[1;33mmiss\033[0m %s\n' "${cmd}"

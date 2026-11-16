@@ -14,6 +14,7 @@ inline constexpr const char *kDefaultTimeFormat = "ddd MMM d hh:mm:ss AP";
 inline constexpr const char *kDefaultBarOrientation = "top";
 inline constexpr const char *kDefaultFont = "Noto Sans";
 inline constexpr const char *kDefaultWallpaperSubdir = "Pictures/wallpapers"; // Relative to $HOME
+inline constexpr bool kDefaultRunMatugen = false;
 inline constexpr bool kDefaultPackagesNotifyOnStartUp = false;
 inline constexpr bool kDefaultPackagesNotifyEveryDay = false;
 inline constexpr const int kDefaultBatteryWarnPerc = 30;
@@ -29,6 +30,7 @@ struct Config {
     std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;
     std::string wallpaperDir;
+    bool runMatguen = kDefaultRunMatugen;
     bool packagesNotifyOnStartUp = kDefaultPackagesNotifyOnStartUp;
     bool packagesNotifyEveryDay = kDefaultPackagesNotifyEveryDay;
     int batteryWarnPerc = kDefaultBatteryWarnPerc;
