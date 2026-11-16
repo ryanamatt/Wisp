@@ -9,12 +9,76 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    // Full `cliphist list` output, newest first.
     property var clipboardList: []
     property bool cliphistEnabled: true
+
+    // Pins are keyed by preview text, NOT by cliphist id. cliphist dedups on
+    // store, so re-copying a pinned entry gives it a new id. Keying by id
+    // would silently unpin an item every time you use it.
+    // Most recently pinned first. Persisted to ~/.config/wisp/clipboard-pins.json
+    property var pinnedKeys: []
+
+    // Max number of non-pinned entries shown in the history list.
+    readonly property int historyLimit: 100
+
+    // Pinned entries as current cliphist lines, in pin order.
+    readonly property var pinnedList: {
+        const byPreview = new Map()
+        for (const line of root.clipboardList) {
+            const key = root.previewOf(line)
+            if (!byPreview.has(key))
+                byPreview.set(key, line)
+        }
+        const out = []
+        for (const key of root.pinnedKeys) {
+            if (byPreview.has(key))
+                out.push(byPreview.get(key))
+        }
+        return out
+    }
+
+    // Everything that is not pinned, so an entry never shows in both lists.
+    readonly property var unpinnedList: {
+        const pinned = new Set(root.pinnedKeys)
+        return root.clipboardList
+            .filter(line => !pinned.has(root.previewOf(line)))
+            .slice(0, root.historyLimit)
+    }
 
     // Maps a cliphist entry id -> decoded thumbnail file path on disk.
     // Populated lazily by decodeToFile() as image entries scroll into view.
     property var imageCache: ({})
+
+    function previewOf(line) {
+        return line.replace(/^\d+\t/, "")
+    }
+
+    function togglePin(line) {
+        const key = root.previewOf(line)
+        if (root.pinnedKeys.indexOf(key) === -1)
+            root.pinnedKeys = [key].concat(root.pinnedKeys)
+        else
+            root.pinnedKeys = root.pinnedKeys.filter(k => k !== key)
+        root.savePins()
+    }
+
+    function savePins() {
+        pinsFile.setText(JSON.stringify(root.pinnedKeys))
+    }
+
+    // Drop pins whose entry no longer exists in cliphist. Skipped when the
+    // list is empty so a failed `cliphist list` cannot wipe every pin.
+    function prunePins(lines) {
+        if (lines.length === 0)
+            return
+        const present = new Set(lines.map(l => root.previewOf(l)))
+        const kept = root.pinnedKeys.filter(k => present.has(k))
+        if (kept.length !== root.pinnedKeys.length) {
+            root.pinnedKeys = kept
+            root.savePins()
+        }
+    }
 
     function refreshClipboard() {
         getClipboard.running = true
@@ -30,12 +94,20 @@ Singleton {
         if (idMatch && root.imageCache[idMatch[1]] !== undefined)
             delete root.imageCache[idMatch[1]]
 
+        const key = root.previewOf(line)
+        if (root.pinnedKeys.indexOf(key) !== -1) {
+            root.pinnedKeys = root.pinnedKeys.filter(k => k !== key)
+            root.savePins()
+        }
+
         deleteProcess.entryLine = line
         deleteProcess.running = true
     }
 
     function clearAll() {
         root.imageCache = {}
+        root.pinnedKeys = []
+        root.savePins()
         clearProcess.running = true
     }
 
@@ -72,14 +144,34 @@ Singleton {
         proc.running = true
     }
 
+    // ----- Pin persistence -----
+
+    FileView {
+        id: pinsFile
+        // path: Quickshell.env("HOME") + "/.config/wisp/clipboard-pins.json"
+        path: {
+            let clipDir = (Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")) + "/wisp"
+            return clipDir + "/clipboard-pins.json"
+        }
+        onLoaded: {
+            try {
+                const parsed = JSON.parse(text())
+                if (Array.isArray(parsed))
+                    root.pinnedKeys = parsed.filter(k => typeof k === "string")
+            } catch (e) {}
+        }
+    }
+
     // ----- Backing processes -----
 
     Process {
         id: getClipboard
-        command: ["bash", "-c", "cliphist list | head -n 100"]
+        command: ["bash", "-c", "cliphist list"]
         stdout: StdioCollector {
             onStreamFinished: {
-                root.clipboardList = this.text.split("\n").filter(line => line.length > 0)
+                const lines = this.text.split("\n").filter(line => line.length > 0)
+                root.clipboardList = lines
+                root.prunePins(lines)
             }
         }
     }
