@@ -17,6 +17,7 @@ struct ParsedArgs {
     std::string qmlDir;
     std::string configPath;
     std::string modulePath;
+    std::string colorsPath;
 
     bool disown = false;
 

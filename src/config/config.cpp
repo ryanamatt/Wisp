@@ -121,6 +121,12 @@ std::string defaultPath() {
     return "";
 }
 
+std::string defaultColorsPath() {
+    const std::string cfg = defaultPath();
+    if (cfg.empty()) { return ""; }
+    return (std::filesystem::path(cfg).parent_path() / "colors.json").string();
+}
+
 Config load(const std::string &path) {
     const char *home = std::getenv("HOME");
     const std::string defaultWallpaper = home && *home ? std::string(home) + "/" + kDefaultWallpaperSubdir : "";

@@ -26,5 +26,6 @@ inline constexpr const char *kOSDScaleSize = "WISP_OSD_SCALE_SIZE";
 
 // Other
 inline constexpr const char *kShareDir = "WISP_SHARE_DIR";
+inline constexpr const char *kColorsPath = "WISP_COLORS_PATH";
 
 } // namespace wisp::env

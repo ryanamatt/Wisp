@@ -48,6 +48,11 @@ struct Config {
 // Returns an empty string if neither can be determined.
 std::string defaultPath();
 
+// Resolves the default colors file location: colors.json in the same
+// directory as the default config.json. Returns an empty string if
+// that directory cannot be determined.
+std::string defaultColorsPath();
+
 // Loads config from `path`. A missing file, missing keys, or a parse
 // error all fall back to defaults rather than failing.
 Config load(const std::string &path);

@@ -57,6 +57,10 @@ void printUsage(const char *argv0) {
                  "                      (default: "
               << wisp::config::defaultPath()
               << ")\n"
+                 "  -C <file>           Path to colors.json\n"
+                 "                      (default: "
+              << wisp::config::defaultColorsPath()
+              << ")\n"
                  "  -h, --help          Show this help message\n"
                  "  -v, --version       Show version information\n";
 }
@@ -78,6 +82,7 @@ ParsedArgs parse(int argc, char *argv[]) {
     ParsedArgs parsed;
     parsed.qmlDir = WISP_DEFAULT_QML_DIR;
     parsed.configPath = wisp::config::defaultPath();
+    parsed.colorsPath = wisp::config::defaultColorsPath();
 
     std::vector<std::string> args(argv + 1, argv + argc);
 
@@ -114,6 +119,15 @@ ParsedArgs parse(int argc, char *argv[]) {
                 return parsed;
             }
             parsed.configPath = absolutePath(args[++i]);
+            continue;
+        }
+        if (arg == "-C") {
+            if (i + 1 >= args.size()) {
+                std::cerr << "wisp: " << arg << " requires a file argument\n";
+                parsed.earlyExit = 1;
+                return parsed;
+            }
+            parsed.colorsPath = absolutePath(args[++i]);
             continue;
         }
         if (arg == "-m") {
