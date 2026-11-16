@@ -44,63 +44,77 @@ BarPopup {
             RowLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter
+                spacing: 20
 
                 RowLayout {
+                    id: networkRow
                     spacing: 4
 
-                    Image {
-                        source: Icons.getIcon("ui/arrowDown")
-                        sourceSize.width: width * Screen.devicePixelRatio
-                        sourceSize.height: height * Screen.devicePixelRatio
+                    RowLayout {
+                        spacing: 4
 
-                        Layout.preferredWidth: rxText.height * 0.8
-                        Layout.preferredHeight: rxText.height * 0.8
+                        Image {
+                            source: Icons.getIcon("ui/arrowDown")
+                            sourceSize.width: width * Screen.devicePixelRatio
+                            sourceSize.height: height * Screen.devicePixelRatio
 
-                        fillMode: Image.PreserveAspectFit
+                            Layout.preferredWidth: rxText.height * 0.8
+                            Layout.preferredHeight: rxText.height * 0.8
 
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            colorization: 1.0
-                            colorizationColor: Colors.colors.info
+                            fillMode: Image.PreserveAspectFit
+
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                colorization: 1.0
+                                colorizationColor: Colors.colors.info
+                            }
+                        }
+
+                        Text {
+                            id: rxText
+                            text: Utils.formatRate(SystemMonitor.netRxBytesPerSec)
+                            font.pixelSize: 16
+                            font.family: Config.font
+                            color: Colors.colors.foreground
                         }
                     }
 
-                    Text {
-                        id: rxText
-                        text: Utils.formatRate(SystemMonitor.netRxBytesPerSec)
-                        font.pixelSize: 16
-                        font.family: Config.font
-                        color: Colors.colors.foreground
+                    RowLayout {
+                        spacing: 4
+
+                        Image {
+                            source: Icons.getIcon("ui/arrowUp")
+                            sourceSize.width: width * Screen.devicePixelRatio
+                            sourceSize.height: height * Screen.devicePixelRatio
+
+                            Layout.preferredWidth: txText.height * 0.8
+                            Layout.preferredHeight: txText.height * 0.8
+
+                            fillMode: Image.PreserveAspectFit
+
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                colorization: 1.0
+                                colorizationColor: Colors.colors.warning
+                            }
+                        }
+
+                        Text {
+                            id: txText
+                            text: Utils.formatRate(SystemMonitor.netTxBytesPerSec)
+                            font.pixelSize: 16
+                            font.family: Config.font
+                            color: Colors.colors.foreground
+                        }
                     }
                 }
 
-                RowLayout {
-                    spacing: 4
-
-                    Image {
-                        source: Icons.getIcon("ui/arrowUp")
-                        sourceSize.width: width * Screen.devicePixelRatio
-                        sourceSize.height: height * Screen.devicePixelRatio
-
-                        Layout.preferredWidth: txText.height * 0.8
-                        Layout.preferredHeight: txText.height * 0.8
-
-                        fillMode: Image.PreserveAspectFit
-
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            colorization: 1.0
-                            colorizationColor: Colors.colors.warning
-                        }
-                    }
-
-                    Text {
-                        id: txText
-                        text: Utils.formatRate(SystemMonitor.netTxBytesPerSec)
-                        font.pixelSize: 16
-                        font.family: Config.font
-                        color: Colors.colors.foreground
-                    }
+                Text {
+                    id: uptimeText
+                    text: Utils.formatUptime(SystemMonitor.uptimeSeconds)
+                    font.pixelSize: 16
+                    font.family: Config.font
+                    color: Colors.colors.foreground
                 }
 
             }
