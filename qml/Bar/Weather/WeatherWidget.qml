@@ -70,7 +70,7 @@ BarWidgetContainer {
         // If getWeatherFromIp
 
         Image {
-            visible: Config.getWeatherFromIp
+            visible: Config.getWeatherFromIp || Config.weatherCity !== ""
             Layout.preferredWidth: weatherWidget.width * 0.3
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit
@@ -85,7 +85,7 @@ BarWidgetContainer {
         }
 
         Text {
-            visible: Config.getWeatherFromIp
+            visible: Config.getWeatherFromIp || Config.weatherCity !== ""
             color: Colors.colors.foreground
             font.family: Config.font
             font.pixelSize: weatherWidget.width * 0.25
@@ -94,7 +94,7 @@ BarWidgetContainer {
 
         // If not getWeatherFromIp
         Image {
-            visible: !Config.getWeatherFromIp
+            visible: !Config.getWeatherFromIp && !Config.weatherCity
             Layout.preferredWidth: weatherWidget.width * 0.4
             Layout.preferredHeight: Layout.preferredWidth
             fillMode: Image.PreserveAspectFit

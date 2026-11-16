@@ -16,6 +16,7 @@ inline constexpr const char *kBarOrientation = "WISP_BAR_ORIENTATION";
 inline constexpr const char *kFont = "WISP_FONT";
 
 inline constexpr const char *kGetWeatherFromIp = "WISP_GET_WEATHER_FROM_IP";
+inline constexpr const char *kWeatherCity = "WISP_WEATHER_CITY";
 
 inline constexpr const char *kWallpaperDir = "WISP_WALLPAPER_DIR";
 inline constexpr const char *kRunMatugen = "WISP_RUN_MATUGEN";

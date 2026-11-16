@@ -33,8 +33,6 @@ Singleton {
     readonly property string configPath: Quickshell.env("WISP_CONFIG_PATH")
         || configDir + "config.json"
 
-    Component.onCompleted: console.log("CONFIG PATH: " + configPath)
-
     property string timeFormat: Quickshell.env("WISP_TIME_FORMAT") || "ddd MMM d hh:mm:ss AP"
     property string pendingTimeFormat: timeFormat
 
@@ -46,6 +44,9 @@ Singleton {
 
     property bool getWeatherFromIp: envBool("WISP_GET_WEATHER_FROM_IP", false)
     property bool pendingGetWeatherFromIp: getWeatherFromIp
+
+    property string weatherCity: Quickshell.env("WISP_WEATHER_CITY") || ""
+    property string pendingWeatherCity: weatherCity
 
     property string wallpaperDirectory: expandPath(Quickshell.env("WISP_WALLPAPER_DIR") || "~/Pictures/wallpapers")
     property string pendingWallpaperDirectory: wallpaperDirectory
@@ -85,6 +86,7 @@ Singleton {
                                   pendingBarOrientation !== barOrientation ||
                                   pendingFont !== font ||
                                   pendingGetWeatherFromIp !== getWeatherFromIp ||
+                                  pendingWeatherCity !== weatherCity ||
                                   pendingWallpaperDirectory !== wallpaperDirectory ||
                                   pendingRunMatugen !== runMatugen ||
                                   pendingPackagesNotifyOnStartUp !== packagesNotifyOnStartUp ||
@@ -112,6 +114,10 @@ Singleton {
 
     function stageGetWeatherFromIp(enabled) {
         pendingGetWeatherFromIp = enabled
+    }
+
+    function stageWeatherCity(city) {
+        pendingWeatherCity = city
     }
 
     function stageWallpaperDirectory(dir) {
@@ -166,6 +172,7 @@ Singleton {
         pendingFont = font
         pendingGetWeatherFromIp = getWeatherFromIp
         pendingWallpaperDirectory = wallpaperDirectory
+        pendingWeatherCity = weatherCity
         pendingRunMatugen = runMatugen
         pendingPackagesNotifyOnStartUp = packagesNotifyOnStartUp
         pendingPackagesNotifyEveryDay = packagesNotifyEveryDay
@@ -189,6 +196,7 @@ Singleton {
         barOrientation = pendingBarOrientation
         font = pendingFont
         getWeatherFromIp = pendingGetWeatherFromIp
+        weatherCity = pendingWeatherCity
         wallpaperDirectory = expandPath(pendingWallpaperDirectory)
         pendingWallpaperDirectory = wallpaperDirectory
         runMatugen = pendingRunMatugen
@@ -218,6 +226,7 @@ Singleton {
 
             if (!parsed.weather || typeof parsed.weather !== "object") parsed.weather = {}
             parsed.weather.getWeatherFromIp = getWeatherFromIp
+            parsed.weather.weatherCity = weatherCity
 
             if (!parsed.wallpaper || typeof parsed.wallpaper !== "object") parsed.wallpaper = {}
             parsed.wallpaper.directory = wallpaperDirectory

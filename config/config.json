@@ -5,7 +5,8 @@
   },
   "font": "Noto Sans",
   "weather": {
-    "getWeatherFromIp": false
+    "getWeatherFromIp": false,
+    "weatherCity": ""
   },
   "wallpaper": {
     "directory": "~/Pictures/wallpapers",

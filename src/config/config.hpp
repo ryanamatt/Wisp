@@ -16,6 +16,7 @@ inline constexpr const char *kDefaultBarOrientation = "top";
 inline constexpr const char *kDefaultFont = "Noto Sans";
 
 inline constexpr bool KDefaultGetWeatherFromIp = false;
+inline constexpr const char *kDefaultWeatherCity = "";
 
 inline constexpr const char *kDefaultWallpaperSubdir = "Pictures/wallpapers"; // Relative to $HOME
 inline constexpr bool kDefaultRunMatugen = false;
@@ -39,6 +40,7 @@ struct Config {
     std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;
     bool getWeatherFromIp = KDefaultGetWeatherFromIp;
+    std::string weatherCity = kDefaultWeatherCity;
     std::string wallpaperDir;
     bool runMatguen = kDefaultRunMatugen;
     bool packagesNotifyOnStartUp = kDefaultPackagesNotifyOnStartUp;

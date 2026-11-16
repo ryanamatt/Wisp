@@ -6,4 +6,5 @@ SettingsSubSection {
     name: "Weather"
 
     GetWeatherFromIpSetting {}
+    WeatherCitySetting {}
 }
