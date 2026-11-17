@@ -40,6 +40,7 @@ This Document is kept in line with what is in master.
   - *[Calculator Mode](#calculator-mode)*
   - *[Command Mode](#command-mode)*
   - *[Symbol Mode](#symbol-mode)*
+  - *[Convert Mode](#convert-mode)*
 - **[OSD](#osd)**
   - *[Volume OSD](#volume-osd)*
   - *[Mic OSD](#mic-osd)*
@@ -217,6 +218,16 @@ Default is $XDG_CONFIG_HOME/wisp/config.json, if XDG_CONFIG_HOME else it is
 
 ```bash
 wisp -c /path/to/config.json run
+```
+
+#### C Flag
+
+This flag sets the path where Wisp will look for the colors.json file that colors
+Default is $XDG_CONFIG_HOME/wisp/colors.json, if XDG_CONFIG_HOME else it is
+/home/$USER/.config/wisp/colors.json
+
+```bash
+wisp -C /path/to/colors.json run
 ```
 
 ## **Bar**
@@ -420,6 +431,18 @@ Examples:
 ```runner
 :happy
 :thumbs up
+```
+
+### Convert Mode
+
+To change into convert mode, type `~` as your first character.
+Then type in your conversions. If it is valid conversion it will
+then expand the window to show what your conversion is.
+
+Examples:
+```runner
+5km mi
+rgb(100, 100, 100) hex
 ```
 
 ## **OSD**

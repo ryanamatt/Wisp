@@ -130,6 +130,7 @@ Each subdirectory becomes a QML module under the `Wisp.` namespace. They are def
 | `brightness/` | `Wisp.Brightness` | Brightness state/control |
 | `calculator/` | `Wisp.Calculator` | Calculator backend |
 | `calendar/` | `Wisp.Calendar` | Calendar data |
+| `convert/` | Wisp.Convert | Conversions backend | 
 | `logger/` | `Wisp.Log` | QML-facing logger singleton |
 | `systemMonitor/` | `Wisp.System` | CPU/memory/etc. metrics |
 | `time/` | `Wisp.Time` | Clock, countdown timer, stopwatch |
