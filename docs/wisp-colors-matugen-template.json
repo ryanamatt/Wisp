@@ -1,0 +1,54 @@
+{
+  "background": "{{ colors.background.default.hex }}",
+  "backgroundAlt": "{{ colors.surface_container.default.hex }}",
+
+  "surface": "{{ colors.surface.default.hex }}",
+  "surfaceAlt": "{{ colors.surface_container_high.default.hex }}",
+  "surfaceElevated": "{{ colors.surface_bright.default.hex }}",
+  "surfaceInput": "{{ colors.surface_container_low.default.hex }}",
+  "surfaceOverlay": "{{ colors.surface_container_highest.default.hex }}",
+
+  "foreground": "{{ colors.on_background.default.hex }}",
+  "foregroundMuted": "{{ colors.on_surface_variant.default.hex }}",
+  "foregroundSubtle": "{{ colors.outline.default.hex }}",
+  "foregroundDisabled": "{{ colors.outline_variant.default.hex }}",
+  "onAccent": "{{ colors.on_primary.default.hex }}",
+
+  "accent": "{{ colors.primary.default.hex }}",
+  "accentAlt": "{{ colors.tertiary.default.hex }}",
+  "link": "{{ colors.secondary.default.hex }}",
+
+  "border": "{{ colors.outline_variant.default.hex }}",
+  "borderSoft": "{{ colors.surface_variant.default.hex }}",
+  "borderActive": "{{ colors.primary.default.hex }}",
+  "borderStrong": "{{ colors.outline.default.hex }}",
+  "focusRing": "{{ colors.primary.default.hex }}",
+
+  "hover": "{{ colors.surface_container_highest.default.hex }}",
+  "pressed": "{{ colors.secondary_container.default.hex }}",
+  "selected": "{{ colors.primary_container.default.hex }}",
+  "focused": "{{ colors.tertiary_container.default.hex }}",
+  "disabled": "{{ colors.surface_variant.default.hex }}",
+  "scrim": "{{ colors.scrim.default.hex }}",
+
+  "success": "{{ colors.success.default.hex }}",
+  "warning": "{{ colors.warning.default.hex }}",
+  "error": "{{ colors.error.default.hex }}",
+  "info": "{{ colors.info.default.hex }}",
+  "neutral": "{{ colors.outline_variant.default.hex }}",
+
+  "purple": "{{ colors.purple.default.hex }}",
+  "blue": "{{ colors.blue.default.hex }}",
+  "cyan": "{{ colors.cyan.default.hex }}",
+  "teal": "{{ colors.teal.default.hex }}",
+  "green": "{{ colors.green.default.hex }}",
+  "lime": "{{ colors.lime.default.hex }}",
+  "yellow": "{{ colors.yellow.default.hex }}",
+  "orange": "{{ colors.orange.default.hex }}",
+  "red": "{{ colors.red.default.hex }}",
+  "pink": "{{ colors.pink.default.hex }}",
+  "magenta": "{{ colors.magenta.default.hex }}",
+  "indigo": "{{ colors.indigo.default.hex }}",
+
+  "shadow": "#40{{ colors.primary.default.hex_stripped }}"
+}
