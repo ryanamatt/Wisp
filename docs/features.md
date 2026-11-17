@@ -373,7 +373,7 @@ Uses `yay` and `flatpak`. It shows 2 sections: Packages from yay for Arch and fo
 The Settings Section is a GUI for your Config. In this section
 you are able to update each of your configurations. There is a big
 save button which will save your Settings by overwriting your
-config file.
+config file. See [config.md](config.md) for what each option does.
 
 ## **Runner**
 
