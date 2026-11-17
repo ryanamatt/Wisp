@@ -404,8 +404,8 @@ BarPopup {
                                 Layout.alignment: Qt.AlignVCenter
                                 opacity: Math.max(0.35, entryDelegate.modelData.signal / 100)
 
-                                sourceSize.width: width * Screen.devicePixelRatio
-                                sourceSize.height: height * Screen.devicePixelRatio
+                                sourceSize.width: Layout.preferredWidth * Screen.devicePixelRatio
+                                sourceSize.height: Layout.preferredHeight * Screen.devicePixelRatio
 
                                 Layout.preferredWidth: entryDelegate.height * 0.55
                                 Layout.preferredHeight: width
@@ -425,11 +425,11 @@ BarPopup {
                                 source: Icons.getIcon("ui/lock")
                                 Layout.alignment: Qt.AlignVCenter
 
-                                sourceSize.width: width * Screen.devicePixelRatio
-                                sourceSize.height: height * Screen.devicePixelRatio
+                                sourceSize.width: Layout.preferredWidth * Screen.devicePixelRatio
+                                sourceSize.height: Layout.preferredHeight * Screen.devicePixelRatio
 
-                                Layout.preferredWidth: innerLayout.implicitWidth * 0.15
-                                Layout.preferredHeight: width
+                                Layout.preferredWidth: entryDelegate.height * 0.5
+                                Layout.preferredHeight: Layout.preferredWidth
                             }
 
                             Rectangle {
