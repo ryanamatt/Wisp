@@ -12,15 +12,25 @@ namespace wisp::config {
 // ---------------------------------------------------------------------
 inline constexpr const char *kDefaultTimeFormat = "ddd MMM d hh:mm:ss AP";
 inline constexpr const char *kDefaultBarOrientation = "top";
+
 inline constexpr const char *kDefaultFont = "Noto Sans";
+
+inline constexpr bool KDefaultGetWeatherFromIp = false;
+inline constexpr const char *kDefaultWeatherCity = "";
+
 inline constexpr const char *kDefaultWallpaperSubdir = "Pictures/wallpapers"; // Relative to $HOME
 inline constexpr bool kDefaultRunMatugen = false;
+
 inline constexpr bool kDefaultPackagesNotifyOnStartUp = false;
 inline constexpr bool kDefaultPackagesNotifyEveryDay = false;
+
 inline constexpr const int kDefaultBatteryWarnPerc = 30;
 inline constexpr bool kDefaultBatteryAutoPowerSaver = false;
+
 inline constexpr int kDefaultNotificationToastMs = 2000;
+
 inline constexpr const char *kDefaultJokesFile = "jokes.txt"; // Relative to $HOME/.config/wisp
+
 inline constexpr int kDefaultOSDDuration = 1000;              // milliseconds
 inline constexpr const char *kDefaultOSDOrientation = "bottom";
 inline constexpr double kDefaultOSDScaleSize = 1.0;
@@ -29,6 +39,8 @@ struct Config {
     std::string timeFormat = kDefaultTimeFormat;
     std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;
+    bool getWeatherFromIp = KDefaultGetWeatherFromIp;
+    std::string weatherCity = kDefaultWeatherCity;
     std::string wallpaperDir;
     bool runMatguen = kDefaultRunMatugen;
     bool packagesNotifyOnStartUp = kDefaultPackagesNotifyOnStartUp;

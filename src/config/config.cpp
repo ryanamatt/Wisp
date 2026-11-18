@@ -96,6 +96,8 @@ void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
     setenv(wisp::env::kFont, cfg.font.c_str(), 1);
+    setenv(wisp::env::kGetWeatherFromIp, cfg.getWeatherFromIp ? "true" : "false", 1);
+    setenv(wisp::env::kWeatherCity, cfg.weatherCity.c_str(), 1);
     setenv(wisp::env::kWallpaperDir, cfg.wallpaperDir.c_str(), 1);
     setenv(wisp::env::kRunMatugen, cfg.runMatguen ? "true" : "false", 1);
     setenv(wisp::env::kPackagesNotifyOnStartUp, cfg.packagesNotifyOnStartUp ? "true" : "false", 1);
@@ -165,6 +167,12 @@ Config load(const std::string &path) {
         const auto &wallpaper = j["wallpaper"];
         readPath(wallpaper, "directory", "wallpaper.directory", cfg.wallpaperDir, defaultWallpaper);
         readBool(wallpaper, "runMatugen", "wallpaper.runMatugen", cfg.runMatguen);
+    }
+
+    if (j.contains("weather") && j["weather"].is_object()) {
+        const auto &weather = j["weather"];
+        readBool(weather, "getWeatherFromIp", "weather.getWeatherFromIp", cfg.getWeatherFromIp);
+        readStr(weather, "weatherCity", "weather.weatherCity", cfg.weatherCity);
     }
 
     if (j.contains("packages") && j["packages"].is_object()) {

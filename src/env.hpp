@@ -9,17 +9,28 @@ namespace wisp::env {
 
 // Config
 inline constexpr const char *kConfigPath = "WISP_CONFIG_PATH";
+
 inline constexpr const char *kTimeFormat = "WISP_TIME_FORMAT";
 inline constexpr const char *kBarOrientation = "WISP_BAR_ORIENTATION";
+
 inline constexpr const char *kFont = "WISP_FONT";
+
+inline constexpr const char *kGetWeatherFromIp = "WISP_GET_WEATHER_FROM_IP";
+inline constexpr const char *kWeatherCity = "WISP_WEATHER_CITY";
+
 inline constexpr const char *kWallpaperDir = "WISP_WALLPAPER_DIR";
 inline constexpr const char *kRunMatugen = "WISP_RUN_MATUGEN";
+
 inline constexpr const char *kPackagesNotifyOnStartUp = "WISP_PACKAGES_NOTIFY_ON_STARTUP";
 inline constexpr const char *kPackagesNotifyEveryDay = "WISP_PACKAGES_NOTIFY_EVERY_DAY";
+
 inline constexpr const char *kBatteryWarnPerc = "WISP_BATTERY_WARN_PERC";
 inline constexpr const char *kBatteryAutoPowerSaver = "WISP_BATTERY_AUTO_POWER_SAVER";
+
 inline constexpr const char *kNotificationToastMs = "WISP_NOTIFICATION_TOAST_MS";
+
 inline constexpr const char *kJokesFile = "WISP_JOKES_FILE";
+
 inline constexpr const char *kOSDDuration = "WISP_OSD_DURATION";
 inline constexpr const char *kOSDOrientation = "WISP_OSD_ORIENTATION";
 inline constexpr const char *kOSDScaleSize = "WISP_OSD_SCALE_SIZE";
