@@ -16,7 +16,8 @@ class Convert : public QObject {
     QML_SINGLETON
 
 public:
-    explicit Convert(QObject *parent = nullptr) : QObject(parent) {}
+    explicit Convert(QObject *parent = nullptr) : QObject(parent) {
+    }
 
     // `query` is the text after the Runner's "~". Returns
     //   { ok: bool, input: string, swatch: string,
@@ -24,4 +25,3 @@ public:
     // When ok is false the other fields are empty.
     Q_INVOKABLE QVariantMap convert(const QString &query) const;
 };
-

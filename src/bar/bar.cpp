@@ -77,9 +77,9 @@ void reapChild(pid_t pid) {
 // lifetime of the bar, which is what lets `pgrep wisp`, `wisp kill`,
 // and `wisp reload` find and control it.
 int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath,
-        const std::string &colorsPath) {
+           const std::string &colorsPath) {
     wisp::log::debug("runBar: qmlDir=" + qmlDir + " configPath=" + configPath +
-                     " modulePath=" + (modulePath.empty() ? "<none>" : modulePath),
+                         " modulePath=" + (modulePath.empty() ? "<none>" : modulePath),
                      " colorsPath=" + (colorsPath.empty() ? "<none>" : colorsPath));
 
     const std::filesystem::path shellQml = std::filesystem::path(qmlDir) / "shell.qml";

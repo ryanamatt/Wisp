@@ -15,4 +15,3 @@ namespace wisp::convert {
 Result run(const std::string &query);
 
 } // namespace wisp::convert
-

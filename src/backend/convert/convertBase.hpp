@@ -25,4 +25,3 @@ int baseFromPrefix(const std::string &token);
 bool runBase(const std::string &token, const std::vector<std::string> &units, Result &out);
 
 } // namespace wisp::convert
-

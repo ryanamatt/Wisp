@@ -14,8 +14,8 @@
 #include <QList>
 #include <QPointF>
 #include <QPointer>
-#include <QQmlListProperty>
 #include <QQmlEngine>
+#include <QQmlListProperty>
 #include <QQuickItem>
 #include <QSGGeometry>
 #include <QSGNode>
@@ -133,4 +133,3 @@ private:
     bool m_dragging = false;
     QPointF m_lastMouse;
 };
-

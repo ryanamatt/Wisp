@@ -17,5 +17,3 @@ bool isUnitName(const std::string &name);
 bool runUnits(double value, const std::string &from, const std::string &to, Result &out);
 
 } // namespace wisp::convert
-
-

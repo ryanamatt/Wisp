@@ -36,4 +36,3 @@ bool parseDouble(const std::string &token, double &out);
 std::string formatNumber(double v);
 
 } // namespace wisp::convert
-

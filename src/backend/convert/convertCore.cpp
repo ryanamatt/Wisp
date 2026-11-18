@@ -92,9 +92,8 @@ Result run(const std::string &query) {
 
         // A missing ')' is fine, so a colour previews while it is typed.
         const size_t close = q.find(')');
-        const std::string args = (close == std::string::npos)
-            ? q.substr(head.size())
-            : q.substr(head.size(), close - head.size());
+        const std::string args = (close == std::string::npos) ? q.substr(head.size())
+                                                              : q.substr(head.size(), close - head.size());
         const std::string rest = (close == std::string::npos) ? "" : q.substr(close + 1);
 
         Rgb c;

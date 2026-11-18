@@ -66,12 +66,30 @@ Rgb fromHsl(double h, double s, double l) {
     double g = 0.0;
     double b = 0.0;
     switch (static_cast<int>(h / 60.0)) {
-        case 0: r = c; g = x; break;
-        case 1: r = x; g = c; break;
-        case 2: g = c; b = x; break;
-        case 3: g = x; b = c; break;
-        case 4: r = x; b = c; break;
-        default: r = c; b = x; break;
+        case 0:
+            r = c;
+            g = x;
+            break;
+        case 1:
+            r = x;
+            g = c;
+            break;
+        case 2:
+            g = c;
+            b = x;
+            break;
+        case 3:
+            g = x;
+            b = c;
+            break;
+        case 4:
+            r = x;
+            b = c;
+            break;
+        default:
+            r = c;
+            b = x;
+            break;
     }
 
     Rgb out;
@@ -110,10 +128,14 @@ Row makeRow(const Rgb &c, ColorFormat f) {
 } // namespace
 
 bool colorFormatFromName(const std::string &name, ColorFormat &out) {
-    if (name == "hex") out = ColorFormat::Hex;
-    else if (name == "rgb") out = ColorFormat::Rgb;
-    else if (name == "hsl") out = ColorFormat::Hsl;
-    else return false;
+    if (name == "hex")
+        out = ColorFormat::Hex;
+    else if (name == "rgb")
+        out = ColorFormat::Rgb;
+    else if (name == "hsl")
+        out = ColorFormat::Hsl;
+    else
+        return false;
     return true;
 }
 
@@ -179,8 +201,8 @@ bool parseColorFunction(const std::string &name, const std::string &args, Rgb &o
     return false;
 }
 
-bool runColor(const Rgb &c, ColorFormat source, const std::string &echo,
-              const std::vector<std::string> &targets, Result &out) {
+bool runColor(const Rgb &c, ColorFormat source, const std::string &echo, const std::vector<std::string> &targets,
+              Result &out) {
     std::vector<Row> rows;
 
     if (targets.size() == 1) {
@@ -203,4 +225,3 @@ bool runColor(const Rgb &c, ColorFormat source, const std::string &echo,
 }
 
 } // namespace wisp::convert
-
