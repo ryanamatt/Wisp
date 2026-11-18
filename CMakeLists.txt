@@ -107,6 +107,11 @@ target_link_libraries(wispcalculator PRIVATE
     Qt6::Quick
 )
 
+# --- wispconvert QML module ---
+# convertCore and the files it uses are plain C++, see tests/convertCoreTest.cpp.
+add_wisp_qml_module(wispconvert Convert backend/convert convert
+    convertCommon convertUnits convertBase convertColor convertCore)
+
 # --- wisplogcore: plain C++ logging ---
 add_library(wisplogcore STATIC
     src/logging/log.cpp

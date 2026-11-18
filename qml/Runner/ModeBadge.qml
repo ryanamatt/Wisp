@@ -10,7 +10,7 @@ import "../Config"
 Rectangle {
     id: root
 
-    // "none" | "app" | "command" | "calculator" | "symbol"
+    // "none" | "app" | "command" | "calculator" | "symbol" | "convert"
     property string mode: "none"
 
     // The mode currently drawn. It lags behind `mode` by half of the switch
@@ -22,7 +22,8 @@ Rectangle {
         case "app":        return Colors.colors.accent;
         case "command":    return Colors.colors.green;
         case "calculator": return Colors.colors.orange;
-        case "symbol":     return Colors.colors.purple
+        case "symbol":     return Colors.colors.purple;
+        case "convert":    return Colors.colors.pink;
         default:           return Colors.colors.foregroundSubtle;
         }
     }
@@ -194,6 +195,60 @@ Rectangle {
                 loops: Animation.Infinite
                 NumberAnimation { target: equalsBars; property: "spacing"; to: 6; duration: 700; easing.type: Easing.InOutSine }
                 NumberAnimation { target: equalsBars; property: "spacing"; to: 3; duration: 700; easing.type: Easing.InOutSine }
+            }
+        }
+
+        // ---- Convert: two arrows trading places ----
+        Column {
+            id: swapArrows
+            anchors.centerIn: parent
+            visible: root.shownMode === "convert"
+            spacing: 2
+
+            // Points right.
+            Item {
+                width: 16
+                height: 8
+
+                Item {
+                    id: arrowRight
+                    width: parent.width
+                    height: parent.height
+
+                    Rectangle { x: 0; y: 2.75; width: 16; height: 2.5; radius: 1.25; color: root.modeColor }
+                    Rectangle { x: 10.03; y: 0.28; width: 7; height: 2.5; radius: 1.25; rotation: 45; color: root.modeColor }
+                    Rectangle { x: 10.03; y: 5.22; width: 7; height: 2.5; radius: 1.25; rotation: -45; color: root.modeColor }
+                }
+            }
+
+            // Points left.
+            Item {
+                width: 16
+                height: 8
+
+                Item {
+                    id: arrowLeft
+                    width: parent.width
+                    height: parent.height
+
+                    Rectangle { x: 0; y: 2.75; width: 16; height: 2.5; radius: 1.25; color: root.modeColor }
+                    Rectangle { x: -1.03; y: 0.28; width: 7; height: 2.5; radius: 1.25; rotation: -45; color: root.modeColor }
+                    Rectangle { x: -1.03; y: 5.22; width: 7; height: 2.5; radius: 1.25; rotation: 45; color: root.modeColor }
+                }
+            }
+
+            // The arrows slide past each other and settle again.
+            SequentialAnimation {
+                running: swapArrows.visible
+                loops: Animation.Infinite
+                ParallelAnimation {
+                    NumberAnimation { target: arrowRight; property: "x"; to: 3; duration: 650; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: arrowLeft; property: "x"; to: -3; duration: 650; easing.type: Easing.InOutSine }
+                }
+                ParallelAnimation {
+                    NumberAnimation { target: arrowRight; property: "x"; to: 0; duration: 650; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: arrowLeft; property: "x"; to: 0; duration: 650; easing.type: Easing.InOutSine }
+                }
             }
         }
 

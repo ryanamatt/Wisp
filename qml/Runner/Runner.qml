@@ -8,6 +8,7 @@ import "../IpcState"
 import "../Colors"
 import "../Config"
 import Wisp.Calculator
+import Wisp.Convert
 
 Scope {
     id: runnerScope
@@ -22,7 +23,7 @@ Scope {
     }
 
     HyprlandFocusGrab {
-        windows: [runner, appPopup, calcPopup, symbolPopup]
+        windows: [runner, appPopup, calcPopup, symbolPopup, convertPopup]
         active: runner.visible
         onCleared: IpcState.runner.close()
     }
@@ -33,12 +34,13 @@ Scope {
     property string runnerText: ""
 
     // Current mode, decided by the first character of the text field.
-    // "none" (empty) | "app" (plain text) | "command" | "calculator" | "symbol"
+    // "none" (empty) | "app" (plain text) | "command" | "calculator" | "symbol" | "convert"
     readonly property string mode: {
         const first = runnerText.charAt(0);
         if (first === ">") return "command";
         if (first === "=") return "calculator";
         if (first === ":") return "symbol";
+        if (first === "~") return "convert";
         if (runnerText.trim() === "") return "none";
         return "app";
     }
@@ -53,8 +55,13 @@ Scope {
     property string calcExpression: ""
     property real calcAnswer: 0
 
-    // Bottom corners square off as either popup opens.
-    readonly property real popupCorners: Math.max(calcPopup.cornerProgress, symbolPopup.cornerProgress, appPopup.cornerProgress)
+    // Conversion state that feeds RunnerConvertPopup.
+    property bool convertSolvable: false
+    property var convertResult: ({})
+
+    // Bottom corners square off as any popup opens.
+    readonly property real popupCorners: Math.max(calcPopup.cornerProgress, symbolPopup.cornerProgress,
+                                                  appPopup.cornerProgress, convertPopup.cornerProgress)
 
     function updateCalc() {
         calcSolvable = false;
@@ -68,6 +75,17 @@ Scope {
             calcExpression = expr;
             calcAnswer = Calculator.answer;
             calcSolvable = true;
+        }
+    }
+
+    function updateConvert() {
+        convertSolvable = false;
+        if (mode !== "convert") return;
+
+        const r = Convert.convert(runnerText.slice(1));
+        if (r.ok) {
+            convertResult = r;
+            convertSolvable = true;
         }
     }
 
@@ -110,7 +128,9 @@ Scope {
             } else {
                 runnerScope.runnerText = ""
                 runnerScope.calcSolvable = false
+                runnerScope.convertSolvable = false
                 calcPopup.snapClosed()
+                convertPopup.snapClosed()
                 symbolPopup.snapClosed()
                 appPopup.snapClosed()
             }
@@ -194,6 +214,7 @@ Scope {
                             onTextEdited: {
                                 runnerScope.runnerText = text
                                 runnerScope.updateCalc()
+                                runnerScope.updateConvert()
                             }
 
                             // The text field keeps focus, so forward keys to
@@ -215,6 +236,17 @@ Scope {
                                     case Qt.Key_Backtab: symbolPopup.move(-1, 0); event.accepted = true; break;
                                     case Qt.Key_Return:
                                     case Qt.Key_Enter:   symbolPopup.activate();  event.accepted = true; break;
+                                    }
+                                    break;
+
+                                case "convert":
+                                    switch (event.key) {
+                                    case Qt.Key_Down:
+                                    case Qt.Key_Tab:      convertPopup.move(1);  event.accepted = true; break;
+                                    case Qt.Key_Up:
+                                    case Qt.Key_Backtab:  convertPopup.move(-1); event.accepted = true; break;
+                                    case Qt.Key_Return:
+                                    case Qt.Key_Enter:    convertPopup.activate(); event.accepted = true; break;
                                     }
                                     break;
 
@@ -254,6 +286,17 @@ Scope {
         open: runner.visible && runnerScope.calcSolvable
         expression: runnerScope.calcExpression
         answer: runnerScope.calcAnswer
+    }
+
+    RunnerConvertPopup {
+        id: convertPopup
+        screen: runnerScope.targetScreen
+        runnerWidth: runnerScope.runnerWidth
+        runnerHeight: runnerScope.runnerHeight
+        runnerTopMargin: runner.margins.top
+        open: runner.visible && runnerScope.convertSolvable
+        result: runnerScope.convertResult
+        onResultCopied: IpcState.runner.close()
     }
 
     RunnerAppPopup {
