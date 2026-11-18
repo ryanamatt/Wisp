@@ -43,6 +43,9 @@ Feel free to fork or take in compliance with the MIT License.
 ## Install
 
 ```Bash
+# Clone the repo
+git clone --depth=1 https://github.com/ryanamatt/Wisp && cd Wisp
+
 just install
 # Or
 ./install.sh
@@ -81,6 +84,7 @@ wisp [command] [options]
 | `open <target>` | Open a widget/popup |
 | `close <target>` | Close a widget/popup |
 | `toggle <target>` | Toggle a widget/popup |
+| `targets` | Lists all available targets |
 | `lock` | Lock the Screen |
 
 ### Examples
