@@ -342,7 +342,8 @@ Its Popup shows:
   - A Button to Clear Entire Clipboard History. 1 Press to changes to confirm,
   2nd press actually does it.
   - A list of your clipboard items (shows actual Images as Images) with an individual
-  x button to remove just that item from clipboard history.
+  x button to remove just that item from clipboard history. A pin button to pin things
+  to the top of the list.
 
 ### Notifications Widget
 

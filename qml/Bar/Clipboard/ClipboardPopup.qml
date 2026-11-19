@@ -23,13 +23,19 @@ BarPopup {
     readonly property var clipboardList: ClipboardSingleton.clipboardList
     readonly property bool cliphistEnabled: ClipboardSingleton.cliphistEnabled
 
-    readonly property var filteredList: {
-        const list = clipboardPopup.clipboardList
-        const needle = clipboardPopup.searchText.trim().toLowerCase()
+    function applyFilter(list, searchText) {
+        const needle = searchText.trim().toLowerCase()
         if (needle.length === 0)
             return list
         return list.filter(line => line.toLowerCase().indexOf(needle) !== -1)
     }
+
+    // Pinned entries are shown first; an entry is never in both lists.
+    readonly property var filteredPinned: applyFilter(ClipboardSingleton.pinnedList, clipboardPopup.searchText)
+    readonly property var filteredHistory: applyFilter(ClipboardSingleton.unpinnedList, clipboardPopup.searchText)
+
+    // Display order (pinned, then history).
+    readonly property var filteredList: filteredPinned.concat(filteredHistory)
 
     function resetSelection() {
         clipboardPopup.currentIndex = 0
@@ -211,103 +217,63 @@ BarPopup {
                 ListView {
                     id: listView
                     width: scrollView.width
-                    model: clipboardPopup.filteredList
+                    model: clipboardPopup.filteredHistory
                     spacing: 4
 
-                    delegate: Rectangle {
-                        id: entryDelegate
-                        required property string modelData
-                        required property int index
-
-                        readonly property string previewText: entryDelegate.modelData.replace(/^\d+\t/, "")
-                        readonly property bool isImage: /^\[\[\s*binary data/i.test(entryDelegate.previewText)
-                        property string imagePath: ""
-
-                        // Friendly label for image entries, e.g. "1.2 MiB · 1920x1080 · png"
-                        readonly property string imageLabel: {
-                            const m = entryDelegate.previewText.match(/binary data\s*([^,\]]+)(?:,\s*(\d+x\d+))?(?:,\s*([a-zA-Z0-9]+))?/i)
-                            if (!m)
-                                return entryDelegate.previewText
-                            return [m[1] ? m[1].trim() : "", m[2], m[3]].filter(Boolean).join(" · ")
-                        }
-
+                    // The Pinned section scrolls with the list as its header.
+                    header: Column {
                         width: listView.width
-                        height: entryDelegate.isImage ? 52 : 35
-                        radius: 6
-                        color: itemHover.hovered ? Colors.colors.hover : Colors.colors.surface
+                        spacing: 4
+                        visible: pinnedRepeater.count > 0
+                        height: visible ? implicitHeight : 0
 
-                        Behavior on color { ColorAnimation { duration: 100 } }
-
-                        HoverHandler { id: itemHover }
-
-                        Component.onCompleted: {
-                            if (entryDelegate.isImage) {
-                                ClipboardSingleton.decodeToFile(entryDelegate.modelData, function(path) {
-                                    if (entryDelegate)
-                                        entryDelegate.imagePath = path
-                                })
-                            }
+                        Text {
+                            text: "Pinned"
+                            leftPadding: 4
+                            color: Colors.colors.foregroundMuted
+                            font.pixelSize: 11
+                            font.family: Config.font
                         }
 
-                        RowLayout {
-                            id: entryRow
-                            anchors.fill: parent
-                            anchors.leftMargin: 8
-                            anchors.rightMargin: 8
-                            spacing: 8
+                        Repeater {
+                            id: pinnedRepeater
+                            model: clipboardPopup.filteredPinned
 
-                            Rectangle {
-                                visible: entryDelegate.isImage
-                                Layout.preferredWidth: 40
-                                Layout.preferredHeight: 40
-                                Layout.alignment: Qt.AlignVCenter
-                                radius: 4
-                                color: Colors.colors.surfaceAlt
-                                clip: true
+                            delegate: ClipboardEntry {
+                                required property string modelData
 
-                                Image {
-                                    anchors.fill: parent
-                                    visible: entryDelegate.imagePath.length > 0
-                                    source: entryDelegate.imagePath.length > 0 ? ("file://" + entryDelegate.imagePath) : ""
-                                    fillMode: Image.PreserveAspectCrop
-                                    asynchronous: true
-                                    smooth: true
+                                width: listView.width
+                                line: modelData
+                                pinned: true
+
+                                onActivated: {
+                                    clipboardPopup.copyEntry(modelData)
+                                    clipboardPopup.closePopup()
                                 }
                             }
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: entryDelegate.isImage ? entryDelegate.imageLabel : entryDelegate.previewText
-                                color: Colors.colors.foreground
-                                font.family: Config.font
-                                elide: Text.ElideRight
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            IconButton {
-                                icon: "ui/close"
-                                iconSize: 14
-                                implicitWidth: entryRow.implicitWidth * 0.025
-                                implicitHeight: width
-                                radius: 10
-                                tint: Colors.colors.foregroundMuted
-                                hoverColor: Colors.colors.error
-                                tintOnHover: Colors.colors.background
-                                Layout.alignment: Qt.AlignVCenter
-
-                                onClicked: clipboardPopup.deleteEntry(entryDelegate.modelData)
-                            }
                         }
 
-                        // Click anywhere except the delete button to copy + close.
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.rightMargin: 24
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                clipboardPopup.copyEntry(entryDelegate.modelData)
-                                clipboardPopup.closePopup()
-                            }
+                        Text {
+                            visible: clipboardPopup.filteredHistory.length > 0
+                            topPadding: 6
+                            leftPadding: 4
+                            text: "History"
+                            color: Colors.colors.foregroundMuted
+                            font.pixelSize: 11
+                            font.family: Config.font
+                        }
+                    }
+
+                    delegate: ClipboardEntry {
+                        required property string modelData
+
+                        width: listView.width
+                        line: modelData
+                        pinned: false
+
+                        onActivated: {
+                            clipboardPopup.copyEntry(modelData)
+                            clipboardPopup.closePopup()
                         }
                     }
                 }
