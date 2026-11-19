@@ -97,9 +97,7 @@ wisp kill                   # stop a running instance
 
 Wisp reads a `config.json`, by default at `~/.config/wisp/config.json`. A missing file, missing keys, or a parse error all fall back to defaults rather than failing.
 
-See [config/config.json](config/config.json) for an example.
-
-See [docs/theming.md](docs/theming.md) on how to theme Wisp.
+See [config.md](config.md) for every available option, or [config/config.json](config/config.json) for an example.
 
 ## Log File
 
