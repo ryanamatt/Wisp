@@ -40,9 +40,20 @@ Feel free to fork or take in compliance with the MIT License.
 
 </td></tr></table>
 
+### Install all Dependencies
+
+One command on Arch using [yay](https://github.com/Jguer/yay) (it handles both the official repos and the AUR):
+ 
+```Bash
+yay -S --needed hyprland quickshell jq awww gcalcli curl cava pipewire hyprsunset cliphist wl-clipboard grim slurp
+```
+
 ## Install
 
 ```Bash
+# Clone the repo
+git clone --depth=1 https://github.com/ryanamatt/Wisp && cd Wisp
+
 just install
 # Or
 ./install.sh
@@ -81,6 +92,7 @@ wisp [command] [options]
 | `open <target>` | Open a widget/popup |
 | `close <target>` | Close a widget/popup |
 | `toggle <target>` | Toggle a widget/popup |
+| `targets` | Lists all available targets |
 | `lock` | Lock the Screen |
 
 ### Examples
@@ -100,6 +112,46 @@ Wisp reads a `config.json`, by default at `~/.config/wisp/config.json`. A missin
 See [config/config.json](config/config.json) for an example.
 
 See [docs/theming.md](docs/theming.md) on how to theme Wisp.
+
+## Development
+
+Wisp is built for my own setup, but if you want to hack on it, here is how to get going. Everything below assumes the dependencies above are installed.
+
+### Build requirements
+ 
+In addition to the runtime dependencies, you need a C++17 compiler, CMake, Qt6 (Core and QML), and [just](https://github.com/casey/just):
+ 
+```Bash
+yay -S --needed base-devel cmake qt6-base qt6-declarative just
+```
+
+### Workflow
+
+```Bash
+just build    # compile the wisp executable and the Wisp.* QML modules
+just run      # run from the build tree, so your build is picked up ahead of any installed copy
+```
+
+You can also point a running binary at a working tree without installing:
+ 
+```Bash
+wisp -f /path/to/shell.qml -m /path/to/backend/modules run
+```
+ 
+Config changes (including `config.json` edits) are read at startup, so use `wisp reload` to apply them. If something misbehaves, check the log with `wisp log tail`.
+ 
+### Project layout
+ 
+* `qml/`: the Quickshell config, which is the entire UI
+* `src/`: all C++. Anything under `src/backend/` is compiled into a `Wisp.*` QML module, everything else is compiled into the `wisp` executable
+* `scripts/`: Bash helpers called from QML
+* `config/`: example `config.json` and `jokes.txt`
+* `tools/`: development tools such as `format.sh` and `build.sh`
+### Further reading
+ 
+* [docs/architecture.md](docs/architecture.md) explains how the pieces fit together, how to add a backend module, and how to add a config setting.
+* [docs/features.md](docs/features.md) lists every feature Wisp has.
+* [docs/theming.md](docs/theming.md) covers colors and theming.
 
 ## Log File
 
