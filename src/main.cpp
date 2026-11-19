@@ -15,7 +15,8 @@ int main(int argc, char *argv[]) {
     if (parsed.disown && parsed.command != wisp::cli::Command::None) { wisp::process::daemonize(); }
 
     switch (parsed.command) {
-        case wisp::cli::Command::Run: return wisp::bar::runBar(parsed.qmlDir, parsed.configPath, parsed.modulePath, parsed.colorsPath);
+        case wisp::cli::Command::Run:
+            return wisp::bar::runBar(parsed.qmlDir, parsed.configPath, parsed.modulePath, parsed.colorsPath);
         case wisp::cli::Command::Kill: return wisp::process::killInstance();
         case wisp::cli::Command::Reload: return wisp::process::reloadInstance();
         case wisp::cli::Command::Status: return wisp::process::statusInstance();

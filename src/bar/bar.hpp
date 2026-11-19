@@ -9,6 +9,6 @@
 namespace wisp::bar {
 
 int runBar(const std::string &qmlDir, const std::string &configPath, const std::string &modulePath,
-        const std::string &colorsPath);
+           const std::string &colorsPath);
 
 } // namespace wisp::bar

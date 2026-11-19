@@ -29,8 +29,7 @@ bool parseHexColor(const std::string &token, Rgb &out, std::string &echo);
 bool parseColorFunction(const std::string &name, const std::string &args, Rgb &out, std::string &echo);
 
 // `targets` is empty (list the other formats) or one format name.
-bool runColor(const Rgb &c, ColorFormat source, const std::string &echo,
-              const std::vector<std::string> &targets, Result &out);
+bool runColor(const Rgb &c, ColorFormat source, const std::string &echo, const std::vector<std::string> &targets,
+              Result &out);
 
 } // namespace wisp::convert
-

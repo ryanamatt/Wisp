@@ -3,7 +3,8 @@
 #include "graphFunction.hpp"
 #include <limits>
 
-GraphFunction::GraphFunction(QObject *parent) : QObject(parent) {}
+GraphFunction::GraphFunction(QObject *parent) : QObject(parent) {
+}
 
 void GraphFunction::setText(const QString &text) {
     if (m_text == text) return;
@@ -48,7 +49,9 @@ void GraphFunction::recompile() {
 
     switch (eq->kind) {
         case Kind::Explicit: m_equation = std::move(eq); break;
-        case Kind::Implicit: m_error = QStringLiteral("Implicit equations and inequalities are not supported yet"); break;
+        case Kind::Implicit:
+            m_error = QStringLiteral("Implicit equations and inequalities are not supported yet");
+            break;
         case Kind::Value: m_error = QStringLiteral("Nothing to plot (add x, or write y = ...)"); break;
     }
 }
@@ -57,4 +60,3 @@ double GraphFunction::evaluate(double x) const {
     if (!m_equation) return std::numeric_limits<double>::quiet_NaN();
     return m_equation->lhs.eval(x, 0.0);
 }
-

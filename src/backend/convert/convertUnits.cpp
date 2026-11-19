@@ -19,7 +19,7 @@ struct Unit {
     Cat cat;
     double scale;
     double offset;
-    bool common; // Listed when no target unit is given
+    bool common;                    // Listed when no target unit is given
     std::vector<std::string> names; // Lowercase aliases, must be unique across the table
 };
 
@@ -50,8 +50,26 @@ const std::vector<Unit> &table() {
         {"st", Cat::Mass, 6350.29318, 0, false, {"st", "stone"}},
 
         // ---- Temperature, base Celsius ----
-        {"\xC2\xB0" "C", Cat::Temperature, 1.0, 0.0, true, {"c", "\xC2\xB0" "c", "celsius", "degc"}},
-        {"\xC2\xB0" "F", Cat::Temperature, 5.0 / 9.0, -32.0, true, {"f", "\xC2\xB0" "f", "fahrenheit", "degf"}},
+        {"\xC2\xB0"
+         "C",
+         Cat::Temperature,
+         1.0,
+         0.0,
+         true,
+         {"c",
+          "\xC2\xB0"
+          "c",
+          "celsius", "degc"}},
+        {"\xC2\xB0"
+         "F",
+         Cat::Temperature,
+         5.0 / 9.0,
+         -32.0,
+         true,
+         {"f",
+          "\xC2\xB0"
+          "f",
+          "fahrenheit", "degf"}},
         {"K", Cat::Temperature, 1.0, -273.15, true, {"k", "kelvin"}},
 
         // ---- Time, base second ----
@@ -197,4 +215,3 @@ bool runUnits(double value, const std::string &from, const std::string &to, Resu
 }
 
 } // namespace wisp::convert
-

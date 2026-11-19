@@ -19,7 +19,7 @@ class GraphFunction : public QObject {
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY changed)
     Q_PROPERTY(bool visible READ isVisible WRITE setVisible NOTIFY changed)
-    Q_PROPERTY(bool valid READ valid NOTIFY changed) // True if can draw a graph
+    Q_PROPERTY(bool valid READ valid NOTIFY changed)    // True if can draw a graph
     Q_PROPERTY(QString error READ error NOTIFY changed) // Empty when no error
 
 public:
@@ -70,4 +70,3 @@ private:
     QString m_error;
     std::shared_ptr<const wisp::calc::Equation> m_equation;
 };
-

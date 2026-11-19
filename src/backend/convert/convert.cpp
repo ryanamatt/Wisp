@@ -30,7 +30,6 @@ QVariantMap Convert::convert(const QString &query) const {
         out.insert(QStringLiteral("input"), QString::fromStdString(r.input));
         out.insert(QStringLiteral("swatch"), QString::fromStdString(r.swatch));
         out.insert(QStringLiteral("rows"), rows);
-    } catch (...) {
-    }
+    } catch (...) {}
     return out;
 }

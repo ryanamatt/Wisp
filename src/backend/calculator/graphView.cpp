@@ -41,7 +41,7 @@ GraphView::GraphView(QQuickItem *parent) : QQuickItem(parent) {
 
 QQmlListProperty<GraphFunction> GraphView::functions() {
     return QQmlListProperty<GraphFunction>(this, this, &GraphView::functionAppend, &GraphView::functionCount,
-            &GraphView::functionAt, &GraphView::functionClear);
+                                           &GraphView::functionAt, &GraphView::functionClear);
 }
 
 qsizetype GraphView::functionCount(QQmlListProperty<GraphFunction> *list) {
@@ -117,15 +117,31 @@ void GraphView::setScale(double v) {
     notifyViewport();
 }
 
-double GraphView::toGraphX(double px) const { return m_centerX + (px - width() / 2.0) / m_scale; }
-double GraphView::toGraphY(double py) const { return m_centerY - (py - height() / 2.0) / m_scale; }
-double GraphView::toPixelX(double gx) const { return width() / 2.0 + (gx - m_centerX) * m_scale; }
-double GraphView::toPixelY(double gy) const { return height() / 2.0 - (gy - m_centerY) * m_scale; }
+double GraphView::toGraphX(double px) const {
+    return m_centerX + (px - width() / 2.0) / m_scale;
+}
+double GraphView::toGraphY(double py) const {
+    return m_centerY - (py - height() / 2.0) / m_scale;
+}
+double GraphView::toPixelX(double gx) const {
+    return width() / 2.0 + (gx - m_centerX) * m_scale;
+}
+double GraphView::toPixelY(double gy) const {
+    return height() / 2.0 - (gy - m_centerY) * m_scale;
+}
 
-double GraphView::xMin() const { return toGraphX(0.0); }
-double GraphView::xMax() const { return toGraphX(width()); }
-double GraphView::yMin() const { return toGraphY(height()); }
-double GraphView::yMax() const { return toGraphY(0.0); }
+double GraphView::xMin() const {
+    return toGraphX(0.0);
+}
+double GraphView::xMax() const {
+    return toGraphX(width());
+}
+double GraphView::yMin() const {
+    return toGraphY(height());
+}
+double GraphView::yMax() const {
+    return toGraphY(0.0);
+}
 
 double GraphView::gridStep() const {
     double raw = 90.0 / m_scale;
@@ -202,9 +218,13 @@ void GraphView::mouseMoveEvent(QMouseEvent *event) {
     m_lastMouse = pos;
 }
 
-void GraphView::mouseReleaseEvent(QMouseEvent *) { m_dragging = false; }
+void GraphView::mouseReleaseEvent(QMouseEvent *) {
+    m_dragging = false;
+}
 
-void GraphView::mouseUngrabEvent() { m_dragging = false; }
+void GraphView::mouseUngrabEvent() {
+    m_dragging = false;
+}
 
 void GraphView::wheelEvent(QWheelEvent *event) {
     if (!m_interactive) {
@@ -257,7 +277,8 @@ void GraphView::addQuad(const PixelPoint &a, const PixelPoint &b, std::vector<QS
     out.push_back(p3);
 }
 
-void GraphView::addSegment(const wisp::calc::Expression &expr, const PixelPoint &a, const PixelPoint &b, int depth, std::vector<QSGGeometry::Point2D> &out) const {
+void GraphView::addSegment(const wisp::calc::Expression &expr, const PixelPoint &a, const PixelPoint &b, int depth,
+                           std::vector<QSGGeometry::Point2D> &out) const {
     // Undefined at either end, leave a gap.
     if (!a.ok || !b.ok) return;
 
@@ -336,9 +357,7 @@ QSGNode *GraphView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
 
         QSGGeometry *geometry = node->geometry();
         geometry->allocate((int)vertices.size());
-        if (!vertices.empty()) {
-            std::copy(vertices.begin(), vertices.end(), geometry->vertexDataAsPoint2D());
-        }
+        if (!vertices.empty()) { std::copy(vertices.begin(), vertices.end(), geometry->vertexDataAsPoint2D()); }
 
         static_cast<QSGFlatColorMaterial *>(node->material())->setColor(drawables[(size_t)i].color);
         node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
@@ -346,4 +365,3 @@ QSGNode *GraphView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
 
     return root;
 }
-
