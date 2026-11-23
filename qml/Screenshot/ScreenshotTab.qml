@@ -93,15 +93,12 @@ Item {
                         border.color: Colors.colors.accent
                         border.width: 2
 
-                        Image {
-                            source: Icons.getIcon(modelData.icon)
+                        TintedIcon {
+                            anchors.centerIn: parent
                             width: parent.width * 0.6
                             height: width
-                            anchors.centerIn: parent
-                            fillMode: Image.PreserveAspectFit
-
-                            sourceSize.width: width * Screen.devicePixelRatio
-                            sourceSize.height: height * Screen.devicePixelRatio
+                            name: modelData.icon
+                            tint: Colors.colors.accent
                         }
 
                         MouseArea {
