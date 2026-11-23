@@ -254,6 +254,7 @@ as the CPU Usage.
 
 Its popup contains:
 - Text for Rx (Recieve) and Tx (transmit) values.
+- Text for the Uptime of the system
 - Text for Name, Temperature, Usage Bar, Usage % for CPU and GPU
 - Text for Memory and Each Parition showing how much space it takes up out of total.
 

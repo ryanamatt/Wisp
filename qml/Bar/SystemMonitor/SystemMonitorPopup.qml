@@ -42,67 +42,127 @@ BarPopup {
             spacing: 2
 
             RowLayout {
+                id: statsRow
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
+                Layout.leftMargin: sideMargin
+                Layout.rightMargin: sideMargin
 
+                readonly property real sideMargin: 15
+
+                // Large gap between the two categories (network | uptime)
+                spacing: -50
+
+                // Small gap between Rx and Tx
+                readonly property real innerSpacing: -80
+
+                // Width ratio: Network group : Uptime = 3 : 1
+                readonly property real wNet: 3
+                readonly property real wUp: 1
+
+                // All widths derive from contentLayout.width, which no layout assigns,
+                // so there is no feedback loop.
+                readonly property real availWidth: contentLayout.width - sideMargin * 2
+                readonly property real unit: (availWidth - spacing) / (wNet + wUp)
+                readonly property real netWidth: unit * wNet
+                readonly property real upWidth: unit * wUp
+                readonly property real cellWidth: (netWidth - innerSpacing) / 2
+
+                // Network group (Rx + Tx)
                 RowLayout {
-                    spacing: 4
+                    id: networkRow
+                    Layout.fillWidth: false
+                    Layout.preferredWidth: statsRow.netWidth
+                    Layout.minimumWidth: statsRow.netWidth
+                    Layout.maximumWidth: statsRow.netWidth
+                    spacing: statsRow.innerSpacing
 
-                    Image {
-                        source: Icons.getIcon("ui/arrowDown")
-                        sourceSize.width: width * Screen.devicePixelRatio
-                        sourceSize.height: height * Screen.devicePixelRatio
+                    // Rx cell
+                    RowLayout {
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: statsRow.cellWidth
+                        Layout.minimumWidth: statsRow.cellWidth
+                        Layout.maximumWidth: statsRow.cellWidth
+                        spacing: 4
 
-                        Layout.preferredWidth: rxText.height * 0.8
-                        Layout.preferredHeight: rxText.height * 0.8
+                        Image {
+                            source: Icons.getIcon("ui/arrowDown")
+                            sourceSize.width: width * Screen.devicePixelRatio
+                            sourceSize.height: height * Screen.devicePixelRatio
 
-                        fillMode: Image.PreserveAspectFit
+                            Layout.preferredWidth: rxText.height * 0.8
+                            Layout.preferredHeight: rxText.height * 0.8
 
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            colorization: 1.0
-                            colorizationColor: Colors.colors.info
+                            fillMode: Image.PreserveAspectFit
+
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                colorization: 1.0
+                                colorizationColor: Colors.colors.info
+                            }
+                        }
+
+                        Text {
+                            id: rxText
+                            Layout.fillWidth: true
+                            text: Utils.formatRate(SystemMonitor.netRxBytesPerSec)
+                            font.pixelSize: 16
+                            font.family: Config.font
+                            color: Colors.colors.foreground
+                            elide: Text.ElideRight
                         }
                     }
 
-                    Text {
-                        id: rxText
-                        text: Utils.formatRate(SystemMonitor.netRxBytesPerSec)
-                        font.pixelSize: 16
-                        font.family: Config.font
-                        color: Colors.colors.foreground
-                    }
-                }
+                    // Tx cell
+                    RowLayout {
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: statsRow.cellWidth
+                        Layout.minimumWidth: statsRow.cellWidth
+                        Layout.maximumWidth: statsRow.cellWidth
+                        spacing: 4
 
-                RowLayout {
-                    spacing: 4
+                        Image {
+                            source: Icons.getIcon("ui/arrowUp")
+                            sourceSize.width: width * Screen.devicePixelRatio
+                            sourceSize.height: height * Screen.devicePixelRatio
 
-                    Image {
-                        source: Icons.getIcon("ui/arrowUp")
-                        sourceSize.width: width * Screen.devicePixelRatio
-                        sourceSize.height: height * Screen.devicePixelRatio
+                            Layout.preferredWidth: txText.height * 0.8
+                            Layout.preferredHeight: txText.height * 0.8
 
-                        Layout.preferredWidth: txText.height * 0.8
-                        Layout.preferredHeight: txText.height * 0.8
+                            fillMode: Image.PreserveAspectFit
 
-                        fillMode: Image.PreserveAspectFit
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                colorization: 1.0
+                                colorizationColor: Colors.colors.warning
+                            }
+                        }
 
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            colorization: 1.0
-                            colorizationColor: Colors.colors.warning
+                        Text {
+                            id: txText
+                            Layout.fillWidth: true
+                            text: Utils.formatRate(SystemMonitor.netTxBytesPerSec)
+                            font.pixelSize: 16
+                            font.family: Config.font
+                            color: Colors.colors.foreground
+                            elide: Text.ElideRight
                         }
                     }
-
-                    Text {
-                        id: txText
-                        text: Utils.formatRate(SystemMonitor.netTxBytesPerSec)
-                        font.pixelSize: 16
-                        font.family: Config.font
-                        color: Colors.colors.foreground
-                    }
                 }
 
+                // Uptime cell
+                Text {
+                    id: uptimeText
+                    Layout.fillWidth: false
+                    Layout.preferredWidth: statsRow.upWidth
+                    Layout.minimumWidth: statsRow.upWidth
+                    Layout.maximumWidth: statsRow.upWidth
+                    horizontalAlignment: Text.AlignRight
+                    text: Utils.formatUptime(SystemMonitor.uptimeSeconds)
+                    font.pixelSize: 16
+                    font.family: Config.font
+                    color: Colors.colors.foreground
+                    elide: Text.ElideLeft
+                }
             }
 
             // Horizontal Spacer
