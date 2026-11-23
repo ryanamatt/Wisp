@@ -189,6 +189,7 @@ Shared infrastructure:
 
 ## Configuration
  
+* Every option is documented in [config.md](config.md). Keep it updated when adding settings.
 * User config: `~/.config/wisp/config.json` (or `$XDG_CONFIG_HOME/wisp/config.json`), or a path passed with `-c`.
 * Defaults live **only** in `src/config/config.hpp`. Missing files, missing keys, wrong types, and out-of-range values all fall back to defaults with a logged warning and never fail startup.
 * Config is flattened into env vars (`config.cpp::exportEnv`). To add a setting:
@@ -197,6 +198,7 @@ Shared infrastructure:
   3. Add an env var name in `src/env.hpp` and export it in `exportEnv`.
   4. Read it in `qml/Config/Config.qml`.
   5. Optionally add a control in `qml/CommandCenter/SettingsSection/`.
+  6. Document it in [config.md](config.md).
 * Theme colors come from thee `colors.json` file.
 
 ## Logging
@@ -239,4 +241,3 @@ Install layout:
 | `config/jokes.txt` | `/usr/share/wisp/config` |
  
 Developing without installing: build, then `just run` so quickshell picks up the modules in the build tree ahead of the installed ones.
-
