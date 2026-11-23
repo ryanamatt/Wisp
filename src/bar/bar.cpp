@@ -34,32 +34,52 @@ namespace wisp::bar {
 
 namespace {
 
+// Removes ANSI escape sequences like "\033[32m" from a line.
+std::string stripAnsi(const std::string &in) {
+    std::string out;
+    out.reserve(in.size());
+    for (size_t i = 0; i < in.size(); ++i) {
+        if (in[i] == '\033' && i + 1 < in.size() && in[i + 1] == '[') {
+            i += 2;
+            while (i < in.size() && !(in[i] >= '@' && in[i] <= '~')) ++i; // skip to final byte
+            continue;
+        }
+        out += in[i];
+    }
+    return out;
+}
+
 // Maps quickshell's own "  INFO: ..." style prefixes onto wisp log levels.
-void emitQuickshellLine(std::string line) {
+void emitQuickshellLine(std::string raw) {
+    std::string line = stripAnsi(raw);
+
     while (!line.empty() && (line.back() == '\r' || line.back() == ' ')) line.pop_back();
     const auto start = line.find_first_not_of(' ');
     if (start == std::string::npos) return; // blank line
     line.erase(0, start);
 
-    auto strip = [&](const char *prefix) {
-        const std::string p = prefix;
-        if (line.compare(0, p.size(), p) != 0) return false;
-        line.erase(0, p.size());
-        const auto s = line.find_first_not_of(' ');
-        line.erase(0, s == std::string::npos ? line.size() : s);
-        return true;
+    struct Prefix {
+        const char *text;
+        void (*emit)(const std::string &, const std::string &);
+    };
+    static const Prefix prefixes[] = {
+        {"TRACE:", wisp::log::debug},  {"DEBUG:", wisp::log::debug}, {"INFO:", wisp::log::info},
+        {"WARN:", wisp::log::warning}, {"ERROR:", wisp::log::error},
     };
 
-    if (strip("DEBUG:"))
-        wisp::log::debug("quickshell", line);
-    else if (strip("WARN:"))
-        wisp::log::warning("quickshell", line);
-    else if (strip("ERROR:"))
-        wisp::log::error("quickshell", line);
-    else if (strip("INFO:"))
-        wisp::log::info("quickshell", line);
-    else
-        wisp::log::info("quickshell", line); // e.g. qml console.log output
+    for (const auto &p : prefixes) {
+        const std::string text = p.text;
+        if (line.compare(0, text.size(), text) == 0) {
+            line.erase(0, text.size());
+            const auto s = line.find_first_not_of(' ');
+            line.erase(0, s == std::string::npos ? line.size() : s);
+            p.emit("quickshell", line);
+            return;
+        }
+    }
+
+    // No level prefix (e.g. qml console.log output).
+    wisp::log::info("quickshell", line);
 }
 
 // Reads the child's combined stdout/stderr and forwards it line by line
