@@ -3,7 +3,7 @@
 import "../SettingsComponents/"
 
 SettingsSubSection {
-    name: "Battery"
+    name: "Battery Settings"
 
     BatteryWarnPercSetting {}
     BatteryAutoPowerSaverSetting {}
