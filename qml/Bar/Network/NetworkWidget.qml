@@ -19,7 +19,11 @@ BarWidgetContainer {
     // even while the popup is closed.
     readonly property string connectionType: NetworkSingleton.connectionType
 
-    iconImage.source: connectionType === "ethernet" ? Icons.getIcon("wifi/ethernet") : Icons.getIcon("wifi/wifi")
+    iconImage.source: connectionType === "none"
+    ? Icons.getIcon("wifi/wifiOff")
+    : (connectionType === "ethernet"
+        ? Icons.getIcon("wifi/ethernet")
+        : Icons.getIcon("wifi/wifi"))
     iconImage.width: networkWidget.implicitWidth * 0.5
 
     isOpenHere: IpcState.networkWidget.isOpenOn(networkWidget.screen)
