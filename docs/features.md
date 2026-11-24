@@ -314,8 +314,23 @@ Its Popup shows:
 The Weather Widget is the home of weather using the `Open Meteo API`. The 
 Weather widget shows the current temperature in Fahrenheit along side
 an icon dictating the current weather (sunny, cloudy, snowing, etc.).
+The icon switches to a night variant (clear night, partly cloudy night)
+when it is dark at the weather location.
 
-There is no Popup for the Weather Widget.
+Its Popup shows:
+  - A header with the current weather icon, temperature in Fahrenheit, a
+  short description of the conditions (Clear sky, Rain, etc.), the location
+  name, and today's high and low. Includes a refresh button.
+  - A row of hourly forecast cards covering the next 24 hours. The first card
+  is labeled "Now" and highlighted. Each card shows the hour, a weather icon,
+  the temperature, and the chance of precipitation. The row scrolls
+  horizontally with the mouse wheel, by dragging, or with the Left/Right
+  arrow keys. Hours follow your time format setting (12 or 24 hour).
+  - A message instead of the forecast if no weather location is set in
+  Settings, or while the forecast is loading or fails to load.
+
+The popup refreshes the forecast when opened if the data is more than a
+minute old. Its size scales with the monitor width.
 
 ### Audio Widget
 
