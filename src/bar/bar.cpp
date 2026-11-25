@@ -2,12 +2,17 @@
 
 #include "bar/bar.hpp"
 
+#include <atomic>
 #include <cerrno>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
 #include <filesystem>
+#include <poll.h>
+#include <string>
 #include <sys/wait.h>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -29,22 +34,150 @@ namespace wisp::bar {
 
 namespace {
 
+// Removes ANSI escape sequences like "\033[32m" from a line.
+std::string stripAnsi(const std::string &in) {
+    std::string out;
+    out.reserve(in.size());
+    for (size_t i = 0; i < in.size(); ++i) {
+        if (in[i] == '\033' && i + 1 < in.size() && in[i + 1] == '[') {
+            i += 2;
+            while (i < in.size() && !(in[i] >= '@' && in[i] <= '~')) ++i; // skip to final byte
+            continue;
+        }
+        out += in[i];
+    }
+    return out;
+}
+
+// Maps quickshell's own "  INFO: ..." style prefixes onto wisp log levels.
+void emitQuickshellLine(std::string raw) {
+    std::string line = stripAnsi(raw);
+
+    while (!line.empty() && (line.back() == '\r' || line.back() == ' ')) line.pop_back();
+    const auto start = line.find_first_not_of(' ');
+    if (start == std::string::npos) return; // blank line
+    line.erase(0, start);
+
+    struct Prefix {
+        const char *text;
+        void (*emit)(const std::string &, const std::string &);
+    };
+    static const Prefix prefixes[] = {
+        {"TRACE:", wisp::log::debug},  {"DEBUG:", wisp::log::debug}, {"INFO:", wisp::log::info},
+        {"WARN:", wisp::log::warning}, {"ERROR:", wisp::log::error},
+    };
+
+    for (const auto &p : prefixes) {
+        const std::string text = p.text;
+        if (line.compare(0, text.size(), text) == 0) {
+            line.erase(0, text.size());
+            const auto s = line.find_first_not_of(' ');
+            line.erase(0, s == std::string::npos ? line.size() : s);
+            p.emit("quickshell", line);
+            return;
+        }
+    }
+
+    // No level prefix (e.g. qml console.log output).
+    wisp::log::info("quickshell", line);
+}
+
+// Reads the child's combined stdout/stderr and forwards it line by line
+// into the wisp log.
+class OutputPump {
+public:
+    void start(int readFd) {
+        fd_ = readFd;
+        stop_ = false;
+
+        // Block signals while creating the thread so it inherits a fully
+        // blocked mask. Otherwise a SIGTERM/SIGHUP could be delivered to
+        // this thread and the main thread's waitpid() would never see EINTR.
+        sigset_t all, old;
+        sigfillset(&all);
+        pthread_sigmask(SIG_SETMASK, &all, &old);
+        thread_ = std::thread([this] { run(); });
+        pthread_sigmask(SIG_SETMASK, &old, nullptr);
+    }
+
+    // Call after the child has been reaped. Drains whatever is left, then
+    // returns. Uses a flag instead of waiting for EOF because a process
+    // quickshell spawned could still hold the pipe's write end open.
+    void stopAndJoin() {
+        stop_ = true;
+        if (thread_.joinable()) thread_.join();
+    }
+
+private:
+    void run() {
+        std::string buf;
+        char chunk[4096];
+        for (;;) {
+            pollfd p{fd_, POLLIN, 0};
+            int r = poll(&p, 1, 100);
+            if (r < 0) {
+                if (errno == EINTR) continue;
+                break;
+            }
+            if (r == 0) {
+                if (stop_) break; // nothing pending and the child is gone
+                continue;
+            }
+            ssize_t n = read(fd_, chunk, sizeof chunk);
+            if (n < 0) {
+                if (errno == EINTR) continue;
+                break;
+            }
+            if (n == 0) break; // EOF
+            buf.append(chunk, static_cast<size_t>(n));
+
+            size_t pos;
+            while ((pos = buf.find('\n')) != std::string::npos) {
+                emitQuickshellLine(buf.substr(0, pos));
+                buf.erase(0, pos + 1);
+            }
+        }
+        if (!buf.empty()) emitQuickshellLine(buf);
+        close(fd_);
+    }
+
+    int fd_ = -1;
+    std::atomic<bool> stop_{false};
+    std::thread thread_;
+};
+
 // Forks and execs quickshell for the given qmlDir. Returns the child's
 // pid in the parent, and never returns in the child (it either execs
 // or _exit(127)s on failure). Returns -1 if fork() itself failed.
-pid_t spawnQuickshell(const std::string &qmlDir) {
-    pid_t pid = fork();
-    if (pid < 0) {
-        wisp::log::error(std::string("fork failed: ") + std::strerror(errno));
+pid_t spawnQuickshell(const std::string &qmlDir, OutputPump &pump) {
+    int fds[2];
+    if (pipe2(fds, O_CLOEXEC) != 0) {
+        wisp::log::error(std::string("pipe failed: ") + std::strerror(errno));
         return -1;
     }
 
-    setenv("QS_NO_RELOAD_POPUP", "1", 1);
-    setenv("QT_MESSAGE_PATTERN", "%{category}: %{message} (%{file}:%{line} %{function})", 1);
-    setenv("QT_LOGGING_RULES", "qt.qpa.wayland.textinput.warning=false", 1);
+    // Log before forking. The child must not touch the logger's mutex.
+    wisp::log::debug("exec: quickshell -c " + qmlDir);
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        wisp::log::error(std::string("fork failed: ") + std::strerror(errno));
+        close(fds[0]);
+        close(fds[1]);
+        return -1;
+    }
 
     if (pid == 0) {
         // Child: become quickshell.
+        // Child: send stdout and stderr into the pipe. dup2 clears
+        // O_CLOEXEC on the new descriptors, the originals close on exec.
+        dup2(fds[1], STDOUT_FILENO);
+        dup2(fds[1], STDERR_FILENO);
+
+        setenv("QS_NO_RELOAD_POPUP", "1", 1);
+        setenv("QT_MESSAGE_PATTERN", "%{category}: %{message} (%{file}:%{line} %{function})", 1);
+        setenv("QT_LOGGING_RULES", "qt.qpa.wayland.textinput.warning=false", 1);
+
         std::vector<char *> args;
         args.push_back(const_cast<char *>("quickshell"));
         args.push_back(const_cast<char *>("-c"));
@@ -61,6 +194,8 @@ pid_t spawnQuickshell(const std::string &qmlDir) {
         _exit(127);
     }
 
+    close(fds[1]);
+    pump.start(fds[0]);
     return pid;
 }
 
@@ -136,7 +271,8 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
     wisp::process::installSupervisorSignalHandlers();
     wisp::process::writePidFile(getpid());
 
-    pid_t child = spawnQuickshell(qmlDir);
+    OutputPump pump;
+    pid_t child = spawnQuickshell(qmlDir, pump);
     if (child < 0) {
         wisp::log::error("failed to start the bar");
         wisp::process::removePidFileIfOwnedBySelf();
@@ -164,7 +300,8 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
 
             kill(child, SIGTERM);
             reapChild(child);
-            child = spawnQuickshell(qmlDir);
+            pump.stopAndJoin();
+            child = spawnQuickshell(qmlDir, pump);
             if (child < 0) {
                 wisp::log::error("failed to respawn quickshell during reload");
                 exitCode = 1;
@@ -180,6 +317,7 @@ int runBar(const std::string &qmlDir, const std::string &configPath, const std::
             if (errno == EINTR) continue;
             break;
         }
+        pump.stopAndJoin();
 
         // quickshell exited on its own (crash, `Qt.quit()`, etc.) -
         // there's nothing left to supervise, so wisp exits too.
