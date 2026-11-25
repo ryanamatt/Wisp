@@ -207,6 +207,7 @@ Shared infrastructure:
  
 * File: `$XDG_STATE_HOME/wisp/wisp.log` (default `~/.local/state/wisp/wisp.log`).
 * Line format: `[timestamp] [LEVEL] [category] message`.
+  * Quickshell's Log is also outputted to the Wisp Log.
 * Levels: debug, info, warning, error. Warnings and errors go to stderr, the rest to stdout, with ANSI color on the terminal only.
 * Thread-safe (mutex). The file is reopened automatically if it is rotated or deleted by another process, using a device and inode check.
 * Rotation: at process start, a file over 5 MB is renamed to `wisp.log.old`.
