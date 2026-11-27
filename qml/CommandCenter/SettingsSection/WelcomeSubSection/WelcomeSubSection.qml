@@ -3,7 +3,7 @@
 import "../SettingsComponents/"
 
 SettingsSubSection {
-    name: "Welcome"
+    name: "Welcome Settings"
 
     JokesFileSetting {}
 }

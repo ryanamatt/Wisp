@@ -3,7 +3,7 @@
 import "../SettingsComponents/"
 
 SettingsSubSection {
-    name: "Weather"
+    name: "Weather Settings"
 
     GetWeatherFromIpSetting {}
     WeatherCitySetting {}

@@ -3,7 +3,7 @@
 import "../SettingsComponents/"
 
 SettingsSubSection {
-    name: "OSD"
+    name: "OSD Settings"
 
     OSDDurationSetting {}
     OSDOrientationSetting {}

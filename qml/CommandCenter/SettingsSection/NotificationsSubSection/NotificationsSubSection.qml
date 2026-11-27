@@ -3,7 +3,7 @@
 import "../SettingsComponents/"
 
 SettingsSubSection {
-    name: "Notifications"
+    name: "Notification Settings"
 
     NotificationToastDurationSetting {}
 }
