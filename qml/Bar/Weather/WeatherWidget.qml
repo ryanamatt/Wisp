@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import "../../Components"
+import "../../IpcState"
 import "../../Colors"
 import "../../Config"
 import "../../Icons"
@@ -12,54 +13,30 @@ import "../../Icons"
 BarWidgetContainer {
     id: weatherWidget
 
+    required property var screen
+
+    // Shared state lives in WeatherSingleton, so every monitor stays in sync.
     property int weatherCode: WeatherSingleton.weatherCode
     property int weatherTemp: WeatherSingleton.weatherTemp
+    property bool weatherIsDay: WeatherSingleton.weatherIsDay
 
-    property var weatherCodeMap: [
-        {
-            id: "sunny",
-            codes: [0, 1],
-            icon: "sunny"
-        },
-        {
-            id: "overcast",
-            codes: [2],
-            icon: "overcast"
-        },
-        {
-            id: "cloudy",
-            codes: [3],
-            icon: "cloudy"
-        },
-        {
-            id: "fog",
-            codes: [45, 48],
-            icon: "fog"
-        },
-        {
-            id: "rain",
-            codes: [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82],
-            icon: "rain"
-        },
-        {
-            id: "snow",
-            codes: [71, 73, 75, 77, 85, 86],
-            icon: "snow"
-        },
-        {
-            id: "thunderstorm",
-            codes: [95, 96, 99],
-            icon: "thunderstorm"
-        }
-    ]
+    isOpenHere: IpcState.weatherWidget.isOpenOn(weatherWidget.screen)
 
-    function getWeatherIcon(code) {
-        for (let i = 0; i < weatherCodeMap.length; i++) {
-            if (weatherCodeMap[i].codes.includes(code)) {
-                return weatherCodeMap[i].icon;
-            }
+    popupWindows: [weatherPopupWindow]
+
+    onRequestOpen: IpcState.weatherWidget.open(weatherWidget.screen)
+    onRequestClose: IpcState.weatherWidget.close()
+
+    onIsOpenHereChanged: {
+        if (isOpenHere) {
+            popup.resetScroll()
+            popup.forceActiveFocus()
+            popup.refreshAll()
+            activateFocusGrab()
+        } else {
+            popup.closePopup()
+            releaseFocusGrab()
         }
-        return "E"
     }
 
     RowLayout {
@@ -77,8 +54,8 @@ BarWidgetContainer {
             sourceSize.width: width * Screen.devicePixelRatio
             sourceSize.height: height * Screen.devicePixelRatio
             source: {
-                const icon = getWeatherIcon(weatherWidget.weatherCode)
-                if (icon === "E") return ""
+                const icon = WeatherSingleton.getWeatherIcon(weatherWidget.weatherCode, weatherWidget.weatherIsDay)
+                if (icon === "") return ""
 
                 return Icons.getIcon("weather/" + icon)
             }
@@ -103,5 +80,23 @@ BarWidgetContainer {
             source: Icons.getIcon("weather/cloudLock")
         }
 
+    }
+
+    // Sized from the monitor so it scales between desktop and laptop.
+    // Width is 340 / 1900 of the screen width (same basis as Bar.qml), with
+    // a floor so the cards stay readable on small screens. Height is a fixed
+    // ratio of the width, so the proportions never change.
+    WidgetPopup {
+        id: weatherPopupWindow
+        widget: weatherWidget
+        implicitWidth: Math.max(300, Math.round(weatherWidget.screen.width * (340 / 1900)))
+        implicitHeight: Math.round(implicitWidth * 0.6)
+
+        WeatherPopup {
+            id: popup
+            anchors.fill: parent
+
+            onRequestClose: weatherWidget.forceClose()
+        }
     }
 }

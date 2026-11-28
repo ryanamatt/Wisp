@@ -28,7 +28,7 @@ Variants {
 
         color: Qt.rgba(Colors.colors.surfaceAlt.r, Colors.colors.surfaceAlt.g, Colors.colors.surfaceAlt.b, 0.2)
 
-        anchors { 
+        anchors {
             top: Config.barOrientation === "top"
             bottom: Config.barOrientation === "bottom"
             left: true
@@ -46,40 +46,40 @@ Variants {
             // Math Based on a 1920x1080 Monitor
 
             // ~3.95% (75px)
-            ActionWidget { 
-                screen: bar.modelData 
+            ActionWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (75 / 1900)
             }
 
             Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
             // ~6.32% (120px)
-            SystemMonitorWidget { 
-                screen: bar.modelData 
+            SystemMonitorWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (120 / 1900)
             }
 
             Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
             // ~2.63% (50px)
-            NetworkWidget { 
-                screen: bar.modelData 
+            NetworkWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (50 / 1900)
             }
 
             Item { implicitWidth: rowLayout.width * (50 / 1900) }
 
             // ~2.63% (50px)
-            BrightnessWidget { 
-                screen: bar.modelData 
+            BrightnessWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (100 / 1900)
             }
 
             Item { implicitWidth: rowLayout.width * (20 / 1900) }
 
             // ~5.26% (100px)
-            BatteryWidget { 
-                screen: bar.modelData 
+            BatteryWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (100 / 1900)
             }
 
@@ -91,8 +91,8 @@ Variants {
             Item { implicitWidth: rowLayout.width * (30 / 1900) }
 
             // ~2.63% (50px)
-            PowerMenuWidget { 
-                screen: bar.modelData 
+            PowerMenuWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (50 / 1900)
             }
 
@@ -110,6 +110,7 @@ Variants {
 
             // ~3.95% (75px)
             WeatherWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (75 / 1900)
             }
 
@@ -125,8 +126,8 @@ Variants {
             Item { Layout.fillWidth: true }
 
             // ~2.63% (50px)
-            ClipboardWidget { 
-                screen: bar.modelData 
+            ClipboardWidget {
+                screen: bar.modelData
                 implicitWidth: rowLayout.width * (50 / 1900)
             }
 

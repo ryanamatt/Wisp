@@ -18,6 +18,7 @@ Singleton {
     property PopupState brightnessWidget: PopupState { ipcName: "brightness" }
     property PopupState batteryWidget: PopupState { ipcName: "battery" }
     property PopupState notificationsWidget: PopupState { ipcName: "notifications" }
+    property PopupState weatherWidget: PopupState { ipcName: "weather" }
 
     property WindowState themeSwitcher: WindowState { ipcName: "themeSwitcher" }
     property WindowState workspaceSwitcher: WindowState { ipcName: "workspaceSwitcher" }
