@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 1,
   "bar": {
     "timeFormat": "ddd MMM d hh:mm:ss AP",
     "orientation": "top"

@@ -10,6 +10,12 @@ namespace wisp::config {
 // ---------------------------------------------------------------------
 // Defaults live here and only here.
 // ---------------------------------------------------------------------
+
+// Version of the config.json layout this build understands. Bump it only
+// when a change would break existing configs (renamed or removed keys,
+// changed meaning). Adding a new optional key does not need a bump.
+inline constexpr int kCurrentSchemaVersion = 1;
+
 inline constexpr const char *kDefaultTimeFormat = "ddd MMM d hh:mm:ss AP";
 inline constexpr const char *kDefaultBarOrientation = "top";
 
@@ -36,6 +42,7 @@ inline constexpr const char *kDefaultOSDOrientation = "bottom";
 inline constexpr double kDefaultOSDScaleSize = 1.0;
 
 struct Config {
+    int schemaVersion = kCurrentSchemaVersion;
     std::string timeFormat = kDefaultTimeFormat;
     std::string barOrientation = kDefaultBarOrientation;
     std::string font = kDefaultFont;

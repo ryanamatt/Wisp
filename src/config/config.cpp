@@ -91,8 +91,33 @@ void readPath(const nlohmann::json &j, const char *key, const std::string &label
     out = resolvePath(value, defaultPath);
 }
 
+// Reads the top-level "schemaVersion" and warns if it does not match what
+// this build understands. A missing key is treated as the current version
+// so configs written before the key existed keep working silently.
+// Loading always continues; this is advisory only.
+void checkSchemaVersion(const nlohmann::json &j, int &out) {
+    if (!j.contains("schemaVersion")) return;
+
+    if (!j["schemaVersion"].is_number_integer()) {
+        wisp::log::warning("config", "schemaVersion must be an int, assuming " + std::to_string(kCurrentSchemaVersion));
+        return;
+    }
+
+    const int version = j["schemaVersion"].get<int>();
+    out = version;
+
+    if (version > kCurrentSchemaVersion) {
+        wisp::log::warning("config", "schemaVersion " + std::to_string(version) + " is newer than supported version " +
+                                         std::to_string(kCurrentSchemaVersion) + ", some options may be ignored");
+    } else if (version < kCurrentSchemaVersion) {
+        wisp::log::warning("config", "schemaVersion " + std::to_string(version) + " is invalid or outdated, expected " +
+                                         std::to_string(kCurrentSchemaVersion));
+    }
+}
+
 void exportEnv(const Config &cfg, const std::string &path) {
     setenv(wisp::env::kConfigPath, path.c_str(), 1);
+    setenv(wisp::env::kSchemaVersion, std::to_string(cfg.schemaVersion).c_str(), 1);
     setenv(wisp::env::kTimeFormat, cfg.timeFormat.c_str(), 1);
     setenv(wisp::env::kBarOrientation, cfg.barOrientation.c_str(), 1);
     setenv(wisp::env::kFont, cfg.font.c_str(), 1);
@@ -154,6 +179,8 @@ Config load(const std::string &path) {
         exportEnv(cfg, path);
         return cfg;
     }
+
+    checkSchemaVersion(j, cfg.schemaVersion);
 
     if (j.contains("bar") && j["bar"].is_object()) {
         const auto &bar = j["bar"];
